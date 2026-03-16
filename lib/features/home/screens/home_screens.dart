@@ -33,54 +33,60 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 
-  static Future<void> loadData(bool reload, BuildContext context, {bool fromLanguage = false}) async {
-    final productProvider = Provider.of<ProductProvider>(context, listen: false);
-    final flashDealProvider = Provider.of<FlashDealProvider>(context, listen: false);
+  static Future<void> loadData(bool reload, BuildContext context,
+      {bool fromLanguage = false}) async {
+    final productProvider =
+        Provider.of<ProductProvider>(context, listen: false);
+    final flashDealProvider =
+        Provider.of<FlashDealProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final withLListProvider = Provider.of<WishListProvider>(context, listen: false);
-    final localizationProvider = Provider.of<LocalizationProvider>(context, listen: false);
+    final withLListProvider =
+        Provider.of<WishListProvider>(context, listen: false);
+    final localizationProvider =
+        Provider.of<LocalizationProvider>(context, listen: false);
 
-    ConfigModel? config = Provider.of<SplashProvider>(context, listen: false).configModel;
-    if(reload) {
-      Provider.of<SplashProvider>(context, listen: false).initConfig(source: DataSourceEnum.client);
+    ConfigModel? config =
+        Provider.of<SplashProvider>(context, listen: false).configModel;
+    if (reload) {
+      Provider.of<SplashProvider>(context, listen: false)
+          .initConfig(source: DataSourceEnum.client);
       Provider.of<SplashProvider>(context, listen: false).getDeliveryInfo();
     }
-    if(fromLanguage && (authProvider.isLoggedIn() || (config?.isGuestCheckout ?? false) )) {
+    if (fromLanguage &&
+        (authProvider.isLoggedIn() || (config?.isGuestCheckout ?? false))) {
       localizationProvider.changeLanguage();
     }
-    Provider.of<CategoryProvider>(context, listen: false).getCategoryList(context, reload);
+    Provider.of<CategoryProvider>(context, listen: false)
+        .getCategoryList(context, reload);
 
-    Provider.of<BannerProvider>(context, listen: false).getBannerList(context, reload);
+    Provider.of<BannerProvider>(context, listen: false)
+        .getBannerList(context, reload);
 
-
-
-    if(productProvider.dailyProductModel == null || reload) {
-      productProvider.getItemList(1, isUpdate: false, productType: ProductType.dailyItem);
-
+    if (productProvider.dailyProductModel == null || reload) {
+      productProvider.getItemList(1,
+          isUpdate: false, productType: ProductType.dailyItem);
     }
 
-    if(productProvider.featuredProductModel == null || reload) {
-      productProvider.getItemList(1, isUpdate: false, productType: ProductType.featuredItem);
-
+    if (productProvider.featuredProductModel == null || reload) {
+      productProvider.getItemList(1,
+          isUpdate: false, productType: ProductType.featuredItem);
     }
 
-    if(productProvider.mostViewedProductModel == null || reload) {
-      productProvider.getItemList(1, isUpdate: false, productType: ProductType.mostReviewed);
-
+    if (productProvider.mostViewedProductModel == null || reload) {
+      productProvider.getItemList(1,
+          isUpdate: false, productType: ProductType.mostReviewed);
     }
 
     productProvider.getAllProductList(1, reload, isUpdate: false);
 
-    if(authProvider.isLoggedIn()) {
+    if (authProvider.isLoggedIn()) {
       withLListProvider.getWishListProduct();
     }
 
-    if((config?.flashDealProductStatus ?? false) && (flashDealProvider.flashDealModel == null || reload)) {
+    if ((config?.flashDealProductStatus ?? false) &&
+        (flashDealProvider.flashDealModel == null || reload)) {
       flashDealProvider.getFlashDealProducts(1, isUpdate: false);
     }
-
-
-
   }
 }
 
@@ -90,11 +96,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-   Provider.of<OrderProvider>(context, listen: false).manageDialog();
+    Provider.of<OrderProvider>(context, listen: false).manageDialog();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return RefreshIndicator(
       onRefresh: () async {
         await HomeScreen.loadData(true, context);
@@ -102,106 +108,151 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       backgroundColor: Theme.of(context).primaryColor,
       child: Scaffold(
-        appBar: ResponsiveHelper.isDesktop(context) ? const PreferredSize(preferredSize: Size.fromHeight(120), child: WebAppBarWidget())  : null,
+        appBar: ResponsiveHelper.isDesktop(context)
+            ? const PreferredSize(
+                preferredSize: Size.fromHeight(120), child: WebAppBarWidget())
+            : null,
         body: CustomScrollView(controller: scrollController, slivers: [
-          SliverToBoxAdapter(child: Center(child: SizedBox(
+          SliverToBoxAdapter(
+              child: Center(
+                  child: SizedBox(
             width: Dimensions.webScreenWidth,
             child: Column(children: [
-
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: ResponsiveHelper.isDesktop(context)
+                      ? 0
+                      : Dimensions.paddingSizeDefault,
+                ),
+                child: const SizedBox(),
+              ),
               Consumer<BannerProvider>(builder: (context, banner, child) {
-                return (banner.bannerList?.isEmpty ?? false) ? const SizedBox() : const BannersWidget();
+                return (banner.bannerList?.isEmpty ?? false)
+                    ? const SizedBox()
+                    : const BannersWidget();
               }),
-
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: ResponsiveHelper.isDesktop(context)
+                      ? 0
+                      : Dimensions.paddingSizeDefault,
+                ),
+                child: const SizedBox(),
+              ),
 
               /// Category
               Padding(
                 padding: EdgeInsets.only(
-                  bottom: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeSmall,
+                  bottom: ResponsiveHelper.isDesktop(context)
+                      ? Dimensions.paddingSizeLarge
+                      : Dimensions.paddingSizeSmall,
                 ),
                 child: const CategoryWidget(),
               ),
 
-
               /// Flash Deal
               Selector<SplashProvider, ConfigModel?>(
-                  selector: (ctx, splashProvider)=> splashProvider.configModel,
+                  selector: (ctx, splashProvider) => splashProvider.configModel,
                   builder: (context, configModel, _) {
                     return (configModel?.flashDealProductStatus ?? false)
                         ? const FlashDealHomeCardWidget()
                         : const SizedBox();
-                  }
-              ),
+                  }),
 
-
-              Consumer<ProductProvider>(builder: (context, productProvider, child) {
-                bool isDalyProduct = (productProvider.dailyProductModel == null || (productProvider.dailyProductModel?.products?.isNotEmpty ?? false));
-                bool isFeaturedProduct = (productProvider.featuredProductModel == null || ( productProvider.featuredProductModel?.products?.isNotEmpty ?? false));
-                bool isMostViewedProduct = (productProvider.mostViewedProductModel == null || (productProvider.mostViewedProductModel?.products?.isNotEmpty ?? false));
+              Consumer<ProductProvider>(
+                  builder: (context, productProvider, child) {
+                bool isDalyProduct = (productProvider.dailyProductModel ==
+                        null ||
+                    (productProvider.dailyProductModel?.products?.isNotEmpty ??
+                        false));
+                bool isFeaturedProduct =
+                    (productProvider.featuredProductModel == null ||
+                        (productProvider
+                                .featuredProductModel?.products?.isNotEmpty ??
+                            false));
+                bool isMostViewedProduct =
+                    (productProvider.mostViewedProductModel == null ||
+                        (productProvider
+                                .mostViewedProductModel?.products?.isNotEmpty ??
+                            false));
 
                 return Column(children: [
-                  isDalyProduct ?  Column(children: [
-                    TitleWidget(title: getTranslated('daily_needs', context) ,onTap: () {
-                      Navigator.pushNamed(context, RouteHelper.getHomeItemRoute(ProductType.dailyItem));
-                    }),
-
-                    HomeItemWidget(productList: productProvider.dailyProductModel?.products),
-
-                  ]) : const SizedBox(),
-
-                  if(isFeaturedProduct) Selector<SplashProvider, ConfigModel?>(
-                      selector: (ctx, splashProvider)=> splashProvider.configModel,
-                      builder: (context, configModel, _) {
-                        return (configModel?.featuredProductStatus ?? false)
-                            ? Column(children: [
-                          TitleWidget(title: getTranslated(ProductType.featuredItem, context) ,onTap: () {
-                            Navigator.pushNamed(context, RouteHelper.getHomeItemRoute(ProductType.featuredItem));
-                          }),
-
-                          HomeItemWidget(productList: productProvider.featuredProductModel?.products, isFeaturedItem: true),
+                  isDalyProduct
+                      ? Column(children: [
+                          TitleWidget(
+                              title: getTranslated('daily_needs', context),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context,
+                                    RouteHelper.getHomeItemRoute(
+                                        ProductType.dailyItem));
+                              }),
+                          HomeItemWidget(
+                              productList:
+                                  productProvider.dailyProductModel?.products),
                         ])
-                            : const SizedBox();
-                      }
-                  ),
-
-                  if(isMostViewedProduct) Selector<SplashProvider, ConfigModel?>(
-                      selector: (ctx, splashProvider)=> splashProvider.configModel,
-                      builder: (context, configModel, _) {
-                        return (configModel?.mostReviewedProductStatus ?? false)
-                            ? Column(children: [
-                          TitleWidget(title: getTranslated(ProductType.mostReviewed, context) ,onTap: () {
-                            Navigator.pushNamed(context, RouteHelper.getHomeItemRoute(ProductType.mostReviewed));
-                          }),
-
-                          HomeItemWidget(productList: productProvider.mostViewedProductModel?.products),
-
-                        ])
-                            : const SizedBox();
-                      }
-                  ),
-
-
+                      : const SizedBox(),
+                  if (isFeaturedProduct)
+                    Selector<SplashProvider, ConfigModel?>(
+                        selector: (ctx, splashProvider) =>
+                            splashProvider.configModel,
+                        builder: (context, configModel, _) {
+                          return (configModel?.featuredProductStatus ?? false)
+                              ? Column(children: [
+                                  TitleWidget(
+                                      title: getTranslated(
+                                          ProductType.featuredItem, context),
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context,
+                                            RouteHelper.getHomeItemRoute(
+                                                ProductType.featuredItem));
+                                      }),
+                                  HomeItemWidget(
+                                      productList: productProvider
+                                          .featuredProductModel?.products,
+                                      isFeaturedItem: true),
+                                ])
+                              : const SizedBox();
+                        }),
+                  if (isMostViewedProduct)
+                    Selector<SplashProvider, ConfigModel?>(
+                        selector: (ctx, splashProvider) =>
+                            splashProvider.configModel,
+                        builder: (context, configModel, _) {
+                          return (configModel?.mostReviewedProductStatus ??
+                                  false)
+                              ? Column(children: [
+                                  TitleWidget(
+                                      title: getTranslated(
+                                          ProductType.mostReviewed, context),
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context,
+                                            RouteHelper.getHomeItemRoute(
+                                                ProductType.mostReviewed));
+                                      }),
+                                  HomeItemWidget(
+                                      productList: productProvider
+                                          .mostViewedProductModel?.products),
+                                ])
+                              : const SizedBox();
+                        }),
                 ]);
               }),
 
-
-              ResponsiveHelper.isMobilePhone() ? const SizedBox(height: 10) : const SizedBox.shrink(),
+              ResponsiveHelper.isMobilePhone()
+                  ? const SizedBox(height: 10)
+                  : const SizedBox.shrink(),
 
               AllProductListWidget(scrollController: scrollController),
-
-
             ]),
           ))),
-
-          if(ResponsiveHelper.isWeb())...[
+          if (ResponsiveHelper.isWeb()) ...[
             const FooterWebWidget(footerType: FooterType.sliver)
           ],
-
-
-
         ]),
       ),
     );
   }
 }
-
-

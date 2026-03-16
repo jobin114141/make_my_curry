@@ -56,7 +56,8 @@ class _HomeItemWidgetState extends State<HomeItemWidget> {
                     productType: ProductType.flashSale,
                   );
                 },
-              )) : SizedBox(
+              )) :
+               SizedBox(
                 height: widget.isFeaturedItem ? 150 : 340,
                 child: CustomSliderListWidget(
                   controller: scrollController,

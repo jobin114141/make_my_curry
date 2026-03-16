@@ -8,7 +8,7 @@
   "skip": "Skip",
   "deliver_to": "Deliver to",
   "daily_needs": "Daily Needs",
-  "view_all": "View All",
+  "view_all": "See all",
   "popular_items": "Popular items",
   "add_an_address": "Add an address",
   "home": "Home",
@@ -529,7 +529,7 @@
 
   "search_for_products": "Search for Products",
   "my_orders" : "My Orders",
-  "popular_categories" : "Popular Categories",
+  "popular_categories" : "Categories",
   "off" : "OFF",
   "cost_summery" : "Cost Summary",
   "proceed_to_checkout" : "Proceed to Checkout",

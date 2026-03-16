@@ -20,9 +20,9 @@ ThemeData light = ThemeData(
   canvasColor: pesitoCanvas,
   shadowColor: pesitoShadow,
   textTheme: const TextTheme(
-    titleLarge: TextStyle(color: pesitoPrimary, fontWeight: FontWeight.bold),
-    bodyLarge: TextStyle(color: Color(0xFF303030)),
-    bodyMedium: TextStyle(color: Color(0xFF303030)), // Main text color
+    titleLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0), fontWeight: FontWeight.bold),
+    bodyLarge: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+    bodyMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)), // Main text color
   ),
   pageTransitionsTheme: const PageTransitionsTheme(builders: {
     TargetPlatform.android: ZoomPageTransitionsBuilder(),
