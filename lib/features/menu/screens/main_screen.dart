@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_grocery/common/widgets/custom_pop_scope_widget.dart';
@@ -21,7 +19,7 @@ import 'package:flutter_grocery/common/widgets/third_party_chat_widget.dart';
 import 'package:flutter_grocery/features/home/screens/home_screens.dart';
 import 'package:flutter_grocery/features/refer_and_earn/screens/refer_and_earn_screen.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_grocery/theme/light_theme.dart';
 // List<MainScreenModel> screenList = [
 //   MainScreenModel(const HomeScreen(), 'home', Images.home),
 //   MainScreenModel(const AllCategoriesScreen(), 'all_categories', Images.list),
@@ -52,11 +50,11 @@ import 'package:provider/provider.dart';
 //   MainScreenModel(const HtmlViewerScreen(htmlType: HtmlType.faq), 'faq', Images.faq),
 // ];
 
-
 class MainScreen extends StatefulWidget {
   final bool isReload;
   final CustomDrawerController drawerController;
-  const MainScreen({super.key, required this.drawerController, this.isReload = true});
+  const MainScreen(
+      {super.key, required this.drawerController, this.isReload = true});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -67,7 +65,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    final SplashProvider splashProvider = Provider.of<SplashProvider>(context, listen: false);
+    final SplashProvider splashProvider =
+        Provider.of<SplashProvider>(context, listen: false);
     splashProvider.initializeScreenList();
     if (widget.isReload) {
       HomeScreen.loadData(true, context);
@@ -75,107 +74,147 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    final bool isDarkTheme = Provider.of<ThemeProvider>(context, listen: false).darkTheme;
+    final bool isDarkTheme =
+        Provider.of<ThemeProvider>(context, listen: false).darkTheme;
     return Consumer<SplashProvider>(
       builder: (context, splash, child) {
         return CustomPopScopeWidget(
           child: Consumer<ProfileProvider>(
               builder: (context, profileProvider, child) {
-                final referMenu = MainScreenModel(const ReferAndEarnScreen(), 'referAndEarn', Images.referralIcon);
-                if((splash.configModel?.referEarnStatus ?? false)
-                    && profileProvider.userInfoModel?.referCode != null
-                    && splash.screenList[9].title != 'referAndEarn'){
-                  splash.screenList.removeWhere((menu) => menu.screen == referMenu.screen);
-                  splash.screenList.insert(9, referMenu);
-
-                }
-
-              return Consumer<LocationProvider>(
-                builder: (context, locationProvider, child) => InkWell(
-                  onTap: (){
-                    if(!ResponsiveHelper.isDesktop(context) && widget.drawerController.isOpen()) {
-                      widget.drawerController.toggle();
-                    }
-                  },
-                  child: Scaffold(
-                    floatingActionButton: !ResponsiveHelper.isDesktop(context) ?  Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 50.0),
-                      child: ThirdPartyChatWidget(configModel: splash.configModel),
-                    ) : null,
-                    appBar: ResponsiveHelper.isDesktop(context) ? null : AppBar(
-                      backgroundColor: Theme.of(context).cardColor,
-                      leading: IconButton(
-                          icon: Image.asset(Images.moreIcon, color: Theme.of(context).primaryColor, height: 30, width: 30),
-                          onPressed: () {
-                            widget.drawerController.toggle();
-                          }),
-                      title: splash.pageIndex == 0 ? Row(children: [
-                        Image.asset(Images.appLogo, width: 25),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-                        Expanded(child: Text(
-                          AppConstants.appName, maxLines: 1, overflow: TextOverflow.ellipsis,
-                          style: poppinsMedium.copyWith(color: Theme.of(context).primaryColor),
-                        )),
-                      ]) : Text(
-                        getTranslated(splash.screenList[splash.pageIndex].title, context),
-                        style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).primaryColor),
-                      ),
-                  
-                      actions: splash.pageIndex == 0 ? [
-                  
-                        IconButton(
-                          icon: Image.asset(Images.search, color: Theme.of(context).primaryColor, width: 25),
-                          onPressed: () {
-                            Navigator.pushNamed(context, RouteHelper.searchProduct);
-                          },
-                        ),
-                  
-                        IconButton(
-                            icon: Stack(clipBehavior: Clip.none, children: [
-                  
-                              Icon(Icons.shopping_cart, color: Theme.of(context).hintColor.withValues(alpha: isDarkTheme ? 0.9 : 0.4), size: 30),
-                  
-                              Positioned(
-                                top: -7,
-                                right: -2,
-                                child: Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).primaryColor),
-                                  child: Text('${Provider.of<CartProvider>(context).cartList.length}',
-                                      style: TextStyle(color: Theme.of(context).cardColor, fontSize: 10)),
-                                ),
-                              ),
-                            ]),
-                            onPressed: () {
-                             splash.setPageIndex(2);
-                            }),
-                      ]
-                          : splash.pageIndex == 2
-                          ? [
-                        Center(
-                            child: Consumer<CartProvider>(
-                              builder: (context, cartProvider, _) {
-                                return Text('${cartProvider.cartList.length} ${getTranslated('items', context)}',
-                                    style: poppinsMedium.copyWith(color: Theme.of(context).primaryColor));
-                              }
-                            )),
-                        const SizedBox(width: 20)
-                      ] : null,
-                    ),
-                  
-                    body: splash.screenList[splash.pageIndex].screen,
-                  ),
-                ),
-              );
+            final referMenu = MainScreenModel(const ReferAndEarnScreen(),
+                'referAndEarn', Images.referralIcon);
+            if ((splash.configModel?.referEarnStatus ?? false) &&
+                profileProvider.userInfoModel?.referCode != null &&
+                splash.screenList[9].title != 'referAndEarn') {
+              splash.screenList
+                  .removeWhere((menu) => menu.screen == referMenu.screen);
+              splash.screenList.insert(9, referMenu);
             }
-          ),
+
+            return Consumer<LocationProvider>(
+              builder: (context, locationProvider, child) => InkWell(
+                onTap: () {
+                  if (!ResponsiveHelper.isDesktop(context) &&
+                      widget.drawerController.isOpen()) {
+                    widget.drawerController.toggle();
+                  }
+                },
+                child: Scaffold(
+                  floatingActionButton: !ResponsiveHelper.isDesktop(context)
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 50.0),
+                          child: ThirdPartyChatWidget(
+                              configModel: splash.configModel),
+                        )
+                      : null,
+                  appBar: ResponsiveHelper.isDesktop(context)
+                      ? null
+                      : AppBar(
+                          backgroundColor: Theme.of(context).cardColor,
+                          leading: IconButton(
+                              icon: Icon(
+                                Icons.menu,
+                                size: 25,
+                              ),
+                              onPressed: () {
+                                widget.drawerController.toggle();
+                              }),
+                          title: splash.pageIndex == 0
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                      Text(
+                                        'Deliver to',
+                                        style: poppinsMedium.copyWith(
+                                          fontWeight: FontWeight.w400,
+                                          color: const Color(0xFF888888),
+                                          fontSize: Dimensions.fontSizeDefault,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Varode, Palakkad",
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: poppinsRegular.copyWith(
+                                          fontSize: Dimensions.fontSizeDefault,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xff000000),
+                                        ),
+                                      ),
+                                    ])
+                              : Text(
+                                  getTranslated(
+                                      splash.screenList[splash.pageIndex].title,
+                                      context),
+                                  style: poppinsMedium.copyWith(
+                                      fontSize: Dimensions.fontSizeLarge,
+                                      color: Theme.of(context).primaryColor),
+                                ),
+                          actions: splash.pageIndex == 0
+                              ? [
+                                  IconButton(
+                                    icon: Image.asset(Images.search,
+                                        color: Theme.of(context).primaryColor,
+                                        width: 25),
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, RouteHelper.searchProduct);
+                                    },
+                                  ),
+                                  IconButton(
+                                      icon: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Icon(Icons.shopping_cart_outlined,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                size: 25),
+                                            Positioned(
+                                              top: -7,
+                                              right: -2,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: pesitoHint),
+                                                child: Text(
+                                                    '${Provider.of<CartProvider>(context).cartList.length}',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .cardColor,
+                                                        fontSize: 10)),
+                                              ),
+                                            ),
+                                          ]),
+                                      onPressed: () {
+                                        splash.setPageIndex(2);
+                                      }),
+                                ]
+                              : splash.pageIndex == 2
+                                  ? [
+                                      Center(child: Consumer<CartProvider>(
+                                          builder: (context, cartProvider, _) {
+                                        return Text(
+                                            '${cartProvider.cartList.length} ${getTranslated('items', context)}',
+                                            style: poppinsMedium.copyWith(
+                                                color: Theme.of(context)
+                                                    .primaryColor));
+                                      })),
+                                      const SizedBox(width: 20)
+                                    ]
+                                  : null,
+                        ),
+                  body: splash.screenList[splash.pageIndex].screen,
+                ),
+              ),
+            );
+          }),
         );
       },
     );
   }
 }
-
