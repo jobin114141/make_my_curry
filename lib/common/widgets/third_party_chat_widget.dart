@@ -33,13 +33,15 @@ class _ThirdPartyChatWidgetState extends State<ThirdPartyChatWidget> {
           backgroundColor: Colors.transparent,
           child: Container(
             alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(
-              vertical: Dimensions.paddingSizeExtraSmall,
-              horizontal: Dimensions.paddingSizeSmall,
+            height: 55, width: 55,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color.fromARGB(62, 0, 0, 0),
+             
             ),
-            height: 35, width: 55,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Theme.of(context).primaryColor),
-            child: Image.asset(Images.whatsapp),
+            child: ClipOval(
+              child: Image.asset(Images.whatsapp, fit: BoxFit.fill),
+            ),
           ),
           onPressed: () async {
             final String? whatsapp = widget.configModel?.whatsapp!.number;
@@ -60,13 +62,16 @@ class _ThirdPartyChatWidgetState extends State<ThirdPartyChatWidget> {
 
 
         dialList.add(SpeedDialChild(backgroundColor: Colors.transparent,child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: Dimensions.paddingSizeExtraSmall,
-            horizontal: Dimensions.paddingSizeSmall,
+          alignment: Alignment.center,
+          height: 45, width: 45,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.transparent,
+            border: Border.all(color: Colors.black, width: 1.5),
           ),
-          height: 35, width: 55,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.white),
-          child: Image.asset(Images.telegram),
+          child: ClipOval(
+            child: Image.asset(Images.telegram, fit: BoxFit.cover),
+          ),
         ),
           onPressed: () async {
             final String? userName = widget.configModel?.telegram!.userName;
@@ -86,13 +91,16 @@ class _ThirdPartyChatWidgetState extends State<ThirdPartyChatWidget> {
         dialList.add(SpeedDialChild(
           backgroundColor: Colors.transparent,
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: Dimensions.paddingSizeExtraSmall,
-              horizontal: Dimensions.paddingSizeSmall,
+            alignment: Alignment.center,
+            height: 45, width: 45,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.transparent,
+              border: Border.all(color: Colors.black, width: 1.5),
             ),
-            height: 35, width: 55,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: Colors.white),
-            child: Image.asset(Images.messenger),
+            child: ClipOval(
+              child: Image.asset(Images.messenger, fit: BoxFit.cover),
+            ),
           ),
           onPressed: () async {
             final String? userId = widget.configModel?.messenger!.userName;

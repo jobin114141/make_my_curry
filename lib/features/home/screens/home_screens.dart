@@ -175,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         (productProvider
                                 .mostViewedProductModel?.products?.isNotEmpty ??
                             false));
-
+//Daily Needs
                 return Column(children: [
                   isDalyProduct
                       ? Column(children: [
@@ -192,6 +192,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   productProvider.dailyProductModel?.products),
                         ])
                       : const SizedBox(),
+
+// Featured items
                   if (isFeaturedProduct)
                     Selector<SplashProvider, ConfigModel?>(
                         selector: (ctx, splashProvider) =>
@@ -234,7 +236,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       }),
                                   HomeItemWidget(
                                       productList: productProvider
-                                          .mostViewedProductModel?.products),
+                                          .mostViewedProductModel?.products,
+                                      isMostReviewed: true,
+                                  ),
                                 ])
                               : const SizedBox();
                         }),

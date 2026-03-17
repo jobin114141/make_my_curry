@@ -79,8 +79,7 @@ class _AllProductListWidgetState extends State<AllProductListWidget> {
                       margin: EdgeInsets.only(right: ResponsiveHelper.isDesktop(context) ? 0 :Dimensions.paddingSizeSmall),
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(color: Theme.of(context).primaryColor),
+                      
                       ),
                       child: Icon(
                         Icons.filter_list,

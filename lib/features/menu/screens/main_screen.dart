@@ -20,6 +20,7 @@ import 'package:flutter_grocery/features/home/screens/home_screens.dart';
 import 'package:flutter_grocery/features/refer_and_earn/screens/refer_and_earn_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_grocery/theme/light_theme.dart';
+import 'package:flutter_grocery/features/menu/screens/menu_screen.dart';
 // List<MainScreenModel> screenList = [
 //   MainScreenModel(const HomeScreen(), 'home', Images.home),
 //   MainScreenModel(const AllCategoriesScreen(), 'all_categories', Images.list),
@@ -61,6 +62,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool canExit = kIsWeb;
 
   @override
@@ -96,12 +98,10 @@ class _MainScreenState extends State<MainScreen> {
             return Consumer<LocationProvider>(
               builder: (context, locationProvider, child) => InkWell(
                 onTap: () {
-                  if (!ResponsiveHelper.isDesktop(context) &&
-                      widget.drawerController.isOpen()) {
-                    widget.drawerController.toggle();
-                  }
                 },
                 child: Scaffold(
+                  key: _scaffoldKey,
+                  drawer: const MenuWidget(),
                   floatingActionButton: !ResponsiveHelper.isDesktop(context)
                       ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 50.0),
@@ -114,13 +114,13 @@ class _MainScreenState extends State<MainScreen> {
                       : AppBar(
                           backgroundColor: Theme.of(context).cardColor,
                           leading: IconButton(
-                              icon: Icon(
-                                Icons.menu,
-                                size: 25,
-                              ),
-                              onPressed: () {
-                                widget.drawerController.toggle();
-                              }),
+                            icon: const Icon(
+                              Icons.menu,
+                              size: 25,
+                            ),
+                            onPressed: () {
+                              _scaffoldKey.currentState?.openDrawer();
+                            }),
                           title: splash.pageIndex == 0
                               ? Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
