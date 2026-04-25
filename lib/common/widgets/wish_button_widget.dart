@@ -11,7 +11,8 @@ import 'package:provider/provider.dart';
 class WishButtonWidget extends StatelessWidget {
   final Product? product;
   final EdgeInsetsGeometry edgeInset;
-  const WishButtonWidget({super.key, required this.product, this.edgeInset = EdgeInsets.zero});
+  final Color? color;
+  const WishButtonWidget({super.key, required this.product, this.edgeInset = EdgeInsets.zero, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +34,10 @@ class WishButtonWidget extends StatelessWidget {
           },
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor.withValues(alpha: 0.90),
-              borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
-              border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+              color: color ?? Theme.of(context).cardColor.withOpacity(0.90),
+              shape: color != null ? BoxShape.circle : BoxShape.rectangle,
+              borderRadius: color != null ? null : BorderRadius.circular(Dimensions.radiusSizeDefault),
+              border: color != null ? null : Border.all(color: Colors.black.withOpacity(0.05)),
             ),
             child: Padding(
               padding: edgeInset,
@@ -43,7 +45,7 @@ class WishButtonWidget extends StatelessWidget {
                 wishList.wishIdList.contains(product!.id)
                     ? Icons.favorite : Icons.favorite_border,
                 color: wishList.wishIdList.contains(product!.id)
-                    ? Theme.of(context).primaryColor : Theme.of(context).primaryColor,
+                    ? Theme.of(context).primaryColor : (color != null ? Colors.white : Theme.of(context).primaryColor),
                 size: Dimensions.paddingSizeLarge,
               ),
             ),

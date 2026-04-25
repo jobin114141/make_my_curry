@@ -18,34 +18,38 @@ class CouponWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<CouponProvider>(
       builder: (context, couponProvider, child) {
-        return DottedBorder(
-          borderType: BorderType.RRect,
-          radius: const Radius.circular(Dimensions.radiusSizeDefault),
-          color: Theme.of(context).primaryColor,
-          strokeWidth: 2,
-          dashPattern: const [5, 5],
-          child: Padding(padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, right: Dimensions.paddingSizeExtraSmall),
-            child: SizedBox(height: 50, child: Row(children: [
-
-              Image.asset(Images.couponApply, height: 30, width: 30),
-
-              Expanded(child: TextField(
-                controller: couponController,
-                style: poppinsMedium,
-                decoration: InputDecoration(
-                  hintText: getTranslated('enter_promo_code', context),
-                  hintStyle: poppinsRegular.copyWith(color: Theme.of(context).hintColor),
-                  isDense: true,
-                  filled: true,
-                  enabled: couponProvider.discount == 0,
-                  fillColor: Theme.of(context).cardColor,
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.horizontal(left: Radius.circular(10)),
-                    borderSide: BorderSide.none,
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(50),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              )
+            ],
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 8),
+              Image.asset(Images.couponApply, height: 24, width: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  controller: couponController,
+                  style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
+                  decoration: InputDecoration(
+                    hintText: getTranslated('enter_promo_code', context),
+                    hintStyle: poppinsRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeDefault),
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                    enabled: couponProvider.discount == 0,
+                    border: InputBorder.none,
                   ),
                 ),
-              )),
-
+              ),
               InkWell(
                 onTap: () {
                   if (couponController.text.isNotEmpty && !couponProvider.isLoading) {
@@ -54,28 +58,32 @@ class CouponWidget extends StatelessWidget {
                     } else {
                       couponProvider.removeCouponData(true);
                     }
-                  }else {
-                    showCustomSnackBarHelper(getTranslated('invalid_code_or_failed', context),isError: true);
+                  } else {
+                    showCustomSnackBarHelper(getTranslated('invalid_code_or_failed', context), isError: true);
                   }
                 },
-                child: couponProvider.discount! <= 0 ? Container(
-                  height: 40, width: 90,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius: const BorderRadius.all(Radius.circular(Dimensions.radiusSizeTen),),
-                  ),
-                  child: !couponProvider.isLoading ? Text(
-                    getTranslated('apply', context),
-                    style: poppinsMedium.copyWith(color: Colors.white),
-                  ) : const Center(child: SizedBox(
-                    height: Dimensions.paddingSizeExtraLarge, width: Dimensions.paddingSizeExtraLarge,
-                    child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-                  )),
-                ) : Icon(Icons.clear, color: Theme.of(context).colorScheme.error),
+                child: couponProvider.discount! <= 0
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0F1E29),
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: !couponProvider.isLoading
+                            ? Text(
+                                'Apply Now',
+                                style: poppinsSemiBold.copyWith(color: Colors.white, fontSize: 14),
+                              )
+                            : const SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                              ),
+                      )
+                    : Icon(Icons.clear, color: Theme.of(context).colorScheme.error),
               ),
-            ],),
-            )),
+            ],
+          ),
         );
       },
     );

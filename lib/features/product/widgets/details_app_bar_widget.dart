@@ -43,13 +43,12 @@ class DetailsAppBarWidgetState extends State<DetailsAppBarWidget> with SingleTic
 
     return AppBar(
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).textTheme.bodyLarge!.color, size: 20),
+        icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
         onPressed: () => Navigator.pop(context),
       ),
-      elevation: 1,
-      shadowColor: Colors.grey.withValues(alpha: 0.3),
-      backgroundColor: Theme.of(context).cardColor,
-      title: Text(widget.title!, style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyLarge!.color)),
+      elevation: 0,
+      backgroundColor: Colors.white,
+      title: Text(widget.title!, style: poppinsMedium.copyWith(fontSize: 20, color: Colors.black)),
       centerTitle: true,
       actions: [AnimatedBuilder(
         animation: offsetAnimation,
@@ -58,13 +57,15 @@ class DetailsAppBarWidgetState extends State<DetailsAppBarWidget> with SingleTic
             padding: EdgeInsets.only(left: offsetAnimation.value + 15.0, right: 15.0 - offsetAnimation.value),
             child: IconButton(
               icon: Stack(clipBehavior: Clip.none, children: [
-                Icon(Icons.shopping_cart, color: Theme.of(context).disabledColor.withValues(alpha: 0.3), size: 30),
+                const Icon(Icons.shopping_cart_outlined, color: Colors.black87, size: 26),
                 Positioned(
-                  top: -7, right: -2,
+                  top: -6, right: -6,
                   child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).primaryColor),
-                    child: Text('${Provider.of<CartProvider>(context).cartList.length}', style: TextStyle(color: Theme.of(context).cardColor, fontSize: 10)),
+                    height: 20,
+                    width: 20,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+                    child: Text('${Provider.of<CartProvider>(context).cartList.length}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ]),

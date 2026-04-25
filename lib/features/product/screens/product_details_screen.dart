@@ -61,6 +61,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>  with Ticke
     final SplashProvider splashProvider = Provider.of<SplashProvider>(context, listen: false);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: ResponsiveHelper.isDesktop(context) ? const PreferredSize(preferredSize: Size.fromHeight(120), child: WebAppBarWidget())  : DetailsAppBarWidget(key: UniqueKey(), title: 'product_details'.tr),
 
       body: Consumer<CartProvider>(builder: (context, cartProvider, child) {
@@ -106,7 +107,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>  with Ticke
                           Column(children: [
                             ProductImageWidget(productModel: productProvider.product),
 
-                            SizedBox(height: 60, child: productProvider.product?.image != null ? SelectedImageWidget(productModel: productProvider.product) : const SizedBox(),),
+                            // SelectedImageWidget has been removed as per the mockup. The ProductImageWidget handles dots.
 
                             ProductTitleWidget(product: productProvider.product, stock: cartModel?.stock, cartIndex: cartProvider.cartIndex),
 
@@ -114,20 +115,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>  with Ticke
 
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall, horizontal: Dimensions.paddingSizeLarge),
-                              child: Row(mainAxisAlignment : MainAxisAlignment.spaceBetween, children: [
+                              child: Row(mainAxisAlignment : MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end, children: [
 
                                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                  Text('${getTranslated('total_amount', context)}:', style: poppinsMedium.copyWith(
-                                      fontSize: Dimensions.fontSizeSmall,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.70),
+                                  Text(getTranslated('total_amount', context), style: poppinsSemiBold.copyWith(
+                                      fontSize: Dimensions.fontSizeLarge,
+                                      color: Colors.black,
                                   )),
-                                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                  const SizedBox(height: Dimensions.paddingSizeSmall),
 
                                   CustomDirectionalityWidget(child: Text(
                                     PriceConverterHelper.convertPrice(context, priceWithQuantity),
-                                    style: poppinsBold.copyWith(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: Dimensions.fontSizeExtraLarge,
+                                    style: poppinsSemiBold.copyWith(
+                                      color: Colors.black,
+                                      fontSize: 28,
                                     ),
                                   )),
                                 ]),
@@ -136,10 +137,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>  with Ticke
                                 Builder(
                                     builder: (context) {
                                       return Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
+                                        padding: const EdgeInsets.all(4),
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).disabledColor.withValues(alpha: 0.07),
-                                          borderRadius: BorderRadius.circular(Dimensions.radiusSizeSmall),
+                                          color: Colors.white,
+                                          border: Border.all(color: Colors.black12, width: 1),
+                                          borderRadius: BorderRadius.circular(50),
                                         ),
 
                                         child: Row(children: [
@@ -147,12 +149,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>  with Ticke
                                             isIncrement: false, quantity: cartProvider.quantity,
                                             stock: cartModel?.stock, cartIndex: cartProvider.cartIndex,
                                             maxOrderQuantity: productProvider.product!.maximumOrderQuantity,
+                                            backgroundColor: Colors.white,
+                                            iconColor: Colors.black87,
+                                            radius: 50,
                                           ),
                                           const SizedBox(width: 15),
 
                                           Text(
-                                            cartProvider.cartIndex != null ? cartProvider.cartList[cartProvider.cartIndex!].quantity.toString() : cartProvider.quantity.toString(),
-                                            style: poppinsBold.copyWith(color: Theme.of(context).primaryColor),
+                                            (cartProvider.cartIndex != null ? cartProvider.cartList[cartProvider.cartIndex!].quantity : cartProvider.quantity).toString().padLeft(2, '0'),
+                                            style: poppinsMedium.copyWith(color: Colors.black, fontSize: Dimensions.fontSizeLarge),
                                           ),
                                           const SizedBox(width: 15),
 
@@ -160,6 +165,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>  with Ticke
                                             isIncrement: true, quantity: cartProvider.quantity,
                                             stock: cartModel?.stock, cartIndex: cartProvider.cartIndex,
                                             maxOrderQuantity: productProvider.product!.maximumOrderQuantity,
+                                            backgroundColor: const Color(0xFF0F1E29),
+                                            iconColor: Colors.white,
+                                            radius: 50,
                                           ),
                                         ]),
                                       );
@@ -196,10 +204,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>  with Ticke
                   ),
                 )),
 
-                Center(child: SizedBox(width: Dimensions.webScreenWidth, child: CustomButtonWidget(
-                  icon: Icons.shopping_cart,
-                  margin: Dimensions.paddingSizeSmall,
-                  buttonText: getTranslated(cartProvider.cartIndex != null ? 'already_added' : (cartModel?.stock ?? 0) <= 0 ? 'out_of_stock' : 'add_to_card', context),
+                Center(child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, -5),
+                      ),
+                    ],
+                  ),
+                  width: Dimensions.webScreenWidth, 
+                  child: CustomButtonWidget(
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black,
+                    borderColor: Colors.black,
+                    borderRadius: 30,
+                    margin: Dimensions.paddingSizeSmall,
+                    buttonText: getTranslated(cartProvider.cartIndex != null ? 'already_added' : (cartModel?.stock ?? 0) <= 0 ? 'out_of_stock' : 'add_to_card', context),
                   onPressed: (cartProvider.cartIndex == null && (cartModel?.stock ?? 0) > 0) ? () {
                     if (cartProvider.cartIndex == null && (cartModel?.stock ?? 0) > 0) {
                       cartProvider.addToCart(cartModel!);

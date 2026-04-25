@@ -98,63 +98,74 @@ class ProductDescriptionWidget extends StatelessWidget {
         ),
 
 
-        tabIndex == 0 ? Stack(children: [
-          Container(
-            height: (productProvider.product != null && productProvider.product!.description != null && productProvider.product!.description!.length > 300) && showSeeMoreButton ? 100 : null,
-            padding: const EdgeInsets.all(Dimensions.paddingSizeSmall).copyWith(bottom: showSeeMoreButton ? 0 : 40),
-            width: Dimensions.webScreenWidth,
-            child: SingleChildScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              child: HtmlWidget(
-                productProvider.product?.description ?? getTranslated('no_description', context),
-                textStyle: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
-                onTapUrl: (String url) {
-                  return launchUrl(Uri.parse(url));
-                },
+        tabIndex == 0 ? Column(children: [
+          Stack(children: [
+            Container(
+              height: (productProvider.product != null && productProvider.product!.description != null && productProvider.product!.description!.length > 300) && showSeeMoreButton ? 100 : null,
+              padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+              width: Dimensions.webScreenWidth,
+              child: SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: HtmlWidget(
+                  productProvider.product?.description ?? getTranslated('no_description', context),
+                  textStyle: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
+                  onTapUrl: (String url) {
+                    return launchUrl(Uri.parse(url));
+                  },
+                ),
               ),
             ),
-          ),
 
-          if( (productProvider.product?.description?.length ?? 0) > (ResponsiveHelper.isDesktop(context) ? 700 : 300) && showSeeMoreButton) Positioned.fill(child: Align(
-            alignment: Alignment.bottomCenter, child: Container(
-            decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [
-              Theme.of(context).cardColor.withValues(alpha: 0),
-              Theme.of(context).cardColor,
-            ])),
-            width: Dimensions.webScreenWidth, height: 55,
-          ),
-          )),
+            if( (productProvider.product?.description?.length ?? 0) > (ResponsiveHelper.isDesktop(context) ? 700 : 300) && showSeeMoreButton) Positioned.fill(child: Align(
+              alignment: Alignment.bottomCenter, child: Container(
+              decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [
+                Colors.white.withValues(alpha: 0),
+                Colors.white,
+              ])),
+              width: Dimensions.webScreenWidth, height: 75,
+            ),
+            )),
+          ]),
 
-          if((productProvider.product?.description?.length ?? 0) > (ResponsiveHelper.isDesktop(context) ? 700 : 300)) Positioned.fill(child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-                alignment: Alignment.center,
-                margin: showSeeMoreButton ? const EdgeInsets.only(bottom: Dimensions.paddingSizeLarge) : null,
-                height: 38, width: 100,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
-                  onTap: ()=> onChangeButtonStatus(!showSeeMoreButton),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Dimensions.paddingSizeExtraSmall, vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: const Alignment(0, 10),
-                      colors: [
-                        Theme.of(context).cardColor,
-                        Theme.of(context).primaryColor,
-                      ]), // Gradient fro,
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
-                    ),
-                    child: Text(getTranslated(showSeeMoreButton ?  'see_more' : 'see_less', context), style: poppinsRegular),
+          if((productProvider.product?.description?.length ?? 0) > (ResponsiveHelper.isDesktop(context) ? 700 : 300)) Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(50),
+                onTap: ()=> onChangeButtonStatus(!showSeeMoreButton),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Dimensions.paddingSizeLarge, vertical: 6,
                   ),
-                )),
-          )),
-
-
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.15)),
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      )
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        getTranslated(showSeeMoreButton ? 'see_more' : 'see_less', context),
+                        style: poppinsMedium.copyWith(color: Theme.of(context).primaryColor),
+                      ),
+                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                      Icon(
+                        showSeeMoreButton ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                        color: Theme.of(context).primaryColor,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
+              )),
         ]) : Column(children: [
 
           if(ResponsiveHelper.isDesktop(context))

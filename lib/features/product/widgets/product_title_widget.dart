@@ -84,77 +84,84 @@ class ProductTitleWidget extends StatelessWidget {
           ),
           child: Column(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-            Text(product?.name ?? '', style: poppinsSemiBold.copyWith(
-              fontSize: ResponsiveHelper.isDesktop(context) ? Dimensions.fontSizeOverLarge : Dimensions.fontSizeLarge,
-              color: Theme.of(context).textTheme.bodyLarge?.color,
-            ), maxLines: 2, overflow: TextOverflow.ellipsis),
-            SizedBox(height: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeDefault),
-
-            Row(children: [
-              product?.rating != null ? Container(
-                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: ColorResources.ratingColor.withValues(alpha: 0.1),
-                ),
-                child: Row(mainAxisSize : MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  const Icon(Icons.star_rounded, color: ColorResources.ratingColor, size: Dimensions.paddingSizeDefault),
-                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                  Text(
-                    product!.rating!.isNotEmpty ? product!.rating![0].average!.toStringAsFixed(1) : '0.0',
-                    style: poppinsMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.80), fontSize: Dimensions.fontSizeSmall),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: RichText(
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: product?.name != null ? product!.name!.split(' (').first : '',
+                          style: poppinsSemiBold.copyWith(
+                            fontSize: ResponsiveHelper.isDesktop(context) ? Dimensions.fontSizeOverLarge : Dimensions.fontSizeExtraLarge,
+                            color: Colors.black,
+                          ),
+                        ),
+                        if (product?.name != null && product!.name!.contains(' ('))
+                          TextSpan(
+                            text: ' (${product!.name!.split(' (').sublist(1).join(' (')}',
+                            style: poppinsRegular.copyWith(
+                              fontSize: Dimensions.fontSizeLarge,
+                              color: Colors.black87,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                ]),
-              ) : const SizedBox(),
-
-              SizedBox(width: product!.rating != null ? Dimensions.paddingSizeSmall : 0),
-
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Dimensions.radiusSizeLarge),
-                  border: Border.all(width: 1, color: Theme.of(context).primaryColor),
-                  color: /*product!.totalStock! > 0
-                      ?  Theme.of(context).primaryColor
-                      :*/ Theme.of(context).primaryColor.withValues(alpha:0.05),
                 ),
-                child: Text(
-                  getTranslated(product!.totalStock! > 0
-                      ? 'in_stock' : 'stock_out', context),
-                  style: poppinsSemiBold.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeSmall),
+                const SizedBox(width: Dimensions.paddingSizeSmall),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(width: 1, color: const Color(0xFF53D258)),
+                    color: const Color(0xFFE2F6E3),
+                  ),
+                  child: Text(
+                    getTranslated(product!.totalStock! > 0 ? 'in_stock' : 'stock_out', context),
+                    style: poppinsMedium.copyWith(color: const Color(0xFF38B23C), fontSize: Dimensions.fontSizeSmall),
+                  ),
                 ),
+              ],
+            ),
+            SizedBox(height: Dimensions.paddingSizeDefault),
+
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 4,
+              runSpacing: 4,
+              children: [
+              if (product?.rating != null) ...[
+                const Icon(Icons.star_border, color: Colors.black87, size: 18),
+                Text(
+                  '${product!.rating!.isNotEmpty ? product!.rating![0].average!.toStringAsFixed(1) : '0.0'}', 
+                  style: poppinsRegular.copyWith(color: Colors.black54, fontSize: Dimensions.fontSizeSmall),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4),
+                  child: Text('|', style: TextStyle(color: Colors.black26)),
+                ),
+              ],
+              
+              const Icon(Icons.access_time, color: Colors.black87, size: 18),
+              Text(
+                '20-25 min', 
+                style: poppinsRegular.copyWith(color: Colors.black54, fontSize: Dimensions.fontSizeSmall),
               ),
-            ]),
-            SizedBox(height: ResponsiveHelper.isDesktop(context) ? Dimensions.fontSizeMaxLarge : Dimensions.paddingSizeLarge),
-
-            Text('${product!.capacity} ${product!.unit}', style: poppinsMedium.copyWith(
-              color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.70),
-              fontSize: Dimensions.fontSizeDefault,
-            )),
-            SizedBox(height: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeExtraSmall : Dimensions.paddingSizeLarge),
-
-            //Product Price
-            Row(children: [
-
-              startingPriceWithDiscount! < startingPrice!  ? CustomDirectionalityWidget(
-                child: Text(
-                  '${PriceConverterHelper.convertPrice(context, startingPrice)}'
-                      '${endingPrice != null ? ' - ${PriceConverterHelper.convertPrice(context, endingPrice)}' : ''}',
-                  style: poppinsRegular.copyWith(
-                    color: Theme.of(context).disabledColor,
-                    fontSize: Dimensions.fontSizeSmall, decoration: TextDecoration.lineThrough,
-                  ),
-                ),
-              ): const SizedBox(),
-              SizedBox(width: startingPriceWithDiscount < startingPrice ? Dimensions.paddingSizeExtraSmall : 0),
-
-              CustomDirectionalityWidget(child: Text(
-                '${PriceConverterHelper.convertPrice(context, startingPriceWithDiscount, )}'
-                    '${endingPriceWithDiscount!= null ? ' - ${PriceConverterHelper.convertPrice(context, endingPriceWithDiscount)}' : ''}',
-                style: poppinsBold.copyWith(color: Theme.of(context).primaryColor, fontSize: ResponsiveHelper.isDesktop(context) ? Dimensions.fontSizeExtraLarge : Dimensions.fontSizeLarge),
-              )),
-
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4),
+                child: Text('|', style: TextStyle(color: Colors.black26)),
+              ),
+              
+              const Icon(Icons.local_shipping_outlined, color: Colors.black87, size: 18),
+              Text(
+                'Free Delivery', 
+                style: poppinsRegular.copyWith(color: Colors.black54, fontSize: Dimensions.fontSizeSmall),
+              ),
             ]),
 
           ]),

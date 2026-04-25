@@ -109,7 +109,7 @@ class _MainScreenState extends State<MainScreen> {
                               configModel: splash.configModel),
                         )
                       : null,
-                  appBar: ResponsiveHelper.isDesktop(context)
+                  appBar: (ResponsiveHelper.isDesktop(context) || splash.pageIndex == 2)
                       ? null
                       : AppBar(
                           backgroundColor: Theme.of(context).cardColor,

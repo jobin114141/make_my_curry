@@ -10,7 +10,7 @@ import 'package:flutter_grocery/utill/dimensions.dart';
 import 'package:flutter_grocery/utill/styles.dart';
 import 'package:provider/provider.dart';
 
-class CartDetailsWidget extends StatelessWidget {
+class CartDetailsWidget extends StatefulWidget {
   const CartDetailsWidget({
     super.key,
     required TextEditingController couponController,
@@ -19,13 +19,21 @@ class CartDetailsWidget extends StatelessWidget {
     required double itemPrice,
     required double tax,
     required double discount,
-  }) : _couponController = couponController, _total = total, _itemPrice = itemPrice, _tax = tax, _discount = discount;
+  }) : _couponController = couponController, _total = total, _itemPrice = itemPrice, _tax = tax, _discount = discount, _isFreeDelivery = isFreeDelivery;
 
   final TextEditingController _couponController;
   final double _total;
   final double _itemPrice;
   final double _tax;
   final double _discount;
+  final bool _isFreeDelivery;
+
+  @override
+  State<CartDetailsWidget> createState() => _CartDetailsWidgetState();
+}
+
+class _CartDetailsWidgetState extends State<CartDetailsWidget> {
+  bool _isExpanded = true;
 
   @override
   Widget build(BuildContext context) {
@@ -33,84 +41,104 @@ class CartDetailsWidget extends StatelessWidget {
     return Column(children: [
 
       Container(
-        padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+        width: double.infinity,
+        padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
-          boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 5, offset: const Offset(0, 1))],
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 5))],
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(getTranslated('delivery_option', context), style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault)),
-          DeliveryOptionWidget(value: 'delivery', title: getTranslated('home_delivery', context)),
-
-          if(configModel.selfPickup == 1)...[
-            DeliveryOptionWidget(value: 'self_pickup', title: getTranslated('self_pickup', context)),
-          ],
-
-
+          Text(getTranslated('delivery_option', context), style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: Colors.black)),
+          const SizedBox(height: Dimensions.paddingSizeSmall),
+          Row(
+            children: [
+              DeliveryOptionWidget(value: 'delivery', title: getTranslated('home_delivery', context)),
+              const SizedBox(width: 10),
+              if(configModel.selfPickup == 1)
+                DeliveryOptionWidget(value: 'self_pickup', title: getTranslated('self_pickup', context)),
+            ],
+          ),
         ]),
       ),
-      // SizedBox(height: _isSelfPickupActive ? Dimensions.paddingSizeDefault : 0),
+      const SizedBox(height: Dimensions.paddingSizeDefault),
+
+      Consumer<CouponProvider>(
+        builder: (context, couponProvider, child) {
+          return CouponWidget(couponController: widget._couponController, total: widget._total);
+        },
+      ),
+      const SizedBox(height: Dimensions.paddingSizeDefault),
 
       Container(
-        padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+        padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
-          boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 5, offset: const Offset(0, 1))],
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 5))],
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-
-          Consumer<CouponProvider>(
-            builder: (context, couponProvider, child) {
-              return CouponWidget(couponController: _couponController, total: _total);
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
             },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Price Details', style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: Colors.black)),
+                Icon(_isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, color: Colors.black, size: 24),
+              ],
+            ),
           ),
-          const SizedBox(height: Dimensions.paddingSizeLarge),
+          
+          if (_isExpanded) ...[
+            const SizedBox(height: 8),
+            const Divider(height: 30, thickness: 1, color: Colors.black12),
 
-          // Total
-          Text(getTranslated('cost_summery', context), style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
-          Divider(height: 30, thickness: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.05)),
+            PriceItemWidget(
+              title: getTranslated('items_price', context),
+              subTitle: PriceConverterHelper.convertPrice(context, widget._itemPrice),
+              style: poppinsMedium.copyWith(color: Colors.black54, fontSize: 16),
+            ),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
 
-          PriceItemWidget(
-            title: getTranslated('items_price', context),
-            subTitle: PriceConverterHelper.convertPrice(context, _itemPrice),
-          ),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
+            PriceItemWidget(
+              title: 'Platform fee (Include)',
+              subTitle: PriceConverterHelper.convertPrice(context, 0),
+              style: poppinsMedium.copyWith(color: Colors.black54, fontSize: 16),
+            ),
+            const SizedBox(height: Dimensions.paddingSizeSmall),
 
-          PriceItemWidget(
-            title: '${getTranslated('tax', context)} ${configModel.isVatTexInclude! ? '(${getTranslated('include', context)})' : ''}',
-            subTitle: '${ configModel.isVatTexInclude! ?  '' : '+'} ${PriceConverterHelper.convertPrice(context, _tax)}',
-          ),
-          const SizedBox(height: Dimensions.paddingSizeSmall),
+            PriceItemWidget(
+              title: getTranslated('discount', context),
+              subTitle: '- ${PriceConverterHelper.convertPrice(context, widget._discount)}',
+              style: poppinsMedium.copyWith(color: Colors.black54, fontSize: 16),
+            ),
 
-          PriceItemWidget(
-            title: getTranslated('discount', context),
-            subTitle: '- ${PriceConverterHelper.convertPrice(context, _discount)}',
-          ),
+            const SizedBox(height: 8),
+            const Divider(height: 30, thickness: 1, color: Colors.black12),
+          ],
 
-
-          Consumer<CouponProvider>(builder: (context, couponProvider, _) {
-            return couponProvider.coupon?.couponType != 'free_delivery' && couponProvider.discount! > 0 ? Padding(
-              padding: EdgeInsets.symmetric(vertical: couponProvider.coupon?.couponType != 'free_delivery' && couponProvider.discount! > 0 ? Dimensions.paddingSizeSmall : 0),
-              child: PriceItemWidget(
-                title: getTranslated('coupon_discount', context),
-                subTitle: '- ${PriceConverterHelper.convertPrice(context, couponProvider.discount)}',
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Total Amount', style: poppinsSemiBold.copyWith(fontSize: 18, color: Colors.black)),
+              Text(
+                PriceConverterHelper.convertPrice(context, widget._total),
+                style: poppinsBold.copyWith(fontSize: 24, color: const Color(0xFF38B23C)),
               ),
-            ) : const SizedBox();
-          }),
-
-          Divider(height: 30, thickness: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.1)),
-
-          PriceItemWidget(
-            title: getTranslated('subtotal', context),
-            subTitle: PriceConverterHelper.convertPrice(context, _total),
-            style: poppinsBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'You are saving ₹ 150 On this order', 
+            style: poppinsMedium.copyWith(fontSize: 12, color: const Color(0xFF38B23C)),
           ),
 
         ]),
       ),
-
     ]);
   }
 }

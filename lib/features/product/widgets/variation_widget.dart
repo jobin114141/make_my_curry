@@ -24,44 +24,39 @@ class VariationWidget extends StatelessWidget {
           itemBuilder: (context, index) {
             return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-              Text(product!.choiceOptions![index].title!, style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).hintColor.withValues(alpha: 0.8))),
-              const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+              Text('Select Quantity', style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge, color: Colors.black)),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
 
-              GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: ResponsiveHelper.isDesktop(context) ? 5 : 3,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: ResponsiveHelper.isDesktop(context) ? (1 / 0.3) : (1 / 0.35),
-                ),
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: product!.choiceOptions![index].options!.length,
-                itemBuilder: (context, i) {
-                  return InkWell(
-                    borderRadius: BorderRadius.circular(Dimensions.radiusSizeTen),
-                    onTap: () {
-                      cartProvider.setCartVariationIndex(index, i);
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall, vertical: Dimensions.paddingSizeExtraSmall),
-                      decoration: BoxDecoration(
-                        color: cartProvider.variationIndex![index] != i ? Theme.of(context).canvasColor : Theme.of(context).primaryColor.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(Dimensions.radiusSizeTen),
-                        border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: cartProvider.variationIndex![index] != i ? 0.08 : 0.8), width: 1),
-                      ),
-                      child: Text(
-                        product!.choiceOptions![index].options![i].trim(), maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: poppinsRegular.copyWith(
-                          color: cartProvider.variationIndex![index] != i ? Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.5) : Theme.of(context).primaryColor,
+              Wrap(
+                spacing: 12,
+                runSpacing: 10,
+                children: List.generate(
+                  product!.choiceOptions![index].options!.length,
+                  (i) {
+                    bool isSelected = cartProvider.variationIndex![index] == i;
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(50),
+                      onTap: () {
+                        cartProvider.setCartVariationIndex(index, i);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xFF0F1E29) : Colors.white,
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color: isSelected ? const Color(0xFF0F1E29) : Colors.black12, width: 1),
+                        ),
+                        child: Text(
+                          product!.choiceOptions![index].options![i].trim(), maxLines: 1, overflow: TextOverflow.ellipsis,
+                          style: poppinsMedium.copyWith(
+                            color: isSelected ? Colors.white : Colors.black54,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-              SizedBox(height: index != product!.choiceOptions!.length-1 ? Dimensions.paddingSizeLarge : 0),
             ]);
           },
         );

@@ -20,24 +20,22 @@ class ThirdPartyChatWidget extends StatefulWidget {
 class _ThirdPartyChatWidgetState extends State<ThirdPartyChatWidget> {
   List<SpeedDialChild> dialList = [];
 
-
   @override
   void initState() {
-
     Future.delayed(const Duration(milliseconds: 500)).then((value) {
-      if(( mounted && widget.configModel?.whatsapp != null
-          && widget.configModel!.whatsapp!.status!
-          && widget.configModel?.whatsapp!.number != null)){
-
+      if ((mounted &&
+          widget.configModel?.whatsapp != null &&
+          widget.configModel!.whatsapp!.status! &&
+          widget.configModel?.whatsapp!.number != null)) {
         dialList.add(SpeedDialChild(
           backgroundColor: Colors.transparent,
           child: Container(
             alignment: Alignment.center,
-            height: 55, width: 55,
+            height: 55,
+            width: 55,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: const Color.fromARGB(62, 0, 0, 0),
-             
             ),
             child: ClipOval(
               child: Image.asset(Images.whatsapp, fit: BoxFit.fill),
@@ -45,54 +43,58 @@ class _ThirdPartyChatWidgetState extends State<ThirdPartyChatWidget> {
           ),
           onPressed: () async {
             final String? whatsapp = widget.configModel?.whatsapp!.number;
-            final Uri whatsappMobile = Uri.parse("whatsapp://send?phone=$whatsapp");
+            final Uri whatsappMobile =
+                Uri.parse("whatsapp://send?phone=$whatsapp");
             if (await canLaunchUrl(whatsappMobile)) {
-              await launchUrl(whatsappMobile, mode: LaunchMode.externalApplication);
+              await launchUrl(whatsappMobile,
+                  mode: LaunchMode.externalApplication);
             } else {
-              await launchUrl( Uri.parse("https://web.whatsapp.com/send?phone=$whatsapp"), mode: LaunchMode.externalApplication);
+              await launchUrl(
+                  Uri.parse("https://web.whatsapp.com/send?phone=$whatsapp"),
+                  mode: LaunchMode.externalApplication);
             }
           },
         ));
       }
 
-
-      if((widget.configModel?.telegram != null
-          && widget.configModel!.telegram!.status!
-          && widget.configModel?.telegram!.userName != null)){
-
-
-        dialList.add(SpeedDialChild(backgroundColor: Colors.transparent,child: Container(
-          alignment: Alignment.center,
-          height: 45, width: 45,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.transparent,
-            border: Border.all(color: Colors.black, width: 1.5),
-          ),
-          child: ClipOval(
-            child: Image.asset(Images.telegram, fit: BoxFit.cover),
-          ),
-        ),
-          onPressed: () async {
-            final String? userName = widget.configModel?.telegram!.userName;
-            final Uri whatsappMobile = Uri.parse("https://t.me/$userName");
-            if (await canLaunchUrl(whatsappMobile)) {
-              await launchUrl(whatsappMobile, mode: LaunchMode.externalApplication);
-            }
-          },)
-        );
-
-      }
-
-      if((widget.configModel?.messenger != null
-          && widget.configModel!.messenger!.status!
-          && widget.configModel?.messenger!.userName != null)){
-
+      if ((widget.configModel?.telegram != null &&
+          widget.configModel!.telegram!.status! &&
+          widget.configModel?.telegram!.userName != null)) {
         dialList.add(SpeedDialChild(
           backgroundColor: Colors.transparent,
           child: Container(
             alignment: Alignment.center,
-            height: 45, width: 45,
+            height: 45,
+            width: 45,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.transparent,
+              border: Border.all(color: Colors.black, width: 1.5),
+            ),
+            child: ClipOval(
+              child: Image.asset(Images.telegram, fit: BoxFit.cover),
+            ),
+          ),
+          onPressed: () async {
+            final String? userName = widget.configModel?.telegram!.userName;
+            final Uri whatsappMobile = Uri.parse("https://t.me/$userName");
+            if (await canLaunchUrl(whatsappMobile)) {
+              await launchUrl(whatsappMobile,
+                  mode: LaunchMode.externalApplication);
+            }
+          },
+        ));
+      }
+
+      if ((widget.configModel?.messenger != null &&
+          widget.configModel!.messenger!.status! &&
+          widget.configModel?.messenger!.userName != null)) {
+        dialList.add(SpeedDialChild(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            alignment: Alignment.center,
+            height: 45,
+            width: 45,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.transparent,
@@ -106,29 +108,33 @@ class _ThirdPartyChatWidgetState extends State<ThirdPartyChatWidget> {
             final String? userId = widget.configModel?.messenger!.userName;
             final Uri messengerUrl = Uri.parse("https://m.me/$userId");
             if (await canLaunchUrl(messengerUrl)) {
-              await launchUrl(messengerUrl, mode: LaunchMode.externalApplication);
+              await launchUrl(messengerUrl,
+                  mode: LaunchMode.externalApplication);
             }
           },
         ));
-
       }
-
     });
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return dialList.isEmpty ? const SizedBox() : dialList.length > 1 ?  SpeedDial(
-      closedForegroundColor: Colors.white,
-      openForegroundColor: Colors.white,
-      closedBackgroundColor: Theme.of(context).primaryColor,
-      openBackgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-      labelsBackgroundColor: Colors.white,
-      speedDialChildren: dialList,
-      child: const Icon(Icons.message),
-    ) : InkWell(onTap:()=> dialList.first.onPressed(), child: dialList.first.child);
-
+    return dialList.isEmpty
+        ? const SizedBox()
+        : dialList.length > 1
+            ? SpeedDial(
+                closedForegroundColor: Colors.white,
+                openForegroundColor: Colors.white,
+                closedBackgroundColor: Theme.of(context).primaryColor,
+                openBackgroundColor:
+                    Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                labelsBackgroundColor: Colors.white,
+                speedDialChildren: dialList,
+                child: const Icon(Icons.message),
+              )
+            : InkWell(
+                onTap: () => dialList.first.onPressed(),
+                child: dialList.first.child);
   }
 }

@@ -17,18 +17,26 @@ class DeliveryOptionWidget extends StatelessWidget {
         return InkWell(
           onTap: () => order.setOrderType(value),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Radio(
-                value: value,
-                groupValue: order.orderType,
-                activeColor: Theme.of(context).primaryColor,
-                onChanged: (String? value) => order.setOrderType(value),
+              Container(
+                width: 18,
+                height: 18,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: order.orderType == value ? const Color(0xFF4AC2E2) : Colors.black26,
+                    width: order.orderType == value ? 5 : 1,
+                  ),
+                ),
               ),
-              const SizedBox(width: Dimensions.paddingSizeSmall),
+              const SizedBox(width: 8),
 
-              Text(title!, style: order.orderType == value ? poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall)
-                  : poppinsRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-              const SizedBox(width: 5),
+              Text(title!, style: poppinsMedium.copyWith(
+                fontSize: Dimensions.fontSizeDefault,
+                color: Colors.black,
+              )),
+              const SizedBox(width: 15),
             ],
           ),
         );

@@ -25,44 +25,72 @@ class ProductImageWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Stack(children: [
-          InkWell(
-            onTap: () => Navigator.of(context).pushNamed(
-              RouteHelper.getProductImagesRoute(productModel!.name, jsonEncode(productModel!.image), ''),
-              arguments: ProductImageScreen(imageList: productModel!.image, title: productModel!.name, baseUrl: splashProvider.baseUrls?.productImageUrl),
-            ),
-
-            child: Consumer<CartProvider>(
-              builder: (context, cartProvider, _) {
-                return SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: ResponsiveHelper.isDesktop(context) ? 350 : MediaQuery.of(context).size.height * 0.4,
-                  child: PageView.builder(
-                    itemCount: productModel?.image?.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: CustomImageWidget(
-                            image: '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${productModel!.image![cartProvider.productSelect]}',
-                            fit: BoxFit.cover,
+          Consumer<CartProvider>(
+            builder: (context, cartProvider, _) {
+              return Stack(children: [
+                InkWell(
+                  onTap: () => Navigator.of(context).pushNamed(
+                    RouteHelper.getProductImagesRoute(productModel!.name, jsonEncode(productModel!.image), ''),
+                    arguments: ProductImageScreen(imageList: productModel!.image, title: productModel!.name, baseUrl: splashProvider.baseUrls?.productImageUrl),
+                  ),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: ResponsiveHelper.isDesktop(context) ? 350 : MediaQuery.of(context).size.height * 0.4,
+                    child: PageView.builder(
+                      itemCount: productModel?.image?.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(25),
+                            child: CustomImageWidget(
+                              image: '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${productModel!.image![index]}',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      },
+                      onPageChanged: (index) {
+                        Provider.of<CartProvider>(context, listen: false).onSelectProductStatus(index, true);
+                        Provider.of<ProductProvider>(context, listen: false).setImageSliderSelectedIndex(index);
+                      },
+                    ),
+                  ),
+                ),
+                
+                // Dot Indicator overlay
+                if (productModel?.image != null && productModel!.image!.length > 1)
+                  Positioned(
+                    bottom: 45, // Right over the bottom of the image
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        productModel!.image!.length,
+                        (index) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: cartProvider.productSelect == index ? Colors.white : Colors.white.withValues(alpha: 0.5),
                           ),
                         ),
-                      );
-                    },
-                    onPageChanged: (index) {
-                      Provider.of<CartProvider>(context, listen: false).onSelectProductStatus(index, true);
-                      Provider.of<ProductProvider>(context, listen: false).setImageSliderSelectedIndex(index);
-                    },
+                      ),
+                    ),
                   ),
-                );
-              }
-            ),
+              ]);
+            }
           ),
 
           Positioned(
-            top: 26, right: 26,
-            child: WishButtonWidget(product: productModel, edgeInset: const EdgeInsets.all(Dimensions.paddingSizeSmall)),
+            top: 36, right: 36,
+            child: WishButtonWidget(
+              product: productModel, 
+              edgeInset: const EdgeInsets.all(8),
+              color: Colors.black.withValues(alpha: 0.5), 
+            ),
           )
 
         ]),
