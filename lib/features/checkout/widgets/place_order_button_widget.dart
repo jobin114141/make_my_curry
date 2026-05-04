@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_grocery/common/models/place_order_model.dart';
 import 'package:flutter_grocery/common/providers/cart_provider.dart';
 import 'package:flutter_grocery/features/address/providers/location_provider.dart';
@@ -80,9 +81,8 @@ class _PlaceOrderButtonWidgetState extends State<PlaceOrderButtonWidget> {
                                   SizedBox(
                                     width: 20,
                                     height: 20,
-                                    child: CircularProgressIndicator(
+                                    child: CupertinoActivityIndicator(
                                       color: Theme.of(context).cardColor,
-                                      strokeWidth: 2,
                                     ),
                                   ),
                                   const SizedBox(width: 12),

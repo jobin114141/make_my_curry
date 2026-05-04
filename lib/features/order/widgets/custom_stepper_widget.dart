@@ -56,30 +56,34 @@ class CustomStepperWidget extends StatelessWidget {
       if(title != null) ListTile(
         contentPadding: EdgeInsets.zero,
         leading: Container(
-          padding: const EdgeInsets.all(7),
+          padding: const EdgeInsets.all(10),
           margin: const EdgeInsets.only(left: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
-            color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+            color: (isComplete || isActive) ? Theme.of(context).primaryColor.withValues(alpha: 0.1) : Theme.of(context).disabledColor.withValues(alpha: 0.05),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-            child: Image.asset(
-              statusImage!, width: 30,
-              color: Theme.of(context).primaryColor.withValues(alpha: isComplete ? 1 : 0.5),
-            ),
+          child: Image.asset(
+            statusImage!, width: 24, height: 24,
+            color: (isComplete || isActive) ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
           ),
         ),
         title: Text(title!, style: poppinsMedium.copyWith(
           fontSize: Dimensions.fontSizeLarge,
-          color: isComplete ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
+          color: (isComplete || isActive) ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
         )),
-        subtitle: subTitleWidget ?? (subTitle != null ? Text(subTitle!, style: poppinsRegular.copyWith(color: Theme.of(context).disabledColor)) : const SizedBox()),
+        subtitle: subTitleWidget ?? (subTitle != null ? Text(subTitle!, style: poppinsRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall)) : const SizedBox()),
         trailing: Row(mainAxisSize: MainAxisSize.min, children: [
           if(trailing != null) trailing!,
           if(trailing != null) const SizedBox(width: Dimensions.paddingSizeSmall),
 
-          if(isActive) Icon(Icons.check_circle, color: Theme.of(context).primaryColor, size:  35),
+          if(isActive) Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.check, color: Colors.white, size: 16),
+          ),
         ]),
       ),
 

@@ -13,24 +13,33 @@ class ApiCheckerHelper {
   static void checkApi(ApiResponseModel apiResponse) {
     ErrorResponseModel error = getError(apiResponse);
 
-    if((error.errors?[0].code == '401' || error.errors![0].code == 'auth-001' &&  ModalRoute.of(Get.context!)?.settings.name != RouteHelper.getLoginRoute())) {
-      Provider.of<SplashProvider>(Get.context!, listen: false).removeSharedData();
-      Navigator.pushAndRemoveUntil(Get.context!, MaterialPageRoute(builder: (_) => const LoginScreen()), (route) => false);
-    }else {
-      showCustomSnackBarHelper(getTranslated(error.errors?.first.message, Get.context!));
+    if ((error.errors?[0].code == '401' ||
+        error.errors![0].code == 'auth-001' &&
+            ModalRoute.of(Get.context!)?.settings.name !=
+                RouteHelper.getLoginRoute())) {
+      Provider.of<SplashProvider>(Get.context!, listen: false)
+          .removeSharedData();
+      Navigator.pushAndRemoveUntil(
+          Get.context!,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false);
+    } else {
+      showCustomSnackBarHelper(
+          getTranslated(error.errors?.first.message, Get.context!));
     }
   }
 
-  static ErrorResponseModel getError(ApiResponseModel apiResponse){
+  static ErrorResponseModel getError(ApiResponseModel apiResponse) {
     ErrorResponseModel error;
 
-    try{
+    try {
       error = ErrorResponseModel.fromJson(apiResponse);
-    }catch(e){
-      if(apiResponse.error != null){
+    } catch (e) {
+      if (apiResponse.error != null) {
         error = ErrorResponseModel.fromJson(apiResponse.error);
-      }else{
-        error = ErrorResponseModel(errors: [Errors(code: '', message: apiResponse.error.toString())]);
+      } else {
+        error = ErrorResponseModel(
+            errors: [Errors(code: '', message: apiResponse.error.toString())]);
       }
     }
     return error;

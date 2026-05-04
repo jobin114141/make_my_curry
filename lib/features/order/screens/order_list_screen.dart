@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_grocery/helper/responsive_helper.dart';
 import 'package:flutter_grocery/localization/app_localization.dart';
@@ -20,25 +19,30 @@ class OrderListScreen extends StatefulWidget {
   State<OrderListScreen> createState() => _OrderListScreenState();
 }
 
-class _OrderListScreenState extends State<OrderListScreen> with TickerProviderStateMixin {
-
+class _OrderListScreenState extends State<OrderListScreen>
+    with TickerProviderStateMixin {
   TabController? _tabController;
 
   @override
   void initState() {
-    final bool isLoggedIn = Provider.of<AuthProvider>(context, listen: false).isLoggedIn();
-    Provider.of<OrderProvider>(context, listen: false).changeActiveOrderStatus(true, isUpdate: false);
+    final bool isLoggedIn =
+        Provider.of<AuthProvider>(context, listen: false).isLoggedIn();
+    Provider.of<OrderProvider>(context, listen: false)
+        .changeActiveOrderStatus(true, isUpdate: false);
 
-
-    if(isLoggedIn) {
-      _tabController = TabController(length: 2, initialIndex: 0, vsync: this, animationDuration: const Duration(milliseconds: 100));
+    if (isLoggedIn) {
+      _tabController = TabController(
+          length: 2,
+          initialIndex: 0,
+          vsync: this,
+          animationDuration: const Duration(milliseconds: 100));
       Provider.of<OrderProvider>(context, listen: false).getOrderList(context);
     }
 
-
-    _tabController?.addListener((){
+    _tabController?.addListener(() {
       setState(() {
-        final OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
+        final OrderProvider orderProvider =
+            Provider.of<OrderProvider>(context, listen: false);
         orderProvider.changeActiveOrderStatus(_tabController?.index == 0);
       });
     });
@@ -48,55 +52,91 @@ class _OrderListScreenState extends State<OrderListScreen> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    final bool isLoggedIn = Provider.of<AuthProvider>(context, listen: false).isLoggedIn();
-
+    final bool isLoggedIn =
+        Provider.of<AuthProvider>(context, listen: false).isLoggedIn();
 
     return Scaffold(
-      appBar: ResponsiveHelper.isMobilePhone() ? null: (ResponsiveHelper.isDesktop(context) ? const PreferredSize(preferredSize: Size.fromHeight(120), child: WebAppBarWidget()) : const AppBarBaseWidget()) as PreferredSizeWidget?,
-
-      body: isLoggedIn ? Consumer<OrderProvider>(
-        builder: (context, orderProvider, child){
-          return Column(
-            children: [
-
-              ResponsiveHelper.isDesktop(context) ? Padding(padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraLarge),
-                child: Text("my_orders".tr, style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
-              ) : const SizedBox(),
-
-              Center(
-                child: TabBar(
-                  onTap: (int? index)=> orderProvider.changeActiveOrderStatus(index == 0),
-                  tabAlignment: TabAlignment.center,
-                  controller: _tabController,
-                  labelColor: Theme.of(context).textTheme.bodyLarge!.color,
-                  indicatorColor: Theme.of(context).primaryColor,
-                  indicatorWeight: 3,
-                  unselectedLabelStyle: poppinsRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall),
-                  labelStyle: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
-                  tabs: [
-                    Tab(text: getTranslated('ongoing', context)),
-                    Tab(text: getTranslated('history', context)),
-                  ],
-                ),
-              ),
-
-              Expanded(child: TabBarView(
-                controller: _tabController,
-                children: const [
-                  OrderWidget(isRunning: true),
-                  OrderWidget(isRunning: false),
+      appBar: ResponsiveHelper.isMobilePhone()
+          ? null
+          : (ResponsiveHelper.isDesktop(context)
+              ? const PreferredSize(
+                  preferredSize: Size.fromHeight(120), child: WebAppBarWidget())
+              : const AppBarBaseWidget()) as PreferredSizeWidget?,
+      body: isLoggedIn
+          ? Consumer<OrderProvider>(builder: (context, orderProvider, child) {
+              return Column(
+                children: [
+                  ResponsiveHelper.isDesktop(context)
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: Dimensions.paddingSizeExtraLarge),
+                          child: Text("my_orders".tr,
+                              style: poppinsSemiBold.copyWith(
+                                  fontSize: Dimensions.fontSizeLarge)),
+                        )
+                      : const SizedBox(),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.02),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        )
+                      ],
+                    ),
+                    child: Center(
+                      child: Container(
+                        width: ResponsiveHelper.isDesktop(context) ? 400 : MediaQuery.sizeOf(context).width - 60,
+                        height: 45,
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+                        ),
+                        child: TabBar(
+                          onTap: (int? index)=> orderProvider.changeActiveOrderStatus(index == 0),
+                          controller: _tabController,
+                          labelColor: Colors.white,
+                          unselectedLabelColor: Theme.of(context).primaryColor.withValues(alpha: 0.6),
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          dividerColor: Colors.transparent,
+                          indicator: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault - 4),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              )
+                            ],
+                          ),
+                          labelStyle: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault),
+                          unselectedLabelStyle: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
+                          tabs: [
+                            Tab(text: getTranslated('ongoing', context)),
+                            Tab(text: getTranslated('history', context)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                      child: TabBarView(
+                    controller: _tabController,
+                    children: const [
+                      OrderWidget(isRunning: true),
+                      OrderWidget(isRunning: false),
+                    ],
+                  )),
                 ],
-              )),
-
-            ],
-          );
-
-        }
-      ) : const NotLoggedInWidget(),
+              );
+            })
+          : const NotLoggedInWidget(),
     );
   }
 }
-
-
-
-

@@ -73,6 +73,7 @@ dependencies:
   collection: any
   google_maps_webservice: any
   razorpay_flutter: ^1.4.0
+  font_awesome_flutter: ^10.9.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

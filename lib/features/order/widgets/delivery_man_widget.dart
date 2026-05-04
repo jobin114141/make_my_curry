@@ -16,43 +16,64 @@ class DeliveryManWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+      padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
         boxShadow: [
-          BoxShadow(color: Colors.grey[Provider.of<ThemeProvider>(context).darkTheme ? 700 : 200]!, spreadRadius: 0.5, blurRadius: 0.5)
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
         ],
+        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.3), width: 0.5),
       ),
       child: Row(
         children: [
-          ClipOval(
-            child: CustomImageWidget(
-              placeholder: Images.placeHolder,
-              image: '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.deliveryManImageUrl}/${deliveryMan!.image}',
-              height: 40, width: 40, fit: BoxFit.cover,
+          Container(
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.2), width: 1),
+            ),
+            child: ClipOval(
+              child: CustomImageWidget(
+                placeholder: Images.profile,
+                image: '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.deliveryManImageUrl}/${deliveryMan!.image}',
+                height: 50, width: 50, fit: BoxFit.cover,
+              ),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: Dimensions.paddingSizeDefault),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   '${deliveryMan?.fName} ${deliveryMan?.lName}',
-                  style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
+                  style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   '${deliveryMan?.email}',
-                  style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall),
+                  style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
                 ),
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {
+          InkWell(
+            onTap: () {
               launchUrlString('tel:${deliveryMan!.phone}');
             },
-            icon: Image.asset(Images.call, color: Theme.of(context).primaryColor, width: 30, height: 30),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Image.asset(Images.call, color: Theme.of(context).primaryColor, width: 20, height: 20),
+            ),
           ),
         ],
       ),

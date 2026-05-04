@@ -65,12 +65,19 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                 margin: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
                 height: double.maxFinite,
                 decoration: BoxDecoration(
-                  boxShadow: [BoxShadow(color: Theme.of(context).shadowColor, spreadRadius: 3, blurRadius: 10)],
+                  color: Colors.blue.withValues(alpha: 0.05),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withValues(alpha: 0.03),
+                      blurRadius: 10,
+                      offset: const Offset(2, 0),
+                    )
+                  ],
                 ),
                 child: ListView.builder(
                   physics: const BouncingScrollPhysics(),
                   itemCount: categoryProvider.categoryList!.length,
-                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
+                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall, vertical: Dimensions.paddingSizeSmall),
                   itemBuilder: (context, index) {
                     CategoryModel category = categoryProvider.categoryList![index];
                     return InkWell(
@@ -94,45 +101,56 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                   itemCount: categoryProvider.subCategoryList!.length + 1,
                   itemBuilder: (context, index) {
 
-                    if(index == 0) {
-                      return ListTile(
+                    if (index == 0) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12, top: 4),
+                        child: Text(
+                          getTranslated('sub_categories', context).replaceAll('_', ' '),
+                          style: poppinsSemiBold.copyWith(
+                            fontSize: Dimensions.fontSizeLarge,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      );
+                    }
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 5,
+                            offset: const Offset(0, 2),
+                          )
+                        ],
+                      ),
+                      child: ListTile(
                         onTap: () {
-                          categoryProvider.onChangeSelectIndex(-1);
+                          categoryProvider.onChangeSelectIndex(index - 1);
                           categoryProvider.initCategoryProductList(
-                            categoryProvider.categoryList![categoryProvider.categoryIndex].id.toString(),
+                            categoryProvider.subCategoryList![index - 1].id.toString(),
                           );
+
                           Navigator.of(context).pushNamed(
                             RouteHelper.getCategoryProductsRoute(
                               categoryId: '${categoryProvider.categoryList![categoryProvider.categoryIndex].id}',
+                              subCategory: categoryProvider.subCategoryList![index - 1].name,
                             ),
                           );
                         },
-                        title: Text(getTranslated('all', context)),
-                        trailing: const Icon(Icons.keyboard_arrow_right),
-                      );
-                    }
-                    return ListTile(
-                      onTap: () {
-                        categoryProvider.onChangeSelectIndex(index-1);
-                        if(ResponsiveHelper.isMobilePhone()) {
-
-                        }
-                        categoryProvider.initCategoryProductList(
-                          categoryProvider.subCategoryList![index-1].id.toString(),
-                        );
-
-                        Navigator.of(context).pushNamed(
-                          RouteHelper.getCategoryProductsRoute(
-                            categoryId: '${categoryProvider.categoryList![categoryProvider.categoryIndex].id}',
-                            subCategory: categoryProvider.subCategoryList![index-1].name,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        title: Text(
+                          categoryProvider.subCategoryList![index - 1].name!,
+                          style: poppinsMedium.copyWith(
+                            fontSize: Dimensions.fontSizeDefault,
+                            color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.9),
                           ),
-                        );
-                      },
-                      title: Text(categoryProvider.subCategoryList![index-1].name!,
-                        style: poppinsMedium.copyWith(fontSize: 13, color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.6)),
-                        overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: Icon(Icons.arrow_forward_ios, size: 14, color: Theme.of(context).primaryColor.withValues(alpha: 0.5)),
                       ),
-                      trailing: const Icon(Icons.keyboard_arrow_right),
                     );
                   },
                 ),

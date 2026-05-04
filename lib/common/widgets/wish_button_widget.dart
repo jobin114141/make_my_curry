@@ -45,7 +45,7 @@ class WishButtonWidget extends StatelessWidget {
                 wishList.wishIdList.contains(product!.id)
                     ? Icons.favorite : Icons.favorite_border,
                 color: wishList.wishIdList.contains(product!.id)
-                    ? Theme.of(context).primaryColor : (color != null ? Colors.white : Theme.of(context).primaryColor),
+                    ? Colors.red : (color != null ? Colors.white : Theme.of(context).primaryColor),
                 size: Dimensions.paddingSizeLarge,
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_grocery/features/coupon/providers/coupon_provider.dart';
 import 'package:flutter_grocery/helper/custom_snackbar_helper.dart';
 import 'package:flutter_grocery/localization/language_constraints.dart';
@@ -77,7 +78,7 @@ class CouponWidget extends StatelessWidget {
                             : const SizedBox(
                                 height: 18,
                                 width: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                                child: CupertinoActivityIndicator(color: Colors.white),
                               ),
                       )
                     : Icon(Icons.clear, color: Theme.of(context).colorScheme.error),

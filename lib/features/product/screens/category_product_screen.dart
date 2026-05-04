@@ -201,7 +201,6 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
                   const FooterWebWidget(footerType: FooterType.sliver),
                 ])),
 
-                const CategoryCartTitleWidget(),
 
               ],
             );

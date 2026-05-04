@@ -44,24 +44,38 @@ class OrderedProductItem extends StatelessWidget {
     final SplashProvider splashProvider = Provider.of<SplashProvider>(context, listen: false);
 
     return Container(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+      padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(Dimensions.radiusSizeTen),
-        boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 5)],
+        borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          )
+        ],
+        border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.3), width: 0.5),
       ),
       child: Row(children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(Dimensions.radiusSizeTen),
-          child: CustomImageWidget(
-            placeholder: Images.placeHolder,
-            image: '${splashProvider.baseUrls!.productImageUrl}/'
-                '${orderDetailsModel.productDetails!.image!.isNotEmpty
-                ? orderDetailsModel.productDetails!.image![0] : ''}',
-            height: 80, width: 80, fit: BoxFit.cover,
+        Container(
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault + 2),
+            border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.1), width: 1),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+            child: CustomImageWidget(
+              placeholder: Images.placeHolder,
+              image: '${splashProvider.baseUrls!.productImageUrl}/'
+                  '${orderDetailsModel.productDetails!.image!.isNotEmpty
+                  ? orderDetailsModel.productDetails!.image![0] : ''}',
+              height: 70, width: 70, fit: BoxFit.cover,
+            ),
           ),
         ),
-        const SizedBox(width: Dimensions.paddingSizeSmall),
+        const SizedBox(width: Dimensions.paddingSizeDefault),
 
         Expanded(
           child: ResponsiveHelper.isDesktop(context) ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -69,7 +83,7 @@ class OrderedProductItem extends StatelessWidget {
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               SizedBox(width: 200, child: Text(
                 orderDetailsModel.productDetails?.name ?? '',
-                style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeDefault),
+                style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               )),
@@ -87,7 +101,7 @@ class OrderedProductItem extends StatelessWidget {
                 Text('${getTranslated('quantity', context)} :', style: poppinsRegular.copyWith(color: Theme.of(context).disabledColor)),
                 const SizedBox(width: Dimensions.paddingSizeExtraSmall),
               
-                Text(orderDetailsModel.quantity.toString(), style: poppinsMedium),
+                Text(orderDetailsModel.quantity.toString(), style: poppinsSemiBold),
               
               ]),
             ),
@@ -111,7 +125,7 @@ class OrderedProductItem extends StatelessWidget {
               
                 CustomDirectionalityWidget(child: Text(
                   PriceConverterHelper.convertPrice(context, orderDetailsModel.price! - orderDetailsModel.discountOnProduct!.toDouble()),
-                  style: poppinsBold,
+                  style: poppinsSemiBold.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeLarge),
                 )),
                 const SizedBox(width: 5),
               ]),
@@ -121,19 +135,19 @@ class OrderedProductItem extends StatelessWidget {
 
             Text(
               orderDetailsModel.productDetails!.name!,
-              style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
+              style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+            const SizedBox(height: 4),
 
             if(!fromReview) Row(children: [
-              Text('${getTranslated('quantity', context)} :', style: poppinsRegular),
-              const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+              Text('${getTranslated('quantity', context)} :', style: poppinsRegular.copyWith(color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeSmall)),
+              const SizedBox(width: 4),
 
-              Text(orderDetailsModel.quantity.toString(), style: poppinsMedium),
+              Text(orderDetailsModel.quantity.toString(), style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeSmall)),
             ]),
-            if(!fromReview) const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+            if(!fromReview) const SizedBox(height: 4),
 
             Row(children: [
 
@@ -142,7 +156,7 @@ class OrderedProductItem extends StatelessWidget {
                   PriceConverterHelper.convertPrice(context, orderDetailsModel.price!.toDouble()),
                   style: poppinsRegular.copyWith(
                     decoration: TextDecoration.lineThrough,
-                    fontSize: Dimensions.fontSizeSmall,
+                    fontSize: Dimensions.fontSizeExtraSmall,
                     color: Theme.of(context).hintColor.withValues(alpha: 0.6),
                   ),
                 ),
@@ -151,7 +165,7 @@ class OrderedProductItem extends StatelessWidget {
 
               CustomDirectionalityWidget(child: Text(
                 PriceConverterHelper.convertPrice(context, orderDetailsModel.price! - orderDetailsModel.discountOnProduct!.toDouble()),
-                style: poppinsRegular,
+                style: poppinsSemiBold.copyWith(color: Theme.of(context).primaryColor),
               )),
               const SizedBox(width: 5),
             ]),

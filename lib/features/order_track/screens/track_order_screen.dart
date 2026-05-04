@@ -33,23 +33,33 @@ class TrackOrderScreen extends StatefulWidget {
   final bool isBackButton;
   final OrderModel? orderModel;
   final String? phone;
-  const TrackOrderScreen({super.key, required this.orderID, this.isBackButton = false, this.orderModel, this.phone});
+  const TrackOrderScreen(
+      {super.key,
+      required this.orderID,
+      this.isBackButton = false,
+      this.orderModel,
+      this.phone});
 
   @override
   State<TrackOrderScreen> createState() => _TrackOrderScreenState();
 }
 
 class _TrackOrderScreenState extends State<TrackOrderScreen> {
-
   @override
   void initState() {
-    final OrderProvider orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final OrderProvider orderProvider =
+        Provider.of<OrderProvider>(context, listen: false);
     Provider.of<LocationProvider>(context, listen: false).initAddressList();
 
-
-    orderProvider.trackOrder(widget.orderID, widget.orderModel,  context, true, isUpdate: false, phoneNumber: widget.phone ).whenComplete((){
-      if(orderProvider.trackModel?.deliveryMan != null && mounted){
-        orderProvider.getDeliveryManData(context, orderId: widget.orderID, deliverymanId: orderProvider.trackModel?.deliveryMan?.id.toString() ?? "");
+    orderProvider
+        .trackOrder(widget.orderID, widget.orderModel, context, true,
+            isUpdate: false, phoneNumber: widget.phone)
+        .whenComplete(() {
+      if (orderProvider.trackModel?.deliveryMan != null && mounted) {
+        orderProvider.getDeliveryManData(context,
+            orderId: widget.orderID,
+            deliverymanId:
+                orderProvider.trackModel?.deliveryMan?.id.toString() ?? "");
       }
     });
 
@@ -59,186 +69,440 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.sizeOf(context).width;
-    final SplashProvider splashProvider = Provider.of<SplashProvider>(context, listen: false);
-    final ConfigModel? config = Provider.of<SplashProvider>(context, listen: false).configModel;
+    final SplashProvider splashProvider =
+        Provider.of<SplashProvider>(context, listen: false);
+    final ConfigModel? config =
+        Provider.of<SplashProvider>(context, listen: false).configModel;
 
     return Scaffold(
-      appBar: (ResponsiveHelper.isDesktop(context)? const PreferredSize(preferredSize: Size.fromHeight(120), child: WebAppBarWidget()): CustomAppBarWidget(
-        title: getTranslated('order_track', context),
-        isCenter: false,
-      )) as PreferredSizeWidget?,
+      appBar: (ResponsiveHelper.isDesktop(context)
+          ? const PreferredSize(
+              preferredSize: Size.fromHeight(120), child: WebAppBarWidget())
+          : CustomAppBarWidget(
+              title: getTranslated('order_track', context),
+              isCenter: false,
+            )) as PreferredSizeWidget?,
       body: Column(children: [
-        Expanded(child: CustomScrollView(slivers: [
+        Expanded(
+            child: CustomScrollView(slivers: [
           SliverToBoxAdapter(child: Center(child: Consumer<OrderProvider>(
             builder: (context, orderProvider, child) {
               String? status;
-              bool isOrderFailed = status == OrderConstants.failed || status == OrderConstants.returned || status == OrderConstants.canceled;
+              bool isOrderFailed = status == OrderConstants.failed ||
+                  status == OrderConstants.returned ||
+                  status == OrderConstants.canceled;
 
               if (orderProvider.trackModel != null) {
                 status = orderProvider.trackModel!.orderStatus;
               }
 
-              return orderProvider.isLoading ? const TrackOrderShimmerWidget() : orderProvider.trackModel != null ? orderProvider.trackModel?.id == null ? NoDataWidget(
-                title: getTranslated('order_not_found', context),
-              )  :  Container(
-                margin: EdgeInsets.symmetric(horizontal: ResponsiveHelper.isDesktop(context) ? (width - Dimensions.webScreenWidth) / 2 : Dimensions.paddingSizeDefault),
-                decoration: ResponsiveHelper.isDesktop(context) ? BoxDecoration(
-                  color: Theme.of(context).canvasColor, borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
-                  boxShadow: [BoxShadow(color: Theme.of(context).shadowColor, blurRadius: 5, spreadRadius: 1)],
-                ) : null,
-                child: ResponsiveHelper.isDesktop(context) ? const Padding(
-                  padding: EdgeInsets.all(Dimensions.paddingSizeDefault),
-                  child: TrackOrderWebWidget(phoneNumber: null),
-                ) : Column(children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
-                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall),
-                      color: Theme.of(context).cardColor,
-                      boxShadow: [
-                        BoxShadow(color: Theme.of(context).shadowColor, spreadRadius: 0.5, blurRadius: 0.5)
-                      ],
-                    ),
-                    child: Column(children: [
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(child: Text(
-                          '${getTranslated('order_id', context)} #${orderProvider.trackModel!.id}',
-                          style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
-                        )),
-
-                        CustomDirectionalityWidget(child: Text(
-                          PriceConverterHelper.convertPrice(context, orderProvider.trackModel!.orderAmount),
-                          style: poppinsBold.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeLarge),
-                        )),
-                      ]),
-
-                      const Divider(height: Dimensions.paddingSizeDefault),
-
-                      if(orderProvider.orderType != OrderConstants.selfPickUp)  Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Image.asset(Images.wareHouse, color: Theme.of(context).primaryColor, width: Dimensions.paddingSizeLarge),
-                            const SizedBox(width: 20),
-
-                            if(orderProvider.trackModel?.branchId != null) Expanded(child: Text(
-                              '${OrderHelper.getBranch(id: orderProvider.trackModel!.branchId!, branchList: splashProvider.configModel?.branches ?? [])?.address}',
-                              style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyLarge?.color),
-                            )),
-                          ]),
-
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
-                            margin: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                            height: Dimensions.paddingSizeExtraLarge,
-                            child: CustomPaint(
-                              size: const Size(1, double.infinity),
-                              painter: DashedLineVerticalPainter(isActive: false),
-                            ),
-                          ),
-
-                          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Icon(Icons.location_on, color: Theme.of(context).primaryColor),
-                            const SizedBox(width: 20),
-                            Expanded(
-                              child: Text(
-                                orderProvider.trackModel!.deliveryAddress != null? orderProvider.trackModel!.deliveryAddress!.address! : getTranslated('address_was_deleted', context),
-                                style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyLarge?.color),
-                              ),
-                            ),
-                          ]),
-                        ],
-                      ),
-
-                      const SizedBox(height: Dimensions.paddingSizeDefault),
-
-                      if(orderProvider.trackModel!.deliveryMan != null) DeliveryManWidget(deliveryMan: orderProvider.trackModel!.deliveryMan),
-
-
-
-
-                    ]),
-                  ),
-
-                  Column(children: [
-                    CustomStepperWidget(
-                      title: getTranslated('order_placed', context),
-                      isComplete: true,
-                      isActive: status == OrderConstants.pending,
-                      haveTopBar: false,
-                      statusImage: Images.orderPlace,
-                      subTitleWidget: Row(children: [
-                        const Icon(Icons.schedule, size: Dimensions.fontSizeLarge),
-                        const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                        Text(DateConverterHelper.localDateToIsoStringAMPM(DateConverterHelper.convertStringToDatetime(orderProvider.trackModel!.createdAt!), context)),
-                      ]),
-                    ),
-
-                    if(isOrderFailed) CustomStepperWidget(
-                      height: orderProvider.trackModel?.deliveryMan == null ? 30 : 130,
-                      title: getTranslated(status, context),
-                      isComplete: isOrderFailed,
-                      isActive: isOrderFailed,
-                      statusImage: Images.orderFailed,
-                    ),
-
-                    CustomStepperWidget(
-                      title: getTranslated('order_accepted', context),
-                      isComplete: status == OrderConstants.confirmed
-                          || status == OrderConstants.processing
-                          || status == OrderConstants.outForDelivery
-                          || status == OrderConstants.delivered,
-                      isActive: status == OrderConstants.confirmed,
-                      statusImage: Images.orderAccepted,
-                    ),
-
-                    CustomStepperWidget(
-                      title: getTranslated('preparing_items', context),
-                      isComplete: status == OrderConstants.processing
-                          || status == OrderConstants.outForDelivery
-                          ||status == OrderConstants.delivered,
-                      statusImage: Images.preparingItems,
-                      isActive: status == OrderConstants.processing,
-                    ),
-
-                    Consumer<LocationProvider>(builder: (context, locationProvider, _) {
-                      return CustomStepperWidget(
-                        title: getTranslated('order_is_on_the_way', context),
-                        isComplete: status == OrderConstants.outForDelivery || status == OrderConstants.delivered,
-                        statusImage: Images.outForDelivery,
-                        isActive: status == OrderConstants.outForDelivery,
-                        trailing: orderProvider.trackModel?.deliveryMan?.phone != null ? InkWell(
-                          onTap: ()=> launchUrlString('tel:${orderProvider.trackModel?.deliveryMan?.phone}'),
-                          child: const Icon(Icons.phone_in_talk),
-                        ) : const SizedBox(),
-                      );
-                    }),
-
-
-                    CustomStepperWidget(
-                      height: orderProvider.deliveryManModel != null && (config?.googleMapStatus ?? false) ? 145 : 30,
-                      title: getTranslated('order_delivered', context),
-                      isComplete: status == OrderConstants.delivered,
-                      isActive: status == OrderConstants.delivered,
-                      statusImage: Images.orderDelivered,
-                      child:  orderProvider.trackModel?.orderStatus == "out_for_delivery" && orderProvider.deliveryManModel != null && (config?.googleMapStatus ?? false)
-                          ? TrackMapButtonWidget(orderProvider: orderProvider)
-                          : const SizedBox.shrink(),
-                    ),
-                  ]),
-
-                ]),
-              ) : Center(child: CustomLoaderWidget(color: Theme.of(context).primaryColor));
+              return orderProvider.isLoading
+                  ? const TrackOrderShimmerWidget()
+                  : orderProvider.trackModel != null
+                      ? orderProvider.trackModel?.id == null
+                          ? NoDataWidget(
+                              title: getTranslated('order_not_found', context),
+                            )
+                          : Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: ResponsiveHelper.isDesktop(
+                                          context)
+                                      ? (width - Dimensions.webScreenWidth) / 2
+                                      : Dimensions.paddingSizeDefault),
+                              decoration: ResponsiveHelper.isDesktop(context)
+                                  ? BoxDecoration(
+                                      color: Theme.of(context).canvasColor,
+                                      borderRadius: BorderRadius.circular(
+                                          Dimensions.radiusSizeDefault),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color:
+                                                Theme.of(context).shadowColor,
+                                            blurRadius: 5,
+                                            spreadRadius: 1)
+                                      ],
+                                    )
+                                  : null,
+                              child: ResponsiveHelper.isDesktop(context)
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(
+                                          Dimensions.paddingSizeDefault),
+                                      child: TrackOrderWebWidget(
+                                          phoneNumber: null),
+                                    )
+                                  : Column(children: [
+                                      Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical:
+                                                Dimensions.paddingSizeSmall),
+                                        padding: const EdgeInsets.all(
+                                            Dimensions.paddingSizeDefault),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                              Dimensions.radiusSizeDefault),
+                                          color: Theme.of(context).cardColor,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black
+                                                  .withValues(alpha: 0.05),
+                                              blurRadius: 15,
+                                              offset: const Offset(0, 5),
+                                            )
+                                          ],
+                                        ),
+                                        child: Column(children: [
+                                          Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Expanded(
+                                                    child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      '${getTranslated('order_id', context)} #${orderProvider.trackModel!.id}',
+                                                      style: poppinsSemiBold.copyWith(
+                                                          fontSize: Dimensions
+                                                              .fontSizeExtraLarge),
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      DateConverterHelper.localDateToIsoStringAMPM(
+                                                          DateConverterHelper
+                                                              .convertStringToDatetime(
+                                                                  orderProvider
+                                                                      .trackModel!
+                                                                      .createdAt!),
+                                                          context),
+                                                      style: poppinsRegular.copyWith(
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .disabledColor,
+                                                          fontSize: Dimensions
+                                                              .fontSizeSmall),
+                                                    ),
+                                                  ],
+                                                )),
+                                                CustomDirectionalityWidget(
+                                                    child: Text(
+                                                  PriceConverterHelper
+                                                      .convertPrice(
+                                                          context,
+                                                          orderProvider
+                                                              .trackModel!
+                                                              .orderAmount),
+                                                  style: poppinsSemiBold.copyWith(
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                      fontSize: Dimensions
+                                                          .fontSizeOverLarge),
+                                                )),
+                                              ]),
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: Dimensions
+                                                    .paddingSizeDefault),
+                                            child: Divider(thickness: 0.5),
+                                          ),
+                                          if (orderProvider.orderType !=
+                                              OrderConstants.selfPickUp)
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .primaryColor
+                                                                  .withValues(
+                                                                      alpha:
+                                                                          0.1),
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        ),
+                                                        child: Image.asset(
+                                                            Images.wareHouse,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor,
+                                                            width: 20,
+                                                            height: 20),
+                                                      ),
+                                                      const SizedBox(width: 15),
+                                                      if (orderProvider
+                                                              .trackModel
+                                                              ?.branchId !=
+                                                          null)
+                                                        Expanded(
+                                                            child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                                getTranslated(
+                                                                    'warehouse',
+                                                                    context),
+                                                                style: poppinsMedium.copyWith(
+                                                                    fontSize:
+                                                                        Dimensions
+                                                                            .fontSizeSmall,
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .disabledColor)),
+                                                            const SizedBox(
+                                                                height: 2),
+                                                            Text(
+                                                              '${OrderHelper.getBranch(id: orderProvider.trackModel!.branchId!, branchList: splashProvider.configModel?.branches ?? [])?.address}',
+                                                              style: poppinsRegular
+                                                                  .copyWith(
+                                                                      fontSize:
+                                                                          Dimensions
+                                                                              .fontSizeDefault),
+                                                            ),
+                                                          ],
+                                                        )),
+                                                    ]),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      left: 17),
+                                                  height: 30,
+                                                  child: CustomPaint(
+                                                    size: const Size(
+                                                        1, double.infinity),
+                                                    painter:
+                                                        DashedLineVerticalPainter(
+                                                            isActive: false),
+                                                  ),
+                                                ),
+                                                Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .primaryColor
+                                                                  .withValues(
+                                                                      alpha:
+                                                                          0.1),
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        ),
+                                                        child: Icon(
+                                                            Icons.location_on,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor,
+                                                            size: 20),
+                                                      ),
+                                                      const SizedBox(width: 15),
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                                getTranslated(
+                                                                    'delivery_address',
+                                                                    context),
+                                                                style: poppinsMedium.copyWith(
+                                                                    fontSize:
+                                                                        Dimensions
+                                                                            .fontSizeSmall,
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .disabledColor)),
+                                                            const SizedBox(
+                                                                height: 2),
+                                                            Text(
+                                                              orderProvider
+                                                                          .trackModel!
+                                                                          .deliveryAddress !=
+                                                                      null
+                                                                  ? orderProvider
+                                                                      .trackModel!
+                                                                      .deliveryAddress!
+                                                                      .address!
+                                                                  : getTranslated(
+                                                                      'address_was_deleted',
+                                                                      context),
+                                                              style: poppinsRegular
+                                                                  .copyWith(
+                                                                      fontSize:
+                                                                          Dimensions
+                                                                              .fontSizeDefault),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ]),
+                                              ],
+                                            ),
+                                          if (orderProvider
+                                                  .trackModel!.deliveryMan !=
+                                              null)
+                                            const SizedBox(
+                                                height: Dimensions
+                                                    .paddingSizeLarge),
+                                          if (orderProvider
+                                                  .trackModel!.deliveryMan !=
+                                              null)
+                                            DeliveryManWidget(
+                                                deliveryMan: orderProvider
+                                                    .trackModel!.deliveryMan),
+                                        ]),
+                                      ),
+                                      Column(children: [
+                                        CustomStepperWidget(
+                                          title: getTranslated(
+                                              'order_placed', context),
+                                          isComplete: true,
+                                          isActive:
+                                              status == OrderConstants.pending,
+                                          haveTopBar: false,
+                                          statusImage: Images.orderPlace,
+                                          subTitleWidget: Row(children: [
+                                            const Icon(Icons.schedule,
+                                                size: Dimensions.fontSizeLarge),
+                                            const SizedBox(
+                                                width: Dimensions
+                                                    .paddingSizeSmall),
+                                            Text(DateConverterHelper
+                                                .localDateToIsoStringAMPM(
+                                                    DateConverterHelper
+                                                        .convertStringToDatetime(
+                                                            orderProvider
+                                                                .trackModel!
+                                                                .createdAt!),
+                                                    context)),
+                                          ]),
+                                        ),
+                                        if (isOrderFailed)
+                                          CustomStepperWidget(
+                                            height: orderProvider.trackModel
+                                                        ?.deliveryMan ==
+                                                    null
+                                                ? 30
+                                                : 130,
+                                            title:
+                                                getTranslated(status, context),
+                                            isComplete: isOrderFailed,
+                                            isActive: isOrderFailed,
+                                            statusImage: Images.orderFailed,
+                                          ),
+                                        CustomStepperWidget(
+                                          title: getTranslated(
+                                              'order_accepted', context),
+                                          isComplete: status ==
+                                                  OrderConstants.confirmed ||
+                                              status ==
+                                                  OrderConstants.processing ||
+                                              status ==
+                                                  OrderConstants
+                                                      .outForDelivery ||
+                                              status ==
+                                                  OrderConstants.delivered,
+                                          isActive: status ==
+                                              OrderConstants.confirmed,
+                                          statusImage: Images.orderAccepted,
+                                        ),
+                                        CustomStepperWidget(
+                                          title: getTranslated(
+                                              'preparing_items', context),
+                                          isComplete: status ==
+                                                  OrderConstants.processing ||
+                                              status ==
+                                                  OrderConstants
+                                                      .outForDelivery ||
+                                              status ==
+                                                  OrderConstants.delivered,
+                                          statusImage: Images.preparingItems,
+                                          isActive: status ==
+                                              OrderConstants.processing,
+                                        ),
+                                        Consumer<LocationProvider>(builder:
+                                            (context, locationProvider, _) {
+                                          return CustomStepperWidget(
+                                            title: getTranslated(
+                                                'order_is_on_the_way', context),
+                                            isComplete: status ==
+                                                    OrderConstants
+                                                        .outForDelivery ||
+                                                status ==
+                                                    OrderConstants.delivered,
+                                            statusImage: Images.outForDelivery,
+                                            isActive: status ==
+                                                OrderConstants.outForDelivery,
+                                            trailing: orderProvider.trackModel
+                                                        ?.deliveryMan?.phone !=
+                                                    null
+                                                ? InkWell(
+                                                    onTap: () => launchUrlString(
+                                                        'tel:${orderProvider.trackModel?.deliveryMan?.phone}'),
+                                                    child: const Icon(
+                                                        Icons.phone_in_talk),
+                                                  )
+                                                : const SizedBox(),
+                                          );
+                                        }),
+                                        CustomStepperWidget(
+                                          height: orderProvider
+                                                          .deliveryManModel !=
+                                                      null &&
+                                                  (config?.googleMapStatus ??
+                                                      false)
+                                              ? 145
+                                              : 30,
+                                          title: getTranslated(
+                                              'order_delivered', context),
+                                          isComplete: status ==
+                                              OrderConstants.delivered,
+                                          isActive: status ==
+                                              OrderConstants.delivered,
+                                          statusImage: Images.orderDelivered,
+                                          child: orderProvider.trackModel
+                                                          ?.orderStatus ==
+                                                      "out_for_delivery" &&
+                                                  orderProvider
+                                                          .deliveryManModel !=
+                                                      null &&
+                                                  (config?.googleMapStatus ??
+                                                      false)
+                                              ? TrackMapButtonWidget(
+                                                  orderProvider: orderProvider)
+                                              : const SizedBox.shrink(),
+                                        ),
+                                      ]),
+                                    ]),
+                            )
+                      : Center(
+                          child: CustomLoaderWidget(
+                              color: Theme.of(context).primaryColor));
             },
           ))),
-
           const FooterWebWidget(footerType: FooterType.sliver),
         ])),
-        
       ]),
     );
   }
 }
-

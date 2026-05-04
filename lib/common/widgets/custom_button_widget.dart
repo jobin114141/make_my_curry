@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_grocery/localization/language_constraints.dart';
 import 'package:flutter_grocery/utill/dimensions.dart';
 import 'package:flutter_grocery/utill/styles.dart';
@@ -48,9 +49,8 @@ class CustomButtonWidget extends StatelessWidget {
         Center(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           const SizedBox(
             height: 15, width: 15,
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              strokeWidth: 2,
+            child: CupertinoActivityIndicator(
+              color: Colors.white,
             ),
           ),
           const SizedBox(width: Dimensions.paddingSizeSmall),

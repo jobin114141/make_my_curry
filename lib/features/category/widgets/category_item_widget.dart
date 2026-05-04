@@ -16,46 +16,53 @@ class CategoryItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
-      height: 110,
-      margin: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall, horizontal: 2),
+      width: double.infinity,
+      padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+      margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeExtraSmall),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(7),
-          color: isSelected ? Theme.of(context).primaryColor
-              : Theme.of(context).cardColor
+        borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+        color: isSelected ? Theme.of(context).primaryColor.withValues(alpha: 0.08) : Colors.transparent,
       ),
-      child: Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
           Container(
-            height: 60,
-            width: 60,
-            alignment: Alignment.center,
-            //padding: EdgeInsets.all(5),
+            height: 65,
+            width: 65,
+            padding: const EdgeInsets.all(2),
             decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected ? ColorResources.getCategoryBgColor(context)
-                    : ColorResources.getGreyLightColor(context).withValues(alpha: 0.05)
+              shape: BoxShape.circle,
+              border: isSelected ? Border.all(color: Theme.of(context).primaryColor, width: 1.5) : null,
+              color: isSelected ? Colors.transparent : Theme.of(context).cardColor,
+              boxShadow: isSelected ? [] : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
+              ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(50),
               child: CustomImageWidget(
                 image: '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.categoryImageUrl}/$icon',
-                fit: BoxFit.cover, width: 100, height: 100,
-                ),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
-            child: Text(title!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: poppinsSemiBold.copyWith(
-                    fontSize: Dimensions.fontSizeExtraSmall,
-                    color: isSelected ? Theme.of(context).canvasColor : Theme.of(context).textTheme.bodyLarge?.color
-                )),
+          const SizedBox(height: 8),
+          Text(
+            title!,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: poppinsMedium.copyWith(
+              fontSize: 11,
+              height: 1.2,
+              color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
+            ),
           ),
-        ]),
+        ],
       ),
     );
   }

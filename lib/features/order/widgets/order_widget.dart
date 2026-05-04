@@ -18,47 +18,58 @@ class OrderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Consumer<OrderProvider>(
         builder: (context, order, index) {
           List<OrderModel>? orderList;
           if (order.runningOrderList != null) {
-            orderList = isRunning ? order.runningOrderList!.reversed.toList() : order.historyOrderList!.reversed.toList();
+            orderList = isRunning
+                ? order.runningOrderList!.reversed.toList()
+                : order.historyOrderList!.reversed.toList();
           }
 
-          return orderList != null ? orderList.isNotEmpty ? RefreshIndicator(
-            onRefresh: () async {
-              await Provider.of<OrderProvider>(context, listen: false).getOrderList(context);
-              },
-
-            backgroundColor: Theme.of(context).primaryColor,
-            child: CustomScrollView(slivers: [
-              SliverToBoxAdapter(child: Center(child: SizedBox(
-                width: Dimensions.webScreenWidth,
-                child: ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                  itemCount: orderList.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
-                      child: OrderItemWidget(orderList: orderList,index: index),
-                    );
-                  },
-                ),
-              ))),
-
-              const FooterWebWidget(footerType: FooterType.sliver),
-            ]),
-          ) : NoDataWidget(
-            image: Images.emptyOrderImage, title: getTranslated('no_order_history', context),
-            subTitle: getTranslated('buy_something_to_see', context),
-            isShowButton: true,
-          ) : Center(child: CustomLoaderWidget(color: Theme.of(context).primaryColor));
+          return orderList != null
+              ? orderList.isNotEmpty
+                  ? RefreshIndicator(
+                      onRefresh: () async {
+                        await Provider.of<OrderProvider>(context, listen: false)
+                            .getOrderList(context);
+                      },
+                      backgroundColor: Theme.of(context).primaryColor,
+                      child: CustomScrollView(slivers: [
+                        SliverToBoxAdapter(
+                            child: Center(
+                                child: SizedBox(
+                          width: Dimensions.webScreenWidth,
+                          child: ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: const EdgeInsets.all(
+                                Dimensions.paddingSizeDefault),
+                            itemCount: orderList.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: Dimensions.paddingSizeDefault),
+                                child: OrderItemWidget(
+                                    orderList: orderList, index: index),
+                              );
+                            },
+                          ),
+                        ))),
+                        const FooterWebWidget(footerType: FooterType.sliver),
+                      ]),
+                    )
+                  : NoDataWidget(
+                      image: Images.emptyOrderImage,
+                      title: getTranslated('no_order_history', context),
+                      subTitle: getTranslated('buy_something_to_see', context),
+                      isShowButton: true,
+                    )
+              : Center(
+                  child: CustomLoaderWidget(
+                      color: Theme.of(context).primaryColor));
         },
       ),
     );
   }
 }
-

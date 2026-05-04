@@ -65,6 +65,17 @@ class _MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool canExit = kIsWeb;
 
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) {
+      return 'Good Morning';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  }
+
   @override
   void initState() {
     final SplashProvider splashProvider =
@@ -102,7 +113,7 @@ class _MainScreenState extends State<MainScreen> {
                 child: Scaffold(
                   key: _scaffoldKey,
                   drawer: const MenuWidget(),
-                  floatingActionButton: !ResponsiveHelper.isDesktop(context)
+                  floatingActionButton: (!ResponsiveHelper.isDesktop(context) && splash.pageIndex != 2)
                       ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 50.0),
                           child: ThirdPartyChatWidget(
@@ -122,29 +133,14 @@ class _MainScreenState extends State<MainScreen> {
                               _scaffoldKey.currentState?.openDrawer();
                             }),
                           title: splash.pageIndex == 0
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                      Text(
-                                        'Deliver to',
-                                        style: poppinsMedium.copyWith(
-                                          fontWeight: FontWeight.w400,
-                                          color: const Color(0xFF888888),
-                                          fontSize: Dimensions.fontSizeDefault,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Varode, Palakkad",
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: poppinsRegular.copyWith(
-                                          fontSize: Dimensions.fontSizeDefault,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color(0xff000000),
-                                        ),
-                                      ),
-                                    ])
+                              ? Text(
+                                  _getGreeting(),
+                                  style: poppinsMedium.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xff000000),
+                                    fontSize: Dimensions.fontSizeLarge,
+                                  ),
+                                )
                               : Text(
                                   getTranslated(
                                       splash.screenList[splash.pageIndex].title,

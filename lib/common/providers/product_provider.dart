@@ -20,7 +20,6 @@ class ProductProvider extends ChangeNotifier {
 
   ProductProvider({required this.productRepo, required this.searchRepo});
 
-
   ProductModel? _allProductModel;
   Product? _product;
   int? _imageSliderIndex;
@@ -30,185 +29,194 @@ class ProductProvider extends ChangeNotifier {
   ProductFilterType _selectedFilterType = ProductFilterType.latest;
 
   Product? get product => _product;
-  ProductModel? get allProductModel=> _allProductModel;
+  ProductModel? get allProductModel => _allProductModel;
   ProductModel? get dailyProductModel => _dailyProductModel;
   ProductModel? get featuredProductModel => _featuredProductModel;
   ProductModel? get mostViewedProductModel => _mostViewedProductModel;
   int? get imageSliderIndex => _imageSliderIndex;
   ProductFilterType get selectedFilterType => _selectedFilterType;
 
-
-
-  Future<void> getAllProductList(int offset, bool reload, {bool isUpdate = true}) async {
-    if(reload || offset == 1) {
+  Future<void> getAllProductList(int offset, bool reload,
+      {bool isUpdate = true}) async {
+    if (reload || offset == 1) {
       _allProductModel = null;
 
-      if(isUpdate) {
+      if (isUpdate) {
         notifyListeners();
       }
     }
 
-    if(offset == 1) {
+    if (offset == 1) {
       DataSyncHelper.fetchAndSyncData(
-        fetchFromLocal: ()=> productRepo.getAllProductList(offset, _selectedFilterType, source: DataSourceEnum.local),
-        fetchFromClient: ()=> productRepo.getAllProductList(offset, _selectedFilterType, source: DataSourceEnum.client),
-        onResponse: (data, _){
-
+        fetchFromLocal: () => productRepo.getAllProductList(
+            offset, _selectedFilterType,
+            source: DataSourceEnum.local),
+        fetchFromClient: () => productRepo.getAllProductList(
+            offset, _selectedFilterType,
+            source: DataSourceEnum.client),
+        onResponse: (data, _) {
           _allProductModel = ProductModel.fromJson(data);
 
           notifyListeners();
         },
       );
-    }else {
+    } else {
+      ApiResponseModel? response = await productRepo
+          .getAllProductList<Response>(offset, _selectedFilterType,
+              source: DataSourceEnum.client);
 
-      ApiResponseModel? response = await productRepo.getAllProductList<Response>(offset, _selectedFilterType, source: DataSourceEnum.client);
-
-      if (response.response?.data != null && response.response?.statusCode == 200) {
-        final ProductModel tempProductModel = ProductModel.fromJson(response.response?.data);
+      if (response.response?.data != null &&
+          response.response?.statusCode == 200) {
+        final ProductModel tempProductModel =
+            ProductModel.fromJson(response.response?.data);
 
         _allProductModel!.totalSize = tempProductModel.totalSize;
         _allProductModel!.offset = tempProductModel.offset;
         _allProductModel!.products!.addAll(tempProductModel.products!);
 
         notifyListeners();
-
       } else {
         ApiCheckerHelper.checkApi(response);
       }
     }
-
   }
 
-
-  Future<void> getItemList(int offset, {bool isUpdate = true, bool isReload = true,  required String? productType}) async {
-    if(offset == 1) {
+  Future<void> getItemList(int offset,
+      {bool isUpdate = true,
+      bool isReload = true,
+      required String? productType}) async {
+    if (offset == 1) {
       _dailyProductModel = null;
       _featuredProductModel = null;
       _mostViewedProductModel = null;
 
-      if(isUpdate) {
+      if (isUpdate) {
         notifyListeners();
       }
-
     }
 
-    if(offset == 1) {
+    if (offset == 1) {
       DataSyncHelper.fetchAndSyncData(
-        fetchFromLocal: ()=> productRepo.getItemList(offset, productType, source: DataSourceEnum.local),
-        fetchFromClient: ()=> productRepo.getItemList(offset, productType, source: DataSourceEnum.client),
-        onResponse: (data, _){
-          if(productType == ProductType.dailyItem) {
+        fetchFromLocal: () => productRepo.getItemList(offset, productType,
+            source: DataSourceEnum.local),
+        fetchFromClient: () => productRepo.getItemList(offset, productType,
+            source: DataSourceEnum.client),
+        onResponse: (data, _) {
+          if (productType == ProductType.dailyItem) {
             _dailyProductModel = ProductModel.fromJson(data);
-
-          }else if(productType == ProductType.featuredItem){
+          } else if (productType == ProductType.featuredItem) {
             _featuredProductModel = ProductModel.fromJson(data);
-
-          }else if(productType == ProductType.mostReviewed){
+          } else if (productType == ProductType.mostReviewed) {
             _mostViewedProductModel = ProductModel.fromJson(data);
           }
 
           notifyListeners();
         },
       );
-    }else {
-      ApiResponseModel apiResponse = await productRepo.getItemList(offset, productType, source: DataSourceEnum.client);
+    } else {
+      ApiResponseModel apiResponse = await productRepo
+          .getItemList(offset, productType, source: DataSourceEnum.client);
 
-      if(apiResponse.response?.statusCode == 200) {
-        if(offset == 1) {
-
-          if(productType == ProductType.dailyItem) {
-            _dailyProductModel = ProductModel.fromJson(apiResponse.response?.data);
-
-          }else if(productType == ProductType.featuredItem){
-            _featuredProductModel = ProductModel.fromJson(apiResponse.response?.data);
-
-          }else if(productType == ProductType.mostReviewed){
-            _mostViewedProductModel = ProductModel.fromJson(apiResponse.response?.data);
+      if (apiResponse.response?.statusCode == 200) {
+        if (offset == 1) {
+          if (productType == ProductType.dailyItem) {
+            _dailyProductModel =
+                ProductModel.fromJson(apiResponse.response?.data);
+          } else if (productType == ProductType.featuredItem) {
+            _featuredProductModel =
+                ProductModel.fromJson(apiResponse.response?.data);
+          } else if (productType == ProductType.mostReviewed) {
+            _mostViewedProductModel =
+                ProductModel.fromJson(apiResponse.response?.data);
           }
-
-        }else {
-
-          if(productType == ProductType.dailyItem) {
-            _dailyProductModel?.offset = ProductModel.fromJson(apiResponse.response?.data).offset;
-            _dailyProductModel?.totalSize = ProductModel.fromJson(apiResponse.response?.data).totalSize;
-            _dailyProductModel?.products?.addAll(ProductModel.fromJson(apiResponse.response?.data).products ?? []);
-
-          }else if(productType == ProductType.featuredItem){
-            _featuredProductModel?.offset = ProductModel.fromJson(apiResponse.response?.data).offset;
-            _featuredProductModel?.totalSize = ProductModel.fromJson(apiResponse.response?.data).totalSize;
-            _featuredProductModel?.products?.addAll(ProductModel.fromJson(apiResponse.response?.data).products ?? []);
-
-          }else if(productType == ProductType.mostReviewed){
-            _mostViewedProductModel?.offset = ProductModel.fromJson(apiResponse.response?.data).offset;
-            _mostViewedProductModel?.totalSize = ProductModel.fromJson(apiResponse.response?.data).totalSize;
-            _mostViewedProductModel?.products?.addAll(ProductModel.fromJson(apiResponse.response?.data).products ?? []);
+        } else {
+          if (productType == ProductType.dailyItem) {
+            _dailyProductModel?.offset =
+                ProductModel.fromJson(apiResponse.response?.data).offset;
+            _dailyProductModel?.totalSize =
+                ProductModel.fromJson(apiResponse.response?.data).totalSize;
+            _dailyProductModel?.products?.addAll(
+                ProductModel.fromJson(apiResponse.response?.data).products ??
+                    []);
+          } else if (productType == ProductType.featuredItem) {
+            _featuredProductModel?.offset =
+                ProductModel.fromJson(apiResponse.response?.data).offset;
+            _featuredProductModel?.totalSize =
+                ProductModel.fromJson(apiResponse.response?.data).totalSize;
+            _featuredProductModel?.products?.addAll(
+                ProductModel.fromJson(apiResponse.response?.data).products ??
+                    []);
+          } else if (productType == ProductType.mostReviewed) {
+            _mostViewedProductModel?.offset =
+                ProductModel.fromJson(apiResponse.response?.data).offset;
+            _mostViewedProductModel?.totalSize =
+                ProductModel.fromJson(apiResponse.response?.data).totalSize;
+            _mostViewedProductModel?.products?.addAll(
+                ProductModel.fromJson(apiResponse.response?.data).products ??
+                    []);
           }
-
         }
-      }else{
+      } else {
         ApiCheckerHelper.checkApi(apiResponse);
       }
       notifyListeners();
     }
-
   }
 
-
-
-  Future<Product?> getProductDetails(String productID, {bool searchQuery = false}) async {
-
-    final CartProvider cartProvider = Provider.of<CartProvider>(Get.context!, listen: false);
+  Future<Product?> getProductDetails(String productID,
+      {bool searchQuery = false}) async {
+    final CartProvider cartProvider =
+        Provider.of<CartProvider>(Get.context!, listen: false);
 
     _product = null;
     ApiResponseModel apiResponse = await productRepo.getProductDetails(
-      productID, searchQuery,
+      productID,
+      searchQuery,
     );
 
-    if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+    if (apiResponse.response != null &&
+        apiResponse.response!.statusCode == 200) {
       _product = Product.fromJson(apiResponse.response!.data);
       cartProvider.initData(_product!);
-
     } else {
       ApiCheckerHelper.checkApi(apiResponse);
-
     }
     notifyListeners();
 
     return _product;
-
   }
-
-
 
   Reviews? _productReviews;
   Reviews? get productReviews => _productReviews;
 
-  Future<void> getProductReviews({String? id, int? offset, bool reload = false, bool isUpdate = true}) async {
-    if(reload || offset == 1) {
+  Future<void> getProductReviews(
+      {String? id,
+      int? offset,
+      bool reload = false,
+      bool isUpdate = true}) async {
+    if (reload || offset == 1) {
       _productReviews?.reviewList = null;
 
-      if(isUpdate) {
+      if (isUpdate) {
         notifyListeners();
       }
     }
-    ApiResponseModel apiResponse  = await productRepo.getProductReviews(productId: id, offset: offset);
+    ApiResponseModel apiResponse =
+        await productRepo.getProductReviews(productId: id, offset: offset);
     if (apiResponse.response!.statusCode == 200) {
-
-      final Reviews tempReviews = Reviews.fromJson(apiResponse.response!.data["reviews"]);
-      if(offset == 1){
+      final Reviews tempReviews =
+          Reviews.fromJson(apiResponse.response!.data["reviews"]);
+      if (offset == 1) {
         _productReviews = tempReviews;
       } else {
-        _productReviews?.totalSize =  tempReviews.totalSize;
-        _productReviews?.offset =  tempReviews.offset;
+        _productReviews?.totalSize = tempReviews.totalSize;
+        _productReviews?.offset = tempReviews.offset;
         _productReviews?.reviewList?.addAll(tempReviews.reviewList ?? []);
       }
-    }
-    else {
+    } else {
       ApiCheckerHelper.checkApi(apiResponse);
     }
     notifyListeners();
-
-
   }
 
   void setImageSliderSelectedIndex(int selectedIndex) {
@@ -216,11 +224,8 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onChangeProductFilterType(ProductFilterType type){
+  void onChangeProductFilterType(ProductFilterType type) {
     _selectedFilterType = type;
     notifyListeners();
   }
-
-
 }
-

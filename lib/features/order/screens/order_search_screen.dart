@@ -29,109 +29,144 @@ class OrderSearchScreen extends StatefulWidget {
 
 class _OrderSearchScreenState extends State<OrderSearchScreen> {
   final TextEditingController orderIdTextController = TextEditingController();
-  final TextEditingController phoneNumberTextController = TextEditingController();
+  final TextEditingController phoneNumberTextController =
+      TextEditingController();
   final FocusNode orderIdFocusNode = FocusNode();
   final FocusNode phoneFocusNode = FocusNode();
   String? countryCode;
 
   @override
   void initState() {
-    countryCode = CountryCode.fromCountryCode(Provider.of<SplashProvider>(context, listen: false).configModel!.country!).code;
+    countryCode = CountryCode.fromCountryCode(
+            Provider.of<SplashProvider>(context, listen: false)
+                .configModel!
+                .country!)
+        .code;
 
     Provider.of<OrderProvider>(context, listen: false).clearPrevData();
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ResponsiveHelper.isDesktop(context) ? const PreferredSize(
-        preferredSize: Size.fromHeight(100), child: WebAppBarWidget(),
-      ) : CustomAppBarWidget(
-        isBackButtonExist: !ResponsiveHelper.isMobile(),
-        title: getTranslated('order_details', context),
-        actionView: _TrackRefreshButtonView(
-          orderIdTextController: orderIdTextController,
-          phoneNumberTextController: phoneNumberTextController,
-        ),
-      ) as PreferredSizeWidget,
-
+      appBar: ResponsiveHelper.isDesktop(context)
+          ? const PreferredSize(
+              preferredSize: Size.fromHeight(100),
+              child: WebAppBarWidget(),
+            )
+          : CustomAppBarWidget(
+              isBackButtonExist: !ResponsiveHelper.isMobile(),
+              title: getTranslated('order_details', context),
+              actionView: _TrackRefreshButtonView(
+                orderIdTextController: orderIdTextController,
+                phoneNumberTextController: phoneNumberTextController,
+              ),
+            ) as PreferredSizeWidget,
       body: CustomScrollView(slivers: [
-
-        SliverToBoxAdapter(child: Container(
-          margin: ResponsiveHelper.isDesktop(context) ? EdgeInsets.symmetric(horizontal: (MediaQuery.sizeOf(context).width - Dimensions.webScreenWidth) / 2).copyWith(top: Dimensions.paddingSizeDefault) : null,
-          decoration: ResponsiveHelper.isDesktop(context) ? BoxDecoration(
-            color: Theme.of(context).canvasColor, borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
-            boxShadow: [BoxShadow(color: Theme.of(context).shadowColor, blurRadius: 5, spreadRadius: 1)],
-          ) : null,
+        SliverToBoxAdapter(
+            child: Container(
+          margin: ResponsiveHelper.isDesktop(context)
+              ? EdgeInsets.symmetric(
+                      horizontal: (MediaQuery.sizeOf(context).width -
+                              Dimensions.webScreenWidth) /
+                          2)
+                  .copyWith(top: Dimensions.paddingSizeDefault)
+              : null,
+          decoration: ResponsiveHelper.isDesktop(context)
+              ? BoxDecoration(
+                  color: Theme.of(context).canvasColor,
+                  borderRadius:
+                      BorderRadius.circular(Dimensions.radiusSizeDefault),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Theme.of(context).shadowColor,
+                        blurRadius: 5,
+                        spreadRadius: 1)
+                  ],
+                )
+              : null,
           child: Column(children: [
-            if(ResponsiveHelper.isDesktop(context)) Center(child: Container(
-              padding: const EdgeInsets.only(top: Dimensions.paddingSizeLarge),
-              width: Dimensions.webScreenWidth,
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.center, children: [
-                const SizedBox(),
-                Text(getTranslated('track_your_order', context), style: poppinsBold.copyWith(fontSize: Dimensions.fontSizeOverLarge)),
-
-                _TrackRefreshButtonView(
-                  orderIdTextController: orderIdTextController,
-                  phoneNumberTextController: phoneNumberTextController,
-                ),
-
-
-              ]),
-            )),
-
+            if (ResponsiveHelper.isDesktop(context))
+              Center(
+                  child: Container(
+                padding:
+                    const EdgeInsets.only(top: Dimensions.paddingSizeLarge),
+                width: Dimensions.webScreenWidth,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(),
+                      Text(getTranslated('track_your_order', context),
+                          style: poppinsBold.copyWith(
+                              fontSize: Dimensions.fontSizeOverLarge)),
+                      _TrackRefreshButtonView(
+                        orderIdTextController: orderIdTextController,
+                        phoneNumberTextController: phoneNumberTextController,
+                      ),
+                    ]),
+              )),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Dimensions.paddingSizeDefault),
               child: Column(children: [
-
                 Padding(
-                  padding: ResponsiveHelper.isDesktop(context) ? const EdgeInsets.symmetric(
-                    horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeSmall,
-                  ) : const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
+                  padding: ResponsiveHelper.isDesktop(context)
+                      ? const EdgeInsets.symmetric(
+                          horizontal: Dimensions.paddingSizeLarge,
+                          vertical: Dimensions.paddingSizeSmall,
+                        )
+                      : const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
                   child: _InputView(
                     key: UniqueKey(),
-                    orderIdTextController: orderIdTextController, orderIdFocusNode: orderIdFocusNode,
-                    phoneFocusNode: phoneFocusNode, phoneNumberTextController: phoneNumberTextController,
+                    orderIdTextController: orderIdTextController,
+                    orderIdFocusNode: orderIdFocusNode,
+                    phoneFocusNode: phoneFocusNode,
+                    phoneNumberTextController: phoneNumberTextController,
                     onValueChange: (String code) {
                       setState(() {
                         countryCode = code;
                       });
                     },
                     countryCode: countryCode,
-
                   ),
                 ),
-
-               Consumer<OrderProvider>(builder: (context, orderProvider, _) {
-                    return orderProvider.trackModel == null || orderProvider.trackModel?.id == null  ? Column(children: [
-                      const SizedBox(height: Dimensions.paddingSizeLarge),
-                      Image.asset(Images.outForDelivery, color: Theme.of(context).disabledColor.withValues(alpha: 0.5), width:  70),
-                      const SizedBox(height: Dimensions.paddingSizeDefault),
-
-                      Text(getTranslated('enter_your_order_id', context), style: poppinsRegular.copyWith(
-                        color: Theme.of(context).disabledColor,
-                      ), maxLines: 2,  textAlign: TextAlign.center),
-                      const SizedBox(height: 100),
-                    ]) : ResponsiveHelper.isDesktop(context) ? TrackOrderWebWidget(
-                      phoneNumber: '${CountryCode.fromCountryCode(countryCode!).dialCode}${phoneNumberTextController.text.trim()}',
-                    ) : const SizedBox();
+                Consumer<OrderProvider>(builder: (context, orderProvider, _) {
+                  return orderProvider.trackModel == null ||
+                          orderProvider.trackModel?.id == null
+                      ? Column(children: [
+                          const SizedBox(height: Dimensions.paddingSizeLarge),
+                          Image.asset(Images.outForDelivery,
+                              color: Theme.of(context)
+                                  .disabledColor
+                                  .withValues(alpha: 0.5),
+                              width: 70),
+                          const SizedBox(height: Dimensions.paddingSizeDefault),
+                          Text(getTranslated('enter_your_order_id', context),
+                              style: poppinsRegular.copyWith(
+                                color: Theme.of(context).disabledColor,
+                              ),
+                              maxLines: 2,
+                              textAlign: TextAlign.center),
+                          const SizedBox(height: 100),
+                        ])
+                      : ResponsiveHelper.isDesktop(context)
+                          ? TrackOrderWebWidget(
+                              phoneNumber:
+                                  '${CountryCode.fromCountryCode(countryCode!).dialCode}${phoneNumberTextController.text.trim()}',
+                            )
+                          : const SizedBox();
                 }),
-
-
               ]),
             ),
-
           ]),
         )),
-
         const FooterWebWidget(footerType: FooterType.sliver),
       ]),
     );
   }
 }
-
 
 class _TrackRefreshButtonView extends StatelessWidget {
   const _TrackRefreshButtonView({
@@ -146,18 +181,22 @@ class _TrackRefreshButtonView extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       elevation: 0,
-      backgroundColor: ResponsiveHelper.isDesktop(context) ? Theme.of(context).canvasColor : Theme.of(context).cardColor,
+      backgroundColor: ResponsiveHelper.isDesktop(context)
+          ? Theme.of(context).canvasColor
+          : Theme.of(context).cardColor,
       onPressed: () {
         orderIdTextController.clear();
         phoneNumberTextController.clear();
-        Provider.of<OrderProvider>(context, listen: false).clearPrevData(isUpdate: true);
+        Provider.of<OrderProvider>(context, listen: false)
+            .clearPrevData(isUpdate: true);
       },
-      label: Text(getTranslated('refresh', context), style: poppinsMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color)),
+      label: Text(getTranslated('refresh', context),
+          style: poppinsMedium.copyWith(
+              color: Theme.of(context).textTheme.bodyLarge?.color)),
       icon: Icon(Icons.refresh, color: Theme.of(context).primaryColor),
     );
   }
 }
-
 
 class _InputView extends StatelessWidget {
   const _InputView({
@@ -179,62 +218,63 @@ class _InputView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    return !ResponsiveHelper.isDesktop(context) ? Column(children: [
-      FormField(builder: (builder)=> Column(children: [
-        _OrderIdTextField(
-          orderIdTextController: orderIdTextController,
-          orderIdFocusNode: orderIdFocusNode,
-          phoneFocusNode: phoneFocusNode,
-        ),
-        const SizedBox(height: Dimensions.paddingSizeLarge),
-
-        PhoneNumberFieldWidget(
-          onValueChange: onValueChange,
-          countryCode: countryCode,
-          phoneNumberTextController: phoneNumberTextController,
-          phoneFocusNode: phoneFocusNode,
-        ),
-        const SizedBox(height: Dimensions.paddingSizeLarge),
-
-      ])),
-      const SizedBox(height: Dimensions.paddingSizeDefault),
-
-      TrackOrderButtonView(
-        key: UniqueKey(),
-        orderIdTextController: orderIdTextController,
-        countryCode: countryCode,
-        phoneNumberTextController: phoneNumberTextController,
-      ),
-    ]) : Center(child: SizedBox(
-      width: Dimensions.webScreenWidth,
-      child: FormField(builder: (builder)=> Row(children: [
-        Expanded(child: _OrderIdTextField(
-          orderIdTextController: orderIdTextController,
-          orderIdFocusNode: orderIdFocusNode,
-          phoneFocusNode: phoneFocusNode,
-        )),
-        const SizedBox(width: Dimensions.paddingSizeLarge),
-
-        Expanded(child: PhoneNumberFieldWidget(
-          onValueChange: onValueChange, countryCode: countryCode,
-          phoneNumberTextController: phoneNumberTextController,
-          phoneFocusNode: phoneFocusNode,
-        )),
-        const SizedBox(width: Dimensions.paddingSizeLarge),
-
-
-        SizedBox(
-          width: 200,
-          child: TrackOrderButtonView(
-            key: UniqueKey(),
-            orderIdTextController: orderIdTextController,
-            countryCode: countryCode,
-            phoneNumberTextController: phoneNumberTextController,
-          ),
-        ),
-      ])),
-    ));
+    return !ResponsiveHelper.isDesktop(context)
+        ? Column(children: [
+            FormField(
+                builder: (builder) => Column(children: [
+                      _OrderIdTextField(
+                        orderIdTextController: orderIdTextController,
+                        orderIdFocusNode: orderIdFocusNode,
+                        phoneFocusNode: phoneFocusNode,
+                      ),
+                      const SizedBox(height: Dimensions.paddingSizeLarge),
+                      PhoneNumberFieldWidget(
+                        onValueChange: onValueChange,
+                        countryCode: countryCode,
+                        phoneNumberTextController: phoneNumberTextController,
+                        phoneFocusNode: phoneFocusNode,
+                      ),
+                      const SizedBox(height: Dimensions.paddingSizeLarge),
+                    ])),
+            const SizedBox(height: Dimensions.paddingSizeDefault),
+            TrackOrderButtonView(
+              key: UniqueKey(),
+              orderIdTextController: orderIdTextController,
+              countryCode: countryCode,
+              phoneNumberTextController: phoneNumberTextController,
+            ),
+          ])
+        : Center(
+            child: SizedBox(
+            width: Dimensions.webScreenWidth,
+            child: FormField(
+                builder: (builder) => Row(children: [
+                      Expanded(
+                          child: _OrderIdTextField(
+                        orderIdTextController: orderIdTextController,
+                        orderIdFocusNode: orderIdFocusNode,
+                        phoneFocusNode: phoneFocusNode,
+                      )),
+                      const SizedBox(width: Dimensions.paddingSizeLarge),
+                      Expanded(
+                          child: PhoneNumberFieldWidget(
+                        onValueChange: onValueChange,
+                        countryCode: countryCode,
+                        phoneNumberTextController: phoneNumberTextController,
+                        phoneFocusNode: phoneFocusNode,
+                      )),
+                      const SizedBox(width: Dimensions.paddingSizeLarge),
+                      SizedBox(
+                        width: 200,
+                        child: TrackOrderButtonView(
+                          key: UniqueKey(),
+                          orderIdTextController: orderIdTextController,
+                          countryCode: countryCode,
+                          phoneNumberTextController: phoneNumberTextController,
+                        ),
+                      ),
+                    ])),
+          ));
   }
 }
 
@@ -252,39 +292,44 @@ class TrackOrderButtonView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<OrderProvider>(
-      builder: (context, orderProvider, _) {
-        return orderProvider.isLoading ? CustomLoaderWidget(color: Theme.of(context).primaryColor) : CustomButtonWidget(
-          borderRadius: ResponsiveHelper.isDesktop(context) ? Dimensions.radiusSizeDefault : Dimensions.radiusSizeLarge,
-          buttonText: getTranslated('search_order', context),
-          onPressed: (){
-            final String orderId = orderIdTextController.text.trim();
-            final dialCode = CountryCode.fromCountryCode(countryCode!).dialCode;
+    return Consumer<OrderProvider>(builder: (context, orderProvider, _) {
+      return orderProvider.isLoading
+          ? CustomLoaderWidget(color: Theme.of(context).primaryColor)
+          : CustomButtonWidget(
+              borderRadius: ResponsiveHelper.isDesktop(context)
+                  ? Dimensions.radiusSizeDefault
+                  : Dimensions.radiusSizeLarge,
+              buttonText: getTranslated('search_order', context),
+              onPressed: () {
+                final String orderId = orderIdTextController.text.trim();
+                final dialCode =
+                    CountryCode.fromCountryCode(countryCode!).dialCode;
 
-            final String phoneNumber = '$dialCode${phoneNumberTextController.text.trim()}';
+                final String phoneNumber =
+                    '$dialCode${phoneNumberTextController.text.trim()}';
 
-            if(orderId.isEmpty){
-              showCustomSnackBarHelper(getTranslated('enter_order_id', context));
-            }else if(phoneNumberTextController.text.trim().isEmpty){
-              showCustomSnackBarHelper(getTranslated('enter_phone_number', context));
-            }else{
-              if(ResponsiveHelper.isDesktop(context)){
-                orderProvider.trackOrder(orderId, null, context, true, phoneNumber: phoneNumber);
-              }else{
-                Navigator.of(context).pushNamed(
-                  RouteHelper.getOrderTrackingRoute(int.parse(orderId),  phoneNumber),
-                );
-              }
-            }
-
-          },
-        );
-      }
-    );
+                if (orderId.isEmpty) {
+                  showCustomSnackBarHelper(
+                      getTranslated('enter_order_id', context));
+                } else if (phoneNumberTextController.text.trim().isEmpty) {
+                  showCustomSnackBarHelper(
+                      getTranslated('enter_phone_number', context));
+                } else {
+                  if (ResponsiveHelper.isDesktop(context)) {
+                    orderProvider.trackOrder(orderId, null, context, true,
+                        phoneNumber: phoneNumber);
+                  } else {
+                    Navigator.of(context).pushNamed(
+                      RouteHelper.getOrderTrackingRoute(
+                          int.parse(orderId), phoneNumber),
+                    );
+                  }
+                }
+              },
+            );
+    });
   }
 }
-
-
 
 class _OrderIdTextField extends StatelessWidget {
   const _OrderIdTextField({
@@ -309,7 +354,6 @@ class _OrderIdTextField extends StatelessWidget {
       isShowPrefixIcon: true,
       suffixAssetUrl: Images.order,
       inputType: const TextInputType.numberWithOptions(decimal: false),
-
     );
   }
 }

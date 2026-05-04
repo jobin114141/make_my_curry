@@ -15,7 +15,11 @@ import 'package:flutter_grocery/utill/styles.dart';
 import 'package:flutter_grocery/common/widgets/custom_image_widget.dart';
 import 'package:flutter_grocery/helper/price_converter_helper.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_grocery/common/models/cart_model.dart';
+import 'package:flutter_grocery/common/providers/cart_provider.dart';
+import 'package:flutter_grocery/helper/custom_snackbar_helper.dart';
+import 'package:flutter_grocery/localization/language_constraints.dart';
+import 'package:flutter_grocery/common/widgets/wish_button_widget.dart';
 class HomeItemWidget extends StatefulWidget {
   final List<Product>? productList;
   final bool isFlashDeal;
@@ -138,6 +142,9 @@ class _CustomProductCard extends StatelessWidget {
     String rating = product.rating != null && product.rating!.isNotEmpty ? product.rating![0].average!.toStringAsFixed(1) : '4.5';
 
     return InkWell(
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       onTap: () {
         Navigator.of(context).pushNamed(RouteHelper.getProductDetailsRoute(
           productId: product.id, formSearch: false,
@@ -291,6 +298,9 @@ class _FeaturedProductCard extends StatelessWidget {
     String rating = product.rating != null && product.rating!.isNotEmpty ? product.rating![0].average!.toStringAsFixed(1) : '4.5';
 
     return InkWell(
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       onTap: () {
         Navigator.of(context).pushNamed(RouteHelper.getProductDetailsRoute(
           productId: product.id, formSearch: false,
@@ -345,13 +355,10 @@ class _FeaturedProductCard extends StatelessWidget {
                 Positioned(
                   top: 10,
                   right: 10,
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.favorite, color: Colors.red, size: 18),
+                  child: WishButtonWidget(
+                    product: product, 
+                    edgeInset: const EdgeInsets.all(5),
+                    color: Colors.black.withOpacity(0.5),
                   ),
                 ),
               ],
@@ -413,13 +420,47 @@ class _FeaturedProductCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF42C6E8), // Cyan button
-                    shape: BoxShape.circle,
+                InkWell(
+                  hoverColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onTap: () {
+                    double price = product.price ?? 0;
+                    if(product.variations != null && product.variations!.isNotEmpty) {
+                      price = product.variations![0].price ?? price;
+                    }
+                    CartModel cartModel = CartModel(
+                      product.id, (product.image?.isNotEmpty ?? false) ?  product.image![0] : '',
+                      product.name, price,
+                      PriceConverterHelper.convertWithDiscount(price, product.discount, product.discountType),
+                      1, (product.variations != null && product.variations!.isNotEmpty) ? product.variations![0] : null,
+                      (price - PriceConverterHelper.convertWithDiscount(price, product.discount, product.discountType)!),
+                      (price - PriceConverterHelper.convertWithDiscount(price, product.tax, product.taxType)!),
+                      product.capacity,
+                      product.unit,
+                      product.totalStock, product,
+                    );
+                    
+                    CartProvider cartProvider = Provider.of<CartProvider>(context, listen: false);
+                    bool isExistInCart = cartProvider.isExistInCart(cartModel) != null;
+                    
+                    if (isExistInCart) {
+                      showCustomSnackBarHelper(getTranslated('already_added', context));
+                    } else if (product.totalStock != null && product.totalStock! < 1) {
+                      showCustomSnackBarHelper(getTranslated('out_of_stock', context));
+                    } else {
+                      cartProvider.addToCart(cartModel);
+                      showCustomSnackBarHelper(getTranslated('added_to_cart', context), isError: false);
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF42C6E8), // Cyan button
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.add_shopping_cart, color: Colors.white, size: 22),
                   ),
-                  child: const Icon(Icons.add_shopping_cart, color: Colors.white, size: 22),
                 ),
               ],
             ),
@@ -480,6 +521,9 @@ class _MostReviewedProductCard extends StatelessWidget {
     String rating = product.rating != null && product.rating!.isNotEmpty ? product.rating![0].average!.toStringAsFixed(1) : '4.5';
 
     return InkWell(
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       onTap: () {
         Navigator.of(context).pushNamed(RouteHelper.getProductDetailsRoute(
           productId: product.id, formSearch: false,
@@ -534,13 +578,10 @@ class _MostReviewedProductCard extends StatelessWidget {
                 Positioned(
                   top: 10,
                   right: 10,
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.favorite_border, color: Colors.white, size: 18), // assuming outline heart based on image
+                  child: WishButtonWidget(
+                    product: product, 
+                    edgeInset: const EdgeInsets.all(5),
+                    color: Colors.black.withOpacity(0.5),
                   ),
                 ),
               ],
@@ -602,13 +643,47 @@ class _MostReviewedProductCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(10), // slight size reduction for smaller card
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF42C6E8), // Cyan button
-                    shape: BoxShape.circle,
+                InkWell(
+                  hoverColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  onTap: () {
+                    double price = product.price ?? 0;
+                    if(product.variations != null && product.variations!.isNotEmpty) {
+                      price = product.variations![0].price ?? price;
+                    }
+                    CartModel cartModel = CartModel(
+                      product.id, (product.image?.isNotEmpty ?? false) ?  product.image![0] : '',
+                      product.name, price,
+                      PriceConverterHelper.convertWithDiscount(price, product.discount, product.discountType),
+                      1, (product.variations != null && product.variations!.isNotEmpty) ? product.variations![0] : null,
+                      (price - PriceConverterHelper.convertWithDiscount(price, product.discount, product.discountType)!),
+                      (price - PriceConverterHelper.convertWithDiscount(price, product.tax, product.taxType)!),
+                      product.capacity,
+                      product.unit,
+                      product.totalStock, product,
+                    );
+                    
+                    CartProvider cartProvider = Provider.of<CartProvider>(context, listen: false);
+                    bool isExistInCart = cartProvider.isExistInCart(cartModel) != null;
+                    
+                    if (isExistInCart) {
+                      showCustomSnackBarHelper(getTranslated('already_added', context));
+                    } else if (product.totalStock != null && product.totalStock! < 1) {
+                      showCustomSnackBarHelper(getTranslated('out_of_stock', context));
+                    } else {
+                      cartProvider.addToCart(cartModel);
+                      showCustomSnackBarHelper(getTranslated('added_to_cart', context), isError: false);
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10), // slight size reduction for smaller card
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF42C6E8), // Cyan button
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.add_shopping_cart, color: Colors.white, size: 18),
                   ),
-                  child: const Icon(Icons.add_shopping_cart, color: Colors.white, size: 18),
                 ),
               ],
             ),

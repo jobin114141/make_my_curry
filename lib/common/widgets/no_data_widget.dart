@@ -62,35 +62,51 @@ class NoDataView extends StatelessWidget {
       child: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
 
-          Image.asset(
-           image ?? Images.notFound,
-            // isOrder ? Images.box : isCart ? Images.shoppingCart : Images.notFound,
-            width: height * 0.17, height: height * 0.17,
-            color: Theme.of(context).hintColor.withValues(alpha: 0.5),
+          Container(
+            padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+              shape: BoxShape.circle,
+            ),
+            child: Image.asset(
+              image ?? Images.notFound,
+              width: height * 0.12, height: height * 0.12,
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+            ),
           ),
-          SizedBox(height: height*0.03),
+          SizedBox(height: height * 0.04),
 
           Text(
             title ?? getTranslated('no_result_found', context) ,
-            style: poppinsMedium.copyWith(color: Theme.of(context).hintColor.withValues(alpha: 0.5), fontSize: height*0.02),
+            style: poppinsSemiBold.copyWith(
+              color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
+              fontSize: Dimensions.fontSizeExtraLarge,
+            ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: height*0.01),
+          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
           if(subTitle != null) Text(
             subTitle!,
-            style: poppinsRegular.copyWith(fontSize: height*0.02),
+            style: poppinsRegular.copyWith(
+              color: Theme.of(context).disabledColor,
+              fontSize: Dimensions.fontSizeDefault,
+            ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: height * 0.02),
+          SizedBox(height: height * 0.04),
 
-         if(isShowButton) SizedBox(height: 40, width: 150, child: CustomButtonWidget(
-            buttonText: 'lets_shop'.tr,
-            onPressed: () {
-              Provider.of<SplashProvider>(context, listen: false).setPageIndex(0);
-              Navigator.pushNamed(context, RouteHelper.getMainRoute());
-            },
-          )),
+          if(isShowButton) Container(
+            constraints: const BoxConstraints(maxWidth: 200),
+            child: CustomButtonWidget(
+              buttonText: 'lets_shop'.tr,
+              onPressed: () {
+                Provider.of<SplashProvider>(context, listen: false).setPageIndex(0);
+                Navigator.pushNamed(context, RouteHelper.getMainRoute());
+              },
+              borderRadius: Dimensions.radiusSizeDefault,
+            ),
+          ),
 
         ]),
       ),

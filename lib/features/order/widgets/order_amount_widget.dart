@@ -44,51 +44,60 @@ class OrderAmountWidget extends StatelessWidget {
       children: <Widget>[
 
         Container(
-          padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+          padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(Dimensions.radiusSizeTen),
-            boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 5)],
+            borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              )
+            ],
+            border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.3), width: 0.5),
           ),
           child: Column( mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(getTranslated('cost_summery', context), style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge)),
-            Divider(height: 30, thickness: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.05)),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+              child: Divider(thickness: 0.5),
+            ),
 
             PriceItemWidget(
               title: 'subtotal'.tr,
               subTitle: PriceConverterHelper.convertPrice(context, itemsPrice),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             PriceItemWidget(
               title: 'discount'.tr,
               subTitle: '- ${PriceConverterHelper.convertPrice(context, discount)}',
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             PriceItemWidget(
               title: '${'tax'.tr} ${isVatInclude ? '(${'include'.tr})' : ''}',
               subTitle: '${isVatInclude ? '' : '+'} ${PriceConverterHelper.convertPrice(context, tax)}',
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             PriceItemWidget(
               title: 'coupon_discount'.tr,
               subTitle: '- ${PriceConverterHelper.convertPrice(context, couponDiscount)}',
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             extraDiscount > 0 ? PriceItemWidget(
               title: 'extra_discount'.tr,
               subTitle: '- ${PriceConverterHelper.convertPrice(context, extraDiscount)}',
             ) : const SizedBox(),
-            SizedBox(height: extraDiscount > 0 ? 10 : 0),
+            SizedBox(height: extraDiscount > 0 ? 12 : 0),
 
 
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Row(children: [
-
-                Text(getTranslated('delivery_fee', context), style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).disabledColor)),
+                Text(getTranslated('delivery_fee', context), style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).disabledColor)),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
 
                 if(weightChargeAmount != null && weightChargeAmount! > 0.0)...[
@@ -108,59 +117,45 @@ class OrderAmountWidget extends StatelessWidget {
                     ),
                   ),
                 ],
-
-
               ]),
 
               CustomDirectionalityWidget(child: Text(
                 '+ ${PriceConverterHelper.convertPrice(context, deliveryCharge)}',
-                style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge),
+                style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeDefault),
               )),
+            ]),
 
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
+              child: Divider(thickness: 0.5),
+            ),
 
-            ],)
+            PriceItemWidget(
+              title: 'total_amount'.tr,
+              subTitle: PriceConverterHelper.convertPrice(context, total),
+              style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: Theme.of(context).primaryColor),
+            ),
 
+            if(paymentList.isNotEmpty) Padding(
+              padding: const EdgeInsets.only(top: Dimensions.paddingSizeDefault),
+              child: Column(children: paymentList.map((payment) => payment.id != null ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+
+                  Text("${getTranslated(payment.paidAmount! > 0 ? 'paid_amount' : 'due_amount', context)} (${ payment.paidWith != null && payment.paidWith!.isNotEmpty ? '${payment.paidWith?[0].toUpperCase()}${payment.paidWith?.substring(1).replaceAll('_', ' ')}' : getTranslated('${payment.paidWith}', context)})",
+                    style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                    overflow: TextOverflow.ellipsis,),
+
+                  Text(PriceConverterHelper.convertPrice(context, payment.paidAmount! > 0 ? payment.paidAmount : payment.dueAmount),
+                    style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
+                  ),
+                ],
+                ),
+              ) : const SizedBox()).toList()),
+            ),
           ]),
         ),
-        const SizedBox(height: Dimensions.paddingSizeDefault),
-
-
-        CustomDividerWidget( color: Theme.of(context).primaryColor.withValues(alpha: 0.5), height: 1.5, width: 10),
-
-       Container(
-         padding: const EdgeInsets.symmetric(horizontal:  Dimensions.paddingSizeSmall),
-         decoration: BoxDecoration(color: Theme.of(context).primaryColor.withValues(alpha: 0.05)),
-         child: Column(children: [
-           const SizedBox(height: Dimensions.fontSizeSmall),
-
-           PriceItemWidget(
-             title: 'total_amount'.tr,
-             subTitle: PriceConverterHelper.convertPrice(context, total),
-             style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge),
-           ),
-
-           if(paymentList.isNotEmpty) Padding(
-             padding: const EdgeInsets.only(top: Dimensions.paddingSizeDefault, bottom: Dimensions.paddingSizeSmall),
-             child: Column(children: paymentList.map((payment) => payment.id != null ? Padding(
-               padding: const EdgeInsets.symmetric(vertical: 1),
-               child: Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-
-                 Text("${getTranslated(payment.paidAmount! > 0 ? 'paid_amount' : 'due_amount', context)} (${ payment.paidWith != null && payment.paidWith!.isNotEmpty ? '${payment.paidWith?[0].toUpperCase()}${payment.paidWith?.substring(1).replaceAll('_', ' ')}' : getTranslated('${payment.paidWith}', context)})",
-                   style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge!.color),
-                   overflow: TextOverflow.ellipsis,),
-
-                 Text(PriceConverterHelper.convertPrice(context, payment.paidAmount! > 0 ? payment.paidAmount : payment.dueAmount),
-                   style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge!.color),
-                 ),
-               ],
-               ),
-             ) : const SizedBox()).toList()),
-           ),
-
-           const SizedBox(height: Dimensions.paddingSizeDefault),
-         ]),
-       ),
 
         if(ResponsiveHelper.isDesktop(context)) Column(children: [
           const SizedBox(height: Dimensions.paddingSizeDefault),

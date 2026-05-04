@@ -1,5 +1,6 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_grocery/common/widgets/custom_asset_image_widget.dart';
 import 'package:flutter_grocery/features/auth/widgets/country_code_picker_widget.dart';
@@ -250,7 +251,7 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
                   Container(
                     height: 15, width: 15,
                     padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                    child: const CircularProgressIndicator(),
+                    child: const CupertinoActivityIndicator(),
                   ): null : null,
             ),
             onTap: widget.onTap as void Function()?,

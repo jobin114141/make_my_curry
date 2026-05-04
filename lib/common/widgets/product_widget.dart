@@ -108,6 +108,8 @@ class ProductWidget extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
           child: InkWell(
             hoverColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
             onTap: () => Navigator.of(context).pushNamed(RouteHelper.getProductDetailsRoute(
               productId: product.id, formSearch: productType == ProductType.searchItem,
             )),
@@ -152,25 +154,20 @@ class ProductWidget extends StatelessWidget {
                         top: ResponsiveHelper.isDesktop(context) ? null : 5,
                         right: ResponsiveHelper.isDesktop(context) ? 5 : 5,
                         bottom: ResponsiveHelper.isDesktop(context) ? 5 : null,
-                        child: !isExistInCart ? Tooltip(
+                        child: Tooltip(
                           message: getTranslated('click_to_add_to_your_cart', context),
                           child: InkWell(
+                              hoverColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
                               onTap: () {
-                                if(product.variations == null || product.variations!.isEmpty) {
-                                  if (isExistInCart) {
-                                    showCustomSnackBarHelper('already_added'.tr);
-                                  } else if (stock! < 1) {
-                                    showCustomSnackBarHelper('out_of_stock'.tr);
-                                  } else {
-                                    Provider.of<CartProvider>(context, listen: false).addToCart(cartModel!);
-                                    showCustomSnackBarHelper('added_to_cart'.tr, isError: false);
-                                  }
-                                }else {
-                                  Navigator.of(context).pushNamed(
-                                    RouteHelper.getProductDetailsRoute(
-                                      productId: product.id, formSearch:productType == ProductType.searchItem,
-                                    ),
-                                  );
+                                if (isExistInCart) {
+                                  showCustomSnackBarHelper('already_added'.tr);
+                                } else if (stock! < 1) {
+                                  showCustomSnackBarHelper('out_of_stock'.tr);
+                                } else {
+                                  Provider.of<CartProvider>(context, listen: false).addToCart(cartModel!);
+                                  showCustomSnackBarHelper('added_to_cart'.tr, isError: false);
                                 }
                               },
                               child: Container(
@@ -185,67 +182,6 @@ class ProductWidget extends StatelessWidget {
                                 child: Icon(Icons.shopping_cart_outlined,
                                     color: Theme.of(context).primaryColor),
                               )),
-                        ) : Consumer<CartProvider>(builder: (context, cart, child) => RotatedBox(
-                          quarterTurns: ResponsiveHelper.isDesktop(context) ? 0 : 3,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(width: 1, color: Theme.of(context).primaryColor.withValues(alpha: 0.05)),
-                              borderRadius: BorderRadius.circular(8),
-                              color: Theme.of(context).cardColor,
-                            ),
-
-                            child: Row(children: [
-                              InkWell(
-                                onTap: () {
-                                  if (cart.cartList[cardIndex!].quantity! > 1) {
-                                    Provider.of<CartProvider>(context, listen: false).setCartQuantity(false, cardIndex, context: context, showMessage: true);
-                                  } else {
-                                    Provider.of<CartProvider>(context, listen: false).removeItemFromCart(cardIndex, context);
-                                  }
-                                },
-                                child: RotatedBox(
-                                  quarterTurns: ResponsiveHelper.isDesktop(context) ? 0 : 1,
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeSmall : Dimensions.paddingSizeExtraSmall,
-                                        vertical: Dimensions.paddingSizeExtraSmall),
-                                    child: Icon(Icons.remove, size: 20, color: Theme.of(context).textTheme.bodyLarge!.color),
-                                  ),
-                                ),
-                              ),
-
-                              RotatedBox(
-                                quarterTurns: ResponsiveHelper.isDesktop(context) ? 0 : 1,
-                                child: Text(
-                                    cart.cartList[cardIndex!].quantity.toString(),
-                                    style: poppinsSemiBold.copyWith(
-                                        fontSize: Dimensions.fontSizeExtraLarge,
-                                        color: Theme.of(context).textTheme.bodyLarge!.color)),
-                              ),
-
-
-                              InkWell(
-                                onTap: () {
-                                  if(cart.cartList[cardIndex!].product!.maximumOrderQuantity == null || cart.cartList[cardIndex].quantity! < cart.cartList[cardIndex].product!.maximumOrderQuantity!) {
-                                    if(cart.cartList[cardIndex].quantity! < cart.cartList[cardIndex].stock!) {
-                                      cart.setCartQuantity(true, cardIndex, showMessage: true, context: context);
-                                    }else {
-                                      showCustomSnackBarHelper(getTranslated('out_of_stock', context));
-                                    }
-                                  }else{
-                                    showCustomSnackBarHelper('${getTranslated('you_can_add_max', context)} ${cart.cartList[cardIndex].product!.maximumOrderQuantity} ${getTranslated(cart.cartList[cardIndex].product!.maximumOrderQuantity! > 1 ? 'items' : 'item', context)} ${getTranslated('only', context)}');
-                                  }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: Dimensions.paddingSizeSmall,
-                                      vertical: Dimensions.paddingSizeExtraSmall),
-                                  child: Icon(Icons.add, size: 20, color: Theme.of(context).textTheme.bodyLarge!.color),
-                                ),
-                              ),
-                            ]),
-                          ),
-                        ),
                         ),
                       )
                     ],
@@ -342,6 +278,8 @@ class _ProductGridWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       borderRadius:  BorderRadius.circular(Dimensions.radiusSizeTen),
       onTap: () {
         Navigator.of(context).pushNamed(RouteHelper.getProductDetailsRoute(
@@ -520,25 +458,20 @@ class _ProductGridWidget extends StatelessWidget {
             right: 17, top: 60,
             child: Align(
               alignment: Alignment.topRight,
-              child: !isExistInCart ? Tooltip(
+              child: Tooltip(
                 message: getTranslated('click_to_add_to_your_cart', context),
                 child: InkWell(
+                  hoverColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
                   onTap: () {
-                    if(product.variations == null || product.variations!.isEmpty) {
-                      if (isExistInCart) {
-                        showCustomSnackBarHelper('already_added'.tr);
-                      } else if (stock! < 1) {
-                        showCustomSnackBarHelper('out_of_stock'.tr);
-                      } else {
-                        Provider.of<CartProvider>(context, listen: false).addToCart(cartModel!);
-                        showCustomSnackBarHelper('added_to_cart'.tr, isError: false);
-                      }
-                    }else {
-                      Navigator.of(context).pushNamed(
-                        RouteHelper.getProductDetailsRoute(
-                          productId: product.id, formSearch:productType == ProductType.searchItem,
-                        ),
-                      );
+                    if (isExistInCart) {
+                      showCustomSnackBarHelper('already_added'.tr);
+                    } else if (stock! < 1) {
+                      showCustomSnackBarHelper('out_of_stock'.tr);
+                    } else {
+                      Provider.of<CartProvider>(context, listen: false).addToCart(cartModel!);
+                      showCustomSnackBarHelper('added_to_cart'.tr, isError: false);
                     }
                   },
                   child: Container(
@@ -555,69 +488,6 @@ class _ProductGridWidget extends StatelessWidget {
                       )
                   ),
                 ),
-              ) : Consumer<CartProvider>(builder: (context, cart, child) => RotatedBox(
-                quarterTurns: 3,
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1, color: Theme.of(context).primaryColor.withValues(alpha: 0.05)),
-                    borderRadius: BorderRadius.circular(8),
-                    color: Theme.of(context).cardColor,
-                  ),
-
-                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    InkWell(
-                      onTap: () {
-                        if (cart.cartList[cardIndex!].quantity! > 1) {
-                          Provider.of<CartProvider>(context, listen: false).setCartQuantity(false, cardIndex, context: context, showMessage: true);
-                        } else {
-                          Provider.of<CartProvider>(context, listen: false).removeItemFromCart(cardIndex!, context);
-                        }
-                      },
-                      child: RotatedBox(
-                        quarterTurns: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: Dimensions.paddingSizeExtraSmall,
-                              vertical: Dimensions.paddingSizeExtraSmall),
-                          child: Icon(
-                            Icons.remove, size: Dimensions.paddingSizeLarge,
-                            color: Theme.of(context).textTheme.bodyLarge?.color,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    RotatedBox(
-                      quarterTurns: 1,
-                      child: Text(
-                        cart.cartList[cardIndex!].quantity.toString(),
-                        style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge, color: Theme.of(context).textTheme.bodyLarge!.color),
-                      ),
-                    ),
-
-
-                    InkWell(
-                      onTap: () {
-                        if(cart.cartList[cardIndex!].product!.maximumOrderQuantity == null || cart.cartList[cardIndex!].quantity! < cart.cartList[cardIndex!].product!.maximumOrderQuantity!) {
-                          if(cart.cartList[cardIndex!].quantity! < cart.cartList[cardIndex!].stock!) {
-                            cart.setCartQuantity(true, cardIndex, showMessage: true, context: context);
-                          }else {
-                            showCustomSnackBarHelper(getTranslated('out_of_stock', context));
-                          }
-                        }else{
-                          showCustomSnackBarHelper('${getTranslated('you_can_add_max', context)} ${cart.cartList[cardIndex!].product!.maximumOrderQuantity} ${getTranslated(cart.cartList[cardIndex!].product!.maximumOrderQuantity! > 1 ? 'items' : 'item', context)} ${getTranslated('only', context)}');
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: Dimensions.paddingSizeSmall,
-                            vertical: Dimensions.paddingSizeExtraSmall),
-                        child: Icon(Icons.add, size: 20, color: Theme.of(context).textTheme.bodyLarge!.color),
-                      ),
-                    ),
-                  ]),
-                ),
-              ),
               ),
             ),
           ),

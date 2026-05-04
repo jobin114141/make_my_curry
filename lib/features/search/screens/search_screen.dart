@@ -35,111 +35,130 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: Theme.of(context).canvasColor,
-      appBar: ResponsiveHelper.isDesktop(context)? const PreferredSize(preferredSize: Size.fromHeight(120), child: WebAppBarWidget()) :null,
+      backgroundColor: Colors.white,
+      appBar: ResponsiveHelper.isDesktop(context)
+          ? const PreferredSize(preferredSize: Size.fromHeight(120), child: WebAppBarWidget())
+          : AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(getTranslated('search', context),
+                  style: poppinsMedium.copyWith(fontSize: 20, color: Colors.black)),
+              centerTitle: true,
+            ),
       body: SafeArea(
         child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
-            child: Center(
-              child: SizedBox(
-                width: Dimensions.webScreenWidth,
-                child: Consumer<SearchProvider>(
-                  builder: (context, searchProvider, child) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 15),
-                      Row(
+          padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault),
+          child: Center(
+            child: SizedBox(
+              width: Dimensions.webScreenWidth,
+              child: Consumer<SearchProvider>(
+                builder: (context, searchProvider, child) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: Dimensions.paddingSizeSmall),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Row(
                         children: [
+                          const SizedBox(width: 15),
+                          const Icon(Icons.search, color: Colors.grey, size: 20),
                           Expanded(
-                            child: CustomTextFieldWidget(
-                              fillColor: Theme.of(context).disabledColor.withValues(alpha: 0.001),
-                              hintText: getTranslated('searchItem_here', context),
-                              isShowBorder: true,
-                              isShowPrefixIcon: true,
-                              prefixAssetUrl: Images.search,
+                            child: TextField(
                               controller: _searchController,
-                              inputAction: TextInputAction.search,
-                              isIcon: true,
-                              onSubmit: (text) {
-                                if (_searchController.text.isNotEmpty) {
-                                  List<int> encoded = utf8.encode(_searchController.text);
+                              textInputAction: TextInputAction.search,
+                              onSubmitted: (text) {
+                                if (text.isNotEmpty) {
+                                  List<int> encoded = utf8.encode(text);
                                   String data = base64Encode(encoded);
-                                  searchProvider.saveSearchAddress(_searchController.text);
-                                  Navigator.pushNamed(context, '${RouteHelper.searchResult}?text=$data', arguments: SearchResultScreen(searchString: _searchController.text));
+                                  searchProvider.saveSearchAddress(text);
+                                  Navigator.pushNamed(context, '${RouteHelper.searchResult}?text=$data', arguments: SearchResultScreen(searchString: text));
                                 }
                               },
+                              decoration: InputDecoration(
+                                hintText: getTranslated('searchItem_here', context),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                                hintStyle: poppinsRegular.copyWith(color: Colors.grey, fontSize: Dimensions.fontSizeDefault),
+                              ),
                             ),
                           ),
-                          const SizedBox(width: 10),
-
-                          InkWell(
-                            onTap: () => Navigator.of(context).pop(),
-                            child: Icon(Icons.close, color: Theme.of(context).disabledColor, size: 25),
-                          ),
-
+                          if (_searchController.text.isNotEmpty)
+                            IconButton(
+                              icon: const Icon(Icons.close, color: Colors.grey, size: 20),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {});
+                              },
+                            ),
                         ],
                       ),
-                      // for resent search section
-                      const SizedBox(height: 10),
+                    ),
+                    const SizedBox(height: Dimensions.paddingSizeLarge),
+                    if (searchProvider.historyList.isNotEmpty) ...[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             getTranslated('recent_search', context),
-                            style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeLarge),
+                            style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge),
                           ),
-                          searchProvider.historyList.isNotEmpty
-                              ? TextButton(
-                                  onPressed: searchProvider.clearSearchAddress,
-                                  child: Text(
-                                    getTranslated('remove_all', context),
-                                    style: poppinsMedium.copyWith(color: Theme.of(context).colorScheme.error,fontSize: Dimensions.fontSizeLarge),
-                                  ))
-                              : const SizedBox.shrink(),
+                          TextButton(
+                            onPressed: searchProvider.clearSearchAddress,
+                            child: Text(
+                              getTranslated('remove_all', context),
+                              style: poppinsMedium.copyWith(color: Colors.red, fontSize: Dimensions.fontSizeDefault),
+                            ),
+                          ),
                         ],
                       ),
-
-                      // for recent search list section
+                      const SizedBox(height: Dimensions.paddingSizeSmall),
                       Expanded(
                         child: ListView.builder(
-                            itemCount: searchProvider.historyList.length,
-                            physics: const BouncingScrollPhysics(),
-                            itemBuilder: (context, index) => InkWell(
-                                  onTap: () {
-                                    List<int> encoded = utf8.encode(searchProvider.historyList[index]!);
-                                    String data = base64Encode(encoded);
-                                    searchProvider.getSearchProduct(offset: 1,query: searchProvider.historyList[index]!);
-                                    Navigator.pushNamed(context, '${RouteHelper.searchResult}?text=$data', arguments: SearchResultScreen(searchString: searchProvider.historyList[index]));
-                                   // Navigator.of(context).push(MaterialPageRoute(builder: (_) => SearchResultScreen(searchString: searchProvider.historyList[index])));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 9),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Icon(Icons.history, size: 16, color: Theme.of(context).hintColor.withValues(alpha: 0.6)),
-                                            const SizedBox(width: 13),
-                                            Text(
-                                              searchProvider.historyList[index]!,
-                                            )
-                                          ],
-                                        ),
-                                        Transform.rotate(
-                                          angle: 45,
-                                          child: const Icon(Icons.arrow_upward, size: 16),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )),
-                      )
-                    ],
-                  ),
+                          itemCount: searchProvider.historyList.length,
+                          physics: const BouncingScrollPhysics(),
+                          itemBuilder: (context, index) => ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.history, size: 18, color: Colors.grey),
+                            ),
+                            title: Text(
+                              searchProvider.historyList[index]!,
+                              style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeDefault),
+                            ),
+                            trailing: const Icon(Icons.north_west, size: 16, color: Colors.grey),
+                            onTap: () {
+                              List<int> encoded = utf8.encode(searchProvider.historyList[index]!);
+                              String data = base64Encode(encoded);
+                              searchProvider.getSearchProduct(offset: 1, query: searchProvider.historyList[index]!);
+                              Navigator.pushNamed(context, '${RouteHelper.searchResult}?text=$data', arguments: SearchResultScreen(searchString: searchProvider.historyList[index]));
+                            },
+                          ),
+                        ),
+                      ),
+                    ] else
+                      Expanded(
+                        child: Center(
+                          child: Icon(Icons.search_off, size: 80, color: Colors.grey[200]),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-            )),
+            ),
+          ),
+        ),
       ),
     );
   }

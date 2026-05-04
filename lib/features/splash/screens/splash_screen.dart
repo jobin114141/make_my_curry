@@ -172,22 +172,8 @@ class _SplashScreenState extends State<SplashScreen> {
               _onConfigAction(
                   splashProvider.configModel, splashProvider, context);
             }
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Image.asset(Images.appLogo, height: 130, width: 500),
-                const SizedBox(height: Dimensions.paddingSizeSmall),
-
-                Text(AppConstants.appName,
-                    textAlign: TextAlign.center,
-                    style: poppinsMedium.copyWith(
-                      color: Theme
-                          .of(context)
-                          .primaryColor,
-                      fontSize: 30,
-                    )),
-              ],
+            return Center(
+              child: Image.asset(Images.appLogo, height: 250, width: 250),
             );
           }
       ),

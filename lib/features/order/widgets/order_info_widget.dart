@@ -50,191 +50,144 @@ class OrderInfoWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            /// Order info
-            ResponsiveHelper.isDesktop(context) ? Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-
-              Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-
-                Row(children: [
-
+            ResponsiveHelper.isDesktop(context) ? Container(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  )
+                ],
+              ),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                   Row(children: [
                     Text('${getTranslated('order_id', context)} :', style: poppinsRegular),
                     const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
                     Text(orderProvider.trackModel!.id.toString(), style: poppinsSemiBold),
+                    const SizedBox(width: Dimensions.paddingSizeDefault),
+                    _OrderStatusBadge(status: orderProvider.trackModel!.orderStatus),
                   ]),
-                  const SizedBox(width: Dimensions.paddingSizeDefault),
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
 
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
-                    decoration: BoxDecoration(
-                      color: OrderStatus.pending.name == orderProvider.trackModel!.orderStatus ? ColorResources.colorBlue.withValues(alpha: 0.08)
-                          : OrderStatus.out_for_delivery.name == orderProvider.trackModel!.orderStatus ? ColorResources.ratingColor.withValues(alpha: 0.08)
-                          : OrderStatus.canceled.name == orderProvider.trackModel!.orderStatus ? ColorResources.redColor.withValues(alpha: 0.08) : ColorResources.colorGreen.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(Dimensions.radiusSizeTen),
-                    ),
-                    child: Text(
-                      getTranslated(orderProvider.trackModel!.orderStatus, context),
-                      style: poppinsRegular.copyWith(color: OrderStatus.pending.name == orderProvider.trackModel!.orderStatus ? ColorResources.colorBlue
-                          : OrderStatus.out_for_delivery.name == orderProvider.trackModel!.orderStatus ? ColorResources.ratingColor
-                          : OrderStatus.canceled.name == orderProvider.trackModel!.orderStatus ? ColorResources.redColor : ColorResources.colorGreen),
-                    ),
-                  ),
-
-
-                ]),
-                const SizedBox(height: Dimensions.paddingSizeSmall),
-
-                timeSlot != null ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Row(children: [
+                  timeSlot != null ? Row(children: [
                     Text('${getTranslated('delivered_time', context)}:', style: poppinsRegular),
                     const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
                     Text(DateConverterHelper.convertTimeRange(timeSlot!.startTime!, timeSlot!.endTime!, context), style: poppinsMedium),
-                  ]),
+                  ]) : const SizedBox(),
+                  if(timeSlot != null) const SizedBox(height: Dimensions.paddingSizeSmall),
 
-                ]) : const SizedBox(),
-                SizedBox(height: timeSlot != null ? Dimensions.paddingSizeSmall : 0),
-
-                if(orderProvider.trackModel?.deliveryDate != null) Padding(
-                  padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
-                  child: Row(children: [
+                  if(orderProvider.trackModel?.deliveryDate != null) Row(children: [
                     Text('${getTranslated('estimate_delivery_date', context)}: ', style: poppinsRegular),
                     const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
                     Text(DateConverterHelper.isoStringToLocalDateOnly(orderProvider.trackModel!.deliveryDate!), style: poppinsMedium),
                   ]),
-                ),
-
-                Row(children: [
-
-                  Text('${getTranslated(itemsQuantity > 1 ? 'items' : 'item', context)}:', style: poppinsRegular),
-                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-
-                  Text('$itemsQuantity', style: poppinsSemiBold),
-
-                ]),
-
-              ])),
-
-              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                const _OrderTypeWidget(),
-                const SizedBox(height: Dimensions.paddingSizeSmall),
-
-                Text(DateConverterHelper.isoStringToLocalDateOnly(orderProvider.trackModel!.createdAt!), style: poppinsRegular.copyWith(color: Theme.of(context).disabledColor)),
-                const SizedBox(height: Dimensions.paddingSizeDefault),
-
-
-              ]),
-
-            ]) : const SizedBox(),
-
-            ResponsiveHelper.isDesktop(context) ? const SizedBox() : Row( crossAxisAlignment: CrossAxisAlignment.start, children: [
-
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                
-                  Row(children: [
-                    Text('${getTranslated('order_id', context)} : ', style: poppinsRegular),
-                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                
-                    Text(orderProvider.trackModel!.id.toString(), style: poppinsSemiBold),
-                  ]),
-                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                  if(orderProvider.trackModel?.deliveryDate != null) const SizedBox(height: Dimensions.paddingSizeSmall),
 
                   Row(children: [
-
                     Text('${getTranslated(itemsQuantity > 1 ? 'items' : 'item', context)}:', style: poppinsRegular),
                     const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-
                     Text('$itemsQuantity', style: poppinsSemiBold),
-
                   ]),
+                ])),
 
-                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-
+                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                  const _OrderTypeWidget(),
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
                   Text(DateConverterHelper.isoStringToLocalDateOnly(orderProvider.trackModel!.createdAt!), style: poppinsRegular.copyWith(color: Theme.of(context).disabledColor)),
-                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                ]),
+              ]),
+            ) : const SizedBox(),
 
+            ResponsiveHelper.isDesktop(context) ? const SizedBox() : Container(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  )
+                ],
+              ),
+              child: Row( crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Row(children: [
+                      Text('${getTranslated('order_id', context)} : ', style: poppinsRegular),
+                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                      Text(orderProvider.trackModel!.id.toString(), style: poppinsSemiBold),
+                    ]),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-                  timeSlot != null ? FittedBox(
-                    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [
-                      Row(children: [
+                    Row(children: [
+                      Text('${getTranslated(itemsQuantity > 1 ? 'items' : 'item', context)}:', style: poppinsRegular),
+                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                      Text('$itemsQuantity', style: poppinsSemiBold),
+                    ]),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                    Text(DateConverterHelper.isoStringToLocalDateOnly(orderProvider.trackModel!.createdAt!), style: poppinsRegular.copyWith(color: Theme.of(context).disabledColor)),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                    timeSlot != null ? FittedBox(
+                      child: Row(children: [
                         Text('${getTranslated('delivered_time', context)}:', style: poppinsRegular),
                         const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                         Text(DateConverterHelper.convertTimeRange(timeSlot!.startTime!, timeSlot!.endTime!, context), style: poppinsMedium),
                       ]),
-                    ]),
-                  ) : const SizedBox(),
+                    ) : const SizedBox(),
+                    const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                    if(orderProvider.trackModel?.deliveryDate != null) Padding(
+                      padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
+                      child: FittedBox(
+                        child: Row(children: [
+                          Text('${getTranslated('estimate_delivery_date', context)}: ', style: poppinsRegular),
+                          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                          Text(DateConverterHelper.isoStringToLocalDateOnly(orderProvider.trackModel!.deliveryDate!), style: poppinsMedium),
+                        ]),
+                      ),
+                    ),
+                  ]),
+                ),
+
+                Column(crossAxisAlignment: CrossAxisAlignment.end, mainAxisAlignment: MainAxisAlignment.start, children: [
+                  const _OrderTypeWidget(),
+                  const SizedBox(height: Dimensions.paddingSizeSmall),
+                  _OrderStatusBadge(status: orderProvider.trackModel!.orderStatus),
                   const SizedBox(height: Dimensions.paddingSizeSmall),
 
-                  if(orderProvider.trackModel?.deliveryDate != null) Padding(
-                    padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
-                    child: FittedBox(
-                      child: Row(children: [
-                        Text('${getTranslated('estimate_delivery_date', context)}: ', style: poppinsRegular),
-                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                      
-                        Text(DateConverterHelper.isoStringToLocalDateOnly(orderProvider.trackModel!.deliveryDate!), style: poppinsMedium),
-                      ]),
+                  if(orderProvider.trackModel!.orderType == 'delivery' &&
+                      (splashProvider.configModel?.googleMapStatus ?? false) &&
+                      (orderProvider.trackModel?.deliveryAddress?.longitude != null && (orderProvider.trackModel?.deliveryAddress?.latitude != null))
+                  )  InkWell(
+                    onTap: () {
+                      if(orderProvider.trackModel!.deliveryAddress != null) {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => OrderMapInfoWidget(address: orderProvider.trackModel!.deliveryAddress)));
+                      }
+                      else{
+                        showCustomSnackBarHelper(getTranslated('address_not_found', context), isError: true);
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(width: 1.5, color: Theme.of(context).primaryColor.withValues(alpha: 0.1)),
+                      ),
+                      child: Image.asset(Images.deliveryAddressIcon, color: Theme.of(context).primaryColor, height: 20, width: 20),
                     ),
                   ),
-
-
                 ]),
-              ),
-
-              Column(crossAxisAlignment: CrossAxisAlignment.end, mainAxisAlignment: MainAxisAlignment.start, children: [
-                const _OrderTypeWidget(),
-                const SizedBox(height: Dimensions.paddingSizeSmall),
-
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
-                  decoration: BoxDecoration(
-                    color: OrderStatus.pending.name == orderProvider.trackModel!.orderStatus ? ColorResources.colorBlue.withValues(alpha: 0.08)
-                        : OrderStatus.out_for_delivery.name == orderProvider.trackModel!.orderStatus ? ColorResources.ratingColor.withValues(alpha: 0.08)
-                        : OrderStatus.canceled.name == orderProvider.trackModel!.orderStatus ? ColorResources.redColor.withValues(alpha: 0.08) : ColorResources.colorGreen.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(Dimensions.radiusSizeTen),
-                  ),
-                  child: Text(
-                    getTranslated(orderProvider.trackModel!.orderStatus, context),
-                    style: poppinsRegular.copyWith(color: OrderStatus.pending.name == orderProvider.trackModel!.orderStatus ? ColorResources.colorBlue
-                        : OrderStatus.out_for_delivery.name == orderProvider.trackModel!.orderStatus ? ColorResources.ratingColor
-                        : OrderStatus.canceled.name == orderProvider.trackModel!.orderStatus ? ColorResources.redColor : ColorResources.colorGreen),
-                  ),
-                ),
-                const SizedBox(height: Dimensions.paddingSizeSmall),
-
-                if(orderProvider.trackModel!.orderType == 'delivery' &&
-                    (splashProvider.configModel?.googleMapStatus ?? false) &&
-                    (orderProvider.trackModel?.deliveryAddress?.longitude != null && (orderProvider.trackModel?.deliveryAddress?.latitude != null))
-                )  InkWell(
-                  onTap: () {
-                    if(orderProvider.trackModel!.deliveryAddress != null) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => OrderMapInfoWidget(address: orderProvider.trackModel!.deliveryAddress)));
-                    }
-                    else{
-                      showCustomSnackBarHelper(getTranslated('address_not_found', context), isError: true);
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeSmall),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(width: 1.5, color: Theme.of(context).primaryColor.withValues(alpha: 0.1)),
-                    ),
-                    child: Image.asset(Images.deliveryAddressIcon, color: Theme.of(context).primaryColor, height: 20, width: 20),
-                  ),
-                ),
-
-
-
-
               ]),
-
-            ]),
+            ),
             const SizedBox(height: Dimensions.paddingSizeDefault),
 
 
@@ -243,11 +196,17 @@ class OrderInfoWidget extends StatelessWidget {
 
             /// Payment info
             Container(
-              padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+              padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(Dimensions.radiusSizeTen),
-                boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.1), spreadRadius: 1, blurRadius: 5)],
+                borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  )
+                ],
               ),
               child: orderProvider.trackModel?.paymentMethod == 'offline_payment' ? _OfflinePaymentInfoWidget(orderModel: orderProvider.trackModel,) : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -396,70 +355,79 @@ class OrderInfoWidget extends StatelessWidget {
               )),
             ) : const SizedBox(),
 
-           if(orderProvider.trackModel?.orderImageList?.isNotEmpty ?? false) Container(
-             padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-             decoration: BoxDecoration(
-               borderRadius: BorderRadius.circular(10),
-               color: Theme.of(context).cardColor,
-               boxShadow: [BoxShadow(color: Theme.of(context).shadowColor, spreadRadius: 1, blurRadius: 5)],
-             ),
-             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-               Text(
-                 splashProvider.configModel?.orderImageLabelName ?? '',
-                 style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge),
-               ),
-               Divider(height: Dimensions.paddingSizeLarge, color: Theme.of(context).dividerColor.withValues(alpha: 0.3)),
+            if(orderProvider.trackModel?.orderImageList?.isNotEmpty ?? false) Container(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  )
+                ],
+              ),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(
+                  splashProvider.configModel?.orderImageLabelName ?? '',
+                  style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+                  child: Divider(thickness: 0.5),
+                ),
 
-               Row(
-                 children: [
-                   CustomSingleChildListWidget(
-                     scrollDirection: Axis.horizontal,
-                     itemCount: orderProvider.trackModel?.orderImageList?.length ?? 0,
-                     itemBuilder: (index){
+                Row(
+                  children: [
+                    CustomSingleChildListWidget(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: orderProvider.trackModel?.orderImageList?.length ?? 0,
+                      itemBuilder: (index){
 
-                       return InkWell(
-                         onTap: (){
+                        return InkWell(
+                          onTap: (){
 
-                           if(ResponsiveHelper.isDesktop(context)) {
+                            if(ResponsiveHelper.isDesktop(context)) {
 
-                             showDialog(context: context, builder: (ctx)=> CustomAlertDialogWidget(child: ClipRRect(
-                               borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingSizeDefault)),
-                               child: CustomZoomWidget(
-                                 image: CustomImageWidget(
-                                     fit: BoxFit.contain,
-                                     width: 400, height: 400,
-                                     image: '${splashProvider.configModel?.baseUrls?.orderImageUrl}/${orderProvider.trackModel?.orderImageList?[index].image}'
-                                 ),
-                               ),
-                             )));
+                              showDialog(context: context, builder: (ctx)=> CustomAlertDialogWidget(child: ClipRRect(
+                                borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingSizeDefault)),
+                                child: CustomZoomWidget(
+                                  image: CustomImageWidget(
+                                      fit: BoxFit.contain,
+                                      width: 400, height: 400,
+                                      image: '${splashProvider.configModel?.baseUrls?.orderImageUrl}/${orderProvider.trackModel?.orderImageList?[index].image}'
+                                  ),
+                                ),
+                              )));
 
-                           }else {
-                             Navigator.of(context).pushNamed(
-                               RouteHelper.getProductImagesRoute(
-                                 getTranslated('image', context),
-                                 jsonEncode([orderProvider.trackModel?.orderImageList?[index].image ?? '']),
-                                 splashProvider.configModel?.baseUrls?.orderImageUrl ?? '',
-                               ),
-                             );
-                           }
-                         },
-                         child: Padding(
-                           padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-                           child: ClipRRect(
-                             borderRadius: const BorderRadius.all(Radius.circular(Dimensions.paddingSizeDefault)),
-                             child: CustomImageWidget(
-                                 width: 100, height: 100,
-                                 image: '${splashProvider.configModel?.baseUrls?.orderImageUrl}/${orderProvider.trackModel?.orderImageList?[index].image}'
-                             ),
-                           ),
-                         ),
-                       );
-                     },
-                   ),
-                 ],
-               ),
-             ]),
-           ),
+                            }else {
+                              Navigator.of(context).pushNamed(
+                                RouteHelper.getProductImagesRoute(
+                                  getTranslated('image', context),
+                                  jsonEncode([orderProvider.trackModel?.orderImageList?[index].image ?? '']),
+                                  splashProvider.configModel?.baseUrls?.orderImageUrl ?? '',
+                                ),
+                              );
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+                              child: CustomImageWidget(
+                                  width: 100, height: 100,
+                                  image: '${splashProvider.configModel?.baseUrls?.orderImageUrl}/${orderProvider.trackModel?.orderImageList?[index].image}'
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ]),
+            ),
 
             if(orderProvider.trackModel?.orderImageList?.isNotEmpty ?? false) const SizedBox(height: Dimensions.paddingSizeDefault),
 
@@ -735,3 +703,28 @@ class _OfflinePaymentDeniedNoteWidget extends StatelessWidget {
 
 
 
+class _OrderStatusBadge extends StatelessWidget {
+  final String? status;
+  const _OrderStatusBadge({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: 6),
+      decoration: BoxDecoration(
+        color: OrderStatus.pending.name == status ? ColorResources.colorBlue.withValues(alpha: 0.1)
+            : OrderStatus.out_for_delivery.name == status ? ColorResources.ratingColor.withValues(alpha: 0.1)
+            : OrderStatus.canceled.name == status ? ColorResources.redColor.withValues(alpha: 0.1) : ColorResources.colorGreen.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+      ),
+      child: Text(
+        getTranslated(status, context),
+        style: poppinsMedium.copyWith(
+            fontSize: Dimensions.fontSizeExtraSmall,
+            color: OrderStatus.pending.name == status ? ColorResources.colorBlue
+                : OrderStatus.out_for_delivery.name == status ? ColorResources.ratingColor
+                : OrderStatus.canceled.name == status ? ColorResources.redColor : ColorResources.colorGreen),
+      ),
+    );
+  }
+}

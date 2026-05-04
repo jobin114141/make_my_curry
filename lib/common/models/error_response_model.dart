@@ -6,8 +6,7 @@ class ErrorResponseModel {
 
   List<Errors>? get errors => _errors;
 
-  ErrorResponseModel({
-    List<Errors>? errors}){
+  ErrorResponseModel({List<Errors>? errors}) {
     _errors = errors;
   }
 
@@ -27,7 +26,6 @@ class ErrorResponseModel {
     }
     return map;
   }
-
 }
 
 /// code : "l_name"
@@ -40,9 +38,7 @@ class Errors {
   String? get code => _code;
   String? get message => _message;
 
-  Errors({
-    String? code,
-    String? message}){
+  Errors({String? code, String? message}) {
     _code = code;
     _message = message;
   }
@@ -58,5 +54,4 @@ class Errors {
     map["message"] = _message;
     return map;
   }
-
 }
