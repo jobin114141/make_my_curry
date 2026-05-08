@@ -64,7 +64,7 @@ extension StringExtension on String {
   }catch (error){
     debugPrint('not localized --- $error');
   }
-  return text ?? '';
+  return text?.replaceAll('_', ' ') ?? '';
   }
 
 

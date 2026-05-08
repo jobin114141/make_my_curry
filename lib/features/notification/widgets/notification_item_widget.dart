@@ -5,7 +5,6 @@ import 'package:flutter_grocery/features/notification/widgets/notification_dialo
 import 'package:flutter_grocery/features/splash/providers/splash_provider.dart';
 import 'package:flutter_grocery/helper/date_converter_helper.dart';
 import 'package:flutter_grocery/helper/responsive_helper.dart';
-import 'package:flutter_grocery/utill/color_resources.dart';
 import 'package:flutter_grocery/utill/dimensions.dart';
 import 'package:flutter_grocery/utill/images.dart';
 import 'package:flutter_grocery/utill/styles.dart';
@@ -14,7 +13,8 @@ import 'package:provider/provider.dart';
 class NotificationItemWidget extends StatelessWidget {
   const NotificationItemWidget({
     super.key,
-    required this.notification, required this.isTitle,
+    required this.notification,
+    required this.isTitle,
   });
 
   final NotificationModel notification;
@@ -24,80 +24,114 @@ class NotificationItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final SplashProvider splashProvider = Provider.of<SplashProvider>(context, listen: false);
 
-    return InkWell(
-      onTap: () {
-        showDialog(context: context, builder: (BuildContext context) {
-          return NotificationDialogWidget(notificationModel: notification);
-        });
-      },
-      hoverColor: Colors.transparent,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          isTitle ? Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 2),
-            child: Text(DateConverterHelper.isoStringToLocalDateOnly(notification.createdAt!)),
-          ) : const SizedBox(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: Dimensions.paddingSizeDefault),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  // mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: Container(
-                        height: 50, width: 50,
-                        margin: EdgeInsets.symmetric(horizontal: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeLarge : 0),
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Theme.of(context).primaryColor.withValues(alpha: 0.20)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: CustomImageWidget(
-                            placeholder: Images.placeHolder,
-                            image: '${splashProvider.baseUrls?.notificationImageUrl}/${notification.image}',
-                            height: 150, width: MediaQuery.of(context).size.width, fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ) ,
-                    const SizedBox(width: Dimensions.paddingSizeDefault),
-
-                    Expanded(
-                      child: ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          notification.title!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: poppinsBold.copyWith(
-                            fontSize: Dimensions.fontSizeLarge,
-                          ),
-                        ),
-                        subtitle: Text(notification.description ?? '',
-                          style: poppinsLight.copyWith(
-                            color: Theme.of(context).hintColor,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: Dimensions.paddingSizeSmall),
-                  ],
-                ),
-                const SizedBox(height: Dimensions.paddingSizeLarge),
-                Container(height: 1, color: ColorResources.getGreyColor(context).withValues(alpha: .2))
-              ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (isTitle) ...[
+          Padding(
+            padding: const EdgeInsets.only(top: 24, bottom: 12, left: 4),
+            child: Text(
+              DateConverterHelper.isoStringToLocalDateOnly(notification.createdAt!).toUpperCase(),
+              style: poppinsSemiBold.copyWith(
+                fontSize: 10,
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
+                letterSpacing: 1.5,
+              ),
             ),
           ),
         ],
-      ),
+        
+        InkWell(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => NotificationDialogWidget(notificationModel: notification),
+            );
+          },
+          splashColor: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+          highlightColor: Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Minimalist Icon/Image Container
+                Container(
+                  height: 54,
+                  width: 54,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: CustomImageWidget(
+                      placeholder: Images.placeHolder,
+                      image: '${splashProvider.baseUrls?.notificationImageUrl}/${notification.image}',
+                      height: 54,
+                      width: 54,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+
+                // Content Section
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        notification.title ?? '',
+                        style: poppinsSemiBold.copyWith(
+                          fontSize: Dimensions.fontSizeLarge,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        notification.description ?? '',
+                        style: poppinsRegular.copyWith(
+                          fontSize: Dimensions.fontSizeDefault,
+                          color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
+                          height: 1.4,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(width: 8),
+                
+                // Subtle arrow indicator
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Icon(
+                    Icons.arrow_forward_ios, 
+                    size: 12, 
+                    color: Theme.of(context).disabledColor.withValues(alpha: 0.2),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        
+        // Very subtle, partial divider
+        Padding(
+          padding: const EdgeInsets.only(left: 70),
+          child: Divider(
+            height: 1,
+            thickness: 0.5,
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.08),
+          ),
+        ),
+      ],
     );
   }
 }

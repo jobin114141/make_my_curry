@@ -14,65 +14,79 @@ class SignOutDialogWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Consumer<AuthProvider>(
       builder: (context, auth, child) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child:  SizedBox(
-          width: 300,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault)),
+        elevation: 10,
+        backgroundColor: Theme.of(context).cardColor,
+        child: Container(
+          width: 320,
+          padding: const EdgeInsets.all(Dimensions.paddingSizeExtraLarge),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
 
-            const SizedBox(height: 20),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: Icon(Icons.contact_support, size: 50, color: Theme.of(context).primaryColor),
-            ),
-
-            Padding(
+            Container(
               padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-              child: Text(getTranslated('want_to_sign_out', context), style: poppinsBold, textAlign: TextAlign.center),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.logout_rounded, size: 40, color: Theme.of(context).primaryColor),
             ),
+            const SizedBox(height: Dimensions.paddingSizeLarge),
 
-            Divider(height: 0, color: Theme.of(context).hintColor.withValues(alpha: 0.6)),
-            !auth.isLoading ? Row(children: [
+            Text(
+              getTranslated('want_to_sign_out', context),
+              style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: Dimensions.paddingSizeExtraLarge),
 
-             Expanded(child: InkWell(
-               onTap: () async {
-                 auth.signOut().then((value) {
-                  if(context.mounted ) {
-                    showCustomSnackBarHelper(getTranslated('logout_successful', context), isError: false);
-
-
-                    if(ResponsiveHelper.isWeb()) {
-                      Navigator.pushNamedAndRemoveUntil(context, RouteHelper.getMainRoute(), (route) => false);
-                    }else {
-                      Navigator.pushNamedAndRemoveUntil(context, RouteHelper.getLoginRoute(), (route) => false);
-                    }
-                  }
-                });
-               },
-                child: Container(
-                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10))),
-                  child: Text(getTranslated('yes', context), style: poppinsBold.copyWith(color: Theme.of(context).primaryColor)),
+            !auth.isLoading ? Column(children: [
+              
+              SizedBox(
+                width: double.infinity,
+                height: 45,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    auth.signOut().then((value) {
+                      if(context.mounted) {
+                        showCustomSnackBarHelper(getTranslated('logout_successful', context), isError: false);
+                        if(ResponsiveHelper.isWeb()) {
+                          Navigator.pushNamedAndRemoveUntil(context, RouteHelper.getMainRoute(), (route) => false);
+                        } else {
+                          Navigator.pushNamedAndRemoveUntil(context, RouteHelper.getLoginRoute(), (route) => false);
+                        }
+                      }
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault)),
+                    elevation: 0,
+                  ),
+                  child: Text(getTranslated('yes', context), style: poppinsSemiBold.copyWith(color: Colors.white)),
                 ),
-              )),
+              ),
+              const SizedBox(height: Dimensions.paddingSizeSmall),
 
-             Expanded(child: InkWell(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: const BorderRadius.only(bottomRight: Radius.circular(10))),
-                  child: Text(getTranslated('no', context), style: poppinsBold.copyWith(color: Colors.white)),
+              SizedBox(
+                width: double.infinity,
+                height: 45,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+                      side: BorderSide(color: Theme.of(context).primaryColor.withValues(alpha: 0.2)),
+                    ),
+                  ),
+                  child: Text(getTranslated('no', context), style: poppinsSemiBold.copyWith(color: Theme.of(context).primaryColor)),
                 ),
-              )),
+              ),
 
             ]) : Center(child: CustomLoaderWidget(color: Theme.of(context).primaryColor)),
           ]),
-        )
+        ),
       ),
     );
   }

@@ -105,7 +105,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12, top: 4),
                         child: Text(
-                          getTranslated('sub_categories', context).replaceAll('_', ' '),
+                          getTranslated('sub_categories', context),
                           style: poppinsSemiBold.copyWith(
                             fontSize: Dimensions.fontSizeLarge,
                             color: Theme.of(context).primaryColor,

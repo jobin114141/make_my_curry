@@ -50,8 +50,6 @@ class CustomTextFieldWidget extends StatefulWidget {
   final GlobalKey? toolTipKey;
   final bool isSuffixIconLoading;
 
-  //final LanguageProvider languageProvider;
-
   const CustomTextFieldWidget({super.key, this.hintText = 'Write something...',
         this.controller,
         this.focusNode,
@@ -97,8 +95,11 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
   @override
   void initState() {
     widget.focusNode?.addListener(() {
-      isFocusActive = widget.focusNode!.hasFocus;
-      setState(() {});
+      if(mounted){
+        setState(() {
+          isFocusActive = widget.focusNode!.hasFocus;
+        });
+      }
     });
     widget.toolTipKey != null ? showAndCloseTooltip(widget.toolTipKey) : null;
     super.initState();
@@ -114,155 +115,145 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
 
   @override
   Widget build(BuildContext context) {
-
     final Size size = MediaQuery.of(context).size;
+    final borderRadius = BorderRadius.circular(ResponsiveHelper.isDesktop(context) ? 20 : 16);
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
 
       if(widget.title?.isNotEmpty ?? false)...[
-        RichText(text: TextSpan(children: [
-
-          TextSpan(
-            text: widget.title,
-            style: poppinsMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color),
-          ),
-
-          if(widget.isRequired)
-            TextSpan(
-              text: '*',
-              style: poppinsMedium.copyWith(color: Theme.of(context).colorScheme.error),
-            ),
-
-
-        ])),
-        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-      ],
-
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(ResponsiveHelper.isDesktop(context)? 20 : 12),
-            boxShadow: [
-              BoxShadow(
-                color: widget.isElevation ? Colors.grey[Provider.of<ThemeProvider>(context).darkTheme ? 700 : 200]! : Colors.transparent,
-                spreadRadius: 0.5,
-                blurRadius: 0.5,
-                // changes position of shadow
-              ),
-            ],
-          ),
-          child: TextFormField(
-            maxLines: widget.maxLines,
-            controller: widget.controller,
-            focusNode: widget.focusNode,
-            style: Theme.of(context).textTheme.displayMedium!.copyWith(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: Dimensions.fontSizeLarge),
-            textInputAction: widget.inputAction,
-            keyboardType: widget.inputType,
-            cursorColor: Theme.of(context).primaryColor,
-            textCapitalization: widget.capitalization,
-            enabled: widget.isEnabled,
-            autofocus: false,
-            //onChanged: widget.isSearch ? widget.languageProvider.searchLanguage : null,
-            obscureText: widget.isPassword ? _obscureText : false,
-            inputFormatters: widget.inputType == TextInputType.phone ? <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp('[0-9+]'))] : null,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault, horizontal: widget.isPadding ? 22:0),
-              enabledBorder: !widget.isShowBorder ? InputBorder.none : OutlineInputBorder(
-                borderRadius: ResponsiveHelper.isDesktop(context) ? BorderRadius.circular(5.0) : BorderRadius.circular(7.0),
-                borderSide: BorderSide(width: 1 , color: Theme.of(context).hintColor.withValues(alpha: 0.3)),
-              ),
-              focusedBorder: !widget.isShowBorder ? InputBorder.none : OutlineInputBorder(
-                borderRadius: ResponsiveHelper.isDesktop(context) ? BorderRadius.circular(5.0) : BorderRadius.circular(7.0),
-                borderSide: BorderSide(width: 1 ,color: Theme.of(context).primaryColor.withValues(alpha: 0.6)),
-              ),
-              border: !widget.isShowBorder ? InputBorder.none : OutlineInputBorder(
-                borderRadius: ResponsiveHelper.isDesktop(context) ? BorderRadius.circular(5.0) : BorderRadius.circular(7.0),
-
-                borderSide: BorderSide( width: 1 , color: Theme.of(context).hintColor.withValues(alpha: 0.6)),
-              ),
-              disabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Theme.of(context).hintColor.withValues(alpha: 0.1), ),  // Border color when disabled
-              ),
-              isDense: true,
-              hintText: widget.hintText,
-              fillColor: widget.fillColor ?? Theme.of(context).cardColor,
-              hintStyle: poppinsLight.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).hintColor.withValues(alpha: 0.6)),
-              filled: true,
-              prefixIcon: widget.isShowPrefixIcon
-                  ? IconButton(
-                      padding: const EdgeInsets.all(0),
-                      icon: widget.prefixAssetUrl != null ? Image.asset(
-                          widget.prefixAssetUrl!,
-                          color: widget.prefixAssetImageColor ?? Theme.of(context).primaryColor,
-                        scale: 2.5,
-                      ) : Icon(
-                        widget.prefixIconUrl,
-                        color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.6),
-                      ),
-                      onPressed: () {},
-                    )
-                  : widget.countryDialCode != null ? Padding( padding:  EdgeInsets.only(left: widget.isShowBorder == true ?  10: 0),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  CountryCodePickerWidget(
-                    onChanged: widget.onCountryChanged,
-                    initialSelection: widget.countryDialCode,
-                    favorite: [widget.countryDialCode ?? ""],
-                    showDropDownButton: true,
-                    padding: EdgeInsets.zero,
-                    showFlagMain: true,
-                    showFlagDialog: true,
-                    dialogSize: Size(Dimensions.webScreenWidth/2, size.height*0.6),
-                    dialogBackgroundColor: Theme.of(context).cardColor,
-                    //barrierColor: Get.isDarkMode?Colors.black.withValues(alpha: 0.4):null,
-                    textStyle: poppinsRegular.copyWith(
-                      fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge!.color),
-                  ),
-                ])): null,
-              prefixIconConstraints: const BoxConstraints(minWidth: 23, maxHeight: 20),
-              suffixIcon: widget.isShowSuffixIcon
-                  ? widget.isPassword
-                      ? IconButton(
-                          icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: Theme.of(context).hintColor.withValues(alpha: 0.3)),
-                          onPressed: _toggle)
-                      : widget.isIcon
-                          ? IconButton(
-                              onPressed: widget.onSuffixTap as void Function()?,
-                              icon: ResponsiveHelper.isDesktop(context)? Image.asset(
-                                widget.suffixAssetUrl!,
-                                width: 20,
-                                height: 20,
-                                color: widget.imageColor ?? Theme.of(context).textTheme.bodyLarge!.color,
-                              ) : Icon(widget.suffixIconUrl, color: Theme.of(context).hintColor.withValues(alpha: 0.6)),
-                            )
-                  : widget.isToolTipSuffix ?
-              Tooltip(
-                key: widget.toolTipKey,
-                preferBelow: false,
-                margin: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
-                triggerMode: TooltipTriggerMode.manual,
-                message : widget.toolTipMessage ?? '',
-                child: IconButton(
-                  onPressed: widget.onSuffixTap as void Function()?,
-                  icon: CustomAssetImageWidget(
-                    widget.suffixAssetUrl!,
-                    width: 20,
-                    height: 20,
-                  ),),
-              ) : widget.isSuffixIconLoading ?
-                  Container(
-                    height: 15, width: 15,
-                    padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-                    child: const CupertinoActivityIndicator(),
-                  ): null : null,
-            ),
-            onTap: widget.onTap as void Function()?,
-            onChanged: widget.onChanged as void Function(String)?,
-            onFieldSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus)
-                : widget.onSubmit != null ? widget.onSubmit!(text) : null,
-            validator: widget.onValidate,
-
+        Text(
+          widget.title! + (widget.isRequired ? '*' : ''),
+          style: poppinsMedium.copyWith(
+            color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.8),
+            fontSize: Dimensions.fontSizeDefault,
           ),
         ),
+        const SizedBox(height: Dimensions.paddingSizeSmall),
       ],
+
+      AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: widget.fillColor ?? Theme.of(context).cardColor,
+          borderRadius: borderRadius,
+          border: Border.all(
+            color: isFocusActive 
+                ? Theme.of(context).primaryColor.withValues(alpha: 0.5)
+                : Theme.of(context).primaryColor.withValues(alpha: 0.08),
+            width: 1.5,
+          ),
+          boxShadow: [
+            if (isFocusActive)
+              BoxShadow(
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                blurRadius: 10,
+                spreadRadius: 2,
+              ),
+            if (widget.isElevation && !isFocusActive)
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 5,
+                spreadRadius: 1,
+              ),
+          ],
+        ),
+        child: TextFormField(
+          maxLines: widget.maxLines,
+          controller: widget.controller,
+          focusNode: widget.focusNode,
+          style: poppinsMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge!.color, fontSize: Dimensions.fontSizeLarge),
+          textInputAction: widget.inputAction,
+          keyboardType: widget.inputType,
+          cursorColor: Theme.of(context).primaryColor,
+          textCapitalization: widget.capitalization,
+          enabled: widget.isEnabled,
+          autofocus: false,
+          obscureText: widget.isPassword ? _obscureText : false,
+          inputFormatters: widget.inputType == TextInputType.phone ? <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp('[0-9+]'))] : null,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(vertical: 18, horizontal: widget.isPadding ? 20 : 0),
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            isDense: true,
+            hintText: widget.hintText,
+            hintStyle: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.3)),
+            prefixIcon: widget.isShowPrefixIcon
+                ? Container(
+                    padding: const EdgeInsets.all(12),
+                    child: widget.prefixAssetUrl != null ? Image.asset(
+                        widget.prefixAssetUrl!,
+                        color: widget.prefixAssetImageColor ?? Theme.of(context).primaryColor,
+                        width: 20, height: 20,
+                    ) : Icon(
+                      widget.prefixIconUrl,
+                      color: Theme.of(context).primaryColor.withValues(alpha: 0.6),
+                      size: 20,
+                    ),
+                  )
+                : widget.countryDialCode != null ? Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      CountryCodePickerWidget(
+                        onChanged: widget.onCountryChanged,
+                        initialSelection: widget.countryDialCode,
+                        favorite: [widget.countryDialCode ?? ""],
+                        showDropDownButton: true,
+                        padding: EdgeInsets.zero,
+                        showFlagMain: true,
+                        showFlagDialog: true,
+                        dialogSize: Size(Dimensions.webScreenWidth/2, size.height*0.6),
+                        dialogBackgroundColor: Theme.of(context).cardColor,
+                        textStyle: poppinsSemiBold.copyWith(
+                          fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge!.color),
+                      ),
+                      Container(height: 20, width: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.2)),
+                      const SizedBox(width: 10),
+                    ]),
+                  ) : null,
+            prefixIconConstraints: const BoxConstraints(minWidth: 40, maxHeight: 60),
+            suffixIcon: widget.isShowSuffixIcon
+                ? widget.isPassword
+                    ? IconButton(
+                        icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: Theme.of(context).primaryColor.withValues(alpha: 0.4)),
+                        onPressed: _toggle)
+                    : widget.isIcon
+                        ? IconButton(
+                            onPressed: widget.onSuffixTap as void Function()?,
+                            icon: widget.suffixAssetUrl != null ? Image.asset(
+                              widget.suffixAssetUrl!,
+                              width: 20, height: 20,
+                              color: widget.imageColor ?? Theme.of(context).primaryColor,
+                            ) : Icon(widget.suffixIconUrl, color: Theme.of(context).primaryColor.withValues(alpha: 0.6)),
+                          )
+                : widget.isToolTipSuffix ?
+            Tooltip(
+              key: widget.toolTipKey,
+              preferBelow: false,
+              margin: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
+              triggerMode: TooltipTriggerMode.manual,
+              message : widget.toolTipMessage ?? '',
+              child: IconButton(
+                onPressed: widget.onSuffixTap as void Function()?,
+                icon: CustomAssetImageWidget(
+                  widget.suffixAssetUrl!,
+                  width: 20, height: 20,
+                ),),
+            ) : widget.isSuffixIconLoading ?
+                Container(
+                  height: 15, width: 15,
+                  padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                  child: const CupertinoActivityIndicator(),
+                ): null : null,
+          ),
+          onTap: widget.onTap as void Function()?,
+          onChanged: widget.onChanged as void Function(String)?,
+          onFieldSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus)
+              : widget.onSubmit != null ? widget.onSubmit!(text) : null,
+          validator: widget.onValidate,
+        ),
+      ),
+    ],
     );
   }
 

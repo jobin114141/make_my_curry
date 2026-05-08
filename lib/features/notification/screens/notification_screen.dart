@@ -12,6 +12,7 @@ import 'package:flutter_grocery/common/widgets/custom_loader_widget.dart';
 import 'package:flutter_grocery/common/widgets/footer_web_widget.dart';
 import 'package:flutter_grocery/common/widgets/no_data_widget.dart';
 import 'package:flutter_grocery/common/widgets/web_app_bar_widget.dart';
+import 'package:flutter_grocery/utill/dimensions.dart';
 import 'package:provider/provider.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -26,7 +27,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   void initState() {
     Provider.of<NotificationProvider>(context, listen: false).getNotificationList(isUpdate: false);
-
     super.initState();
   }
 
@@ -34,26 +34,25 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     final SplashProvider splashProvider = Provider.of<SplashProvider>(context, listen: false);
 
-
     return PopScope(
       canPop: ResponsiveHelper.isWeb() ? true : false,
       onPopInvokedWithResult: (bool didPop, _) {
         if(didPop) return;
-
         if (Navigator.canPop(context) && !ResponsiveHelper.isDesktop(context)) {
           Navigator.pop(context);
-          return;
         } else if(!didPop && !Navigator.canPop(context)){
           Navigator.of(context).pushNamedAndRemoveUntil(RouteHelper.menu, (route) => false);
           splashProvider.setPageIndex(0);
-          return;
         }
       },
       child: Scaffold(
+        backgroundColor: Theme.of(context).cardColor,
         appBar: (ResponsiveHelper.isDesktop(context) ? const PreferredSize(
           preferredSize: Size.fromHeight(120),
           child: WebAppBarWidget(),
-        ) : CustomAppBarWidget(title: getTranslated('notification', context),
+        ) : CustomAppBarWidget(
+          title: getTranslated('notification', context),
+          isBackButtonExist: true,
           onBackPressed: (){
             if(!Navigator.canPop(context)){
               Navigator.of(context).pushNamedAndRemoveUntil(RouteHelper.menu, (route) => false);
@@ -68,42 +67,59 @@ class _NotificationScreenState extends State<NotificationScreen> {
             await Provider.of<NotificationProvider>(context, listen: false).getNotificationList();
           },
           backgroundColor: Theme.of(context).primaryColor,
+          color: Colors.white,
           child: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(child: Consumer<NotificationProvider>(builder: (context, notificationProvider, child) {
-                List<DateTime> dateTimeList = [];
+              SliverToBoxAdapter(
+                child: Center(
+                  child: Container(
+                    width: Dimensions.webScreenWidth,
+                    constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height * 0.7),
+                    child: Consumer<NotificationProvider>(builder: (context, notificationProvider, child) {
+                      List<DateTime> dateTimeList = [];
 
-                return notificationProvider.notificationList != null ? notificationProvider.notificationList!.isNotEmpty ? ListView.builder(
-                  itemCount: notificationProvider.notificationList!.length,
-                  padding: ResponsiveHelper.isDesktop(context) ? const EdgeInsets.symmetric(horizontal: 350, vertical: 20) :  EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    DateTime originalDateTime = DateConverterHelper.isoStringToLocalDate(notificationProvider.notificationList![index].createdAt!);
-                    DateTime convertedDate = DateTime(originalDateTime.year, originalDateTime.month, originalDateTime.day);
-                    bool addTitle = false;
-                    if(!dateTimeList.contains(convertedDate)) {
-                      addTitle = true;
-                      dateTimeList.add(convertedDate);
-                    }
-                    return NotificationItemWidget(isTitle: addTitle, notification: notificationProvider.notificationList![index],);
-                  },
-                ) : NoDataWidget(
-                  title: getTranslated('no_notification_found', context),
-                ) : SizedBox(height: MediaQuery.of(context).size.height * 0.6, child: Center(child: CustomLoaderWidget(color: Theme.of(context).primaryColor)));
+                      if (notificationProvider.notificationList == null) {
+                        return Center(child: CustomLoaderWidget(color: Theme.of(context).primaryColor));
+                      }
 
+                      if (notificationProvider.notificationList!.isEmpty) {
+                        return NoDataWidget(
+                          title: getTranslated('no_notification_found', context),
+                          // showFooter: true,
+                        );
+                      }
 
-              })),
-
+                      return ListView.builder(
+                        itemCount: notificationProvider.notificationList!.length,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveHelper.isDesktop(context) ? 100 : Dimensions.paddingSizeDefault,
+                          vertical: Dimensions.paddingSizeLarge,
+                        ),
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          DateTime originalDateTime = DateConverterHelper.isoStringToLocalDate(notificationProvider.notificationList![index].createdAt!);
+                          DateTime convertedDate = DateTime(originalDateTime.year, originalDateTime.month, originalDateTime.day);
+                          bool addTitle = false;
+                          if(!dateTimeList.contains(convertedDate)) {
+                            addTitle = true;
+                            dateTimeList.add(convertedDate);
+                          }
+                          return NotificationItemWidget(
+                            isTitle: addTitle, 
+                            notification: notificationProvider.notificationList![index],
+                          );
+                        },
+                      );
+                    }),
+                  ),
+                ),
+              ),
               const FooterWebWidget(footerType: FooterType.sliver),
-
             ],
-
           ),
         ),
       ),
     );
   }
 }
-
-

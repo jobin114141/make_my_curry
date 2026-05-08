@@ -13,7 +13,6 @@ import 'package:flutter_grocery/features/auth/enum/from_page_enum.dart';
 import 'package:flutter_grocery/features/auth/enum/verification_type_enum.dart';
 import 'package:flutter_grocery/features/auth/providers/auth_provider.dart';
 import 'package:flutter_grocery/features/auth/providers/verification_provider.dart';
-import 'package:flutter_grocery/features/auth/widgets/social_login_widget.dart';
 import 'package:flutter_grocery/features/splash/providers/splash_provider.dart';
 import 'package:flutter_grocery/helper/auth_helper.dart';
 import 'package:flutter_grocery/helper/custom_snackbar_helper.dart';
@@ -29,13 +28,11 @@ import 'package:provider/provider.dart';
 class SendOtpScreen extends StatefulWidget {
   const SendOtpScreen({super.key});
 
-
   @override
   State<SendOtpScreen> createState() => _SendOtpScreenState();
 }
 
 class _SendOtpScreenState extends State<SendOtpScreen> {
-
   String? countryCode;
   TextEditingController? _phoneNumberController;
 
@@ -45,84 +42,70 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
     _phoneNumberController = TextEditingController();
 
     final ConfigModel configModel = Provider.of<SplashProvider>(context, listen: false).configModel!;
-    final AuthProvider authProvider =  Provider.of<AuthProvider>(context, listen: false);
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     UserLogData? userData = authProvider.getUserData();
-    if(userData != null && userData.loginType == FromPage.otp.name) {
-      if(userData.phoneNumber != null){
+    if (userData != null && userData.loginType == FromPage.otp.name) {
+      if (userData.phoneNumber != null) {
         _phoneNumberController!.text = PhoneNumberCheckerHelper.getPhoneNumber(userData.phoneNumber ?? '', userData.countryCode ?? '') ?? '';
       }
       countryCode ??= userData.countryCode;
-    }else{
+    } else {
       countryCode ??= CountryCode.fromCountryCode(configModel.country!).dialCode;
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-
-    final Size size = MediaQuery.of(context).size;
     final ConfigModel configModel = Provider.of<SplashProvider>(context, listen: false).configModel!;
 
     return CustomPopScopeWidget(
       child: Scaffold(
-        appBar: ResponsiveHelper.isDesktop(context)? const PreferredSize(preferredSize: Size.fromHeight(120), child: WebAppBarWidget()) : PreferredSize(
-          preferredSize: const Size.fromHeight(40),
-          child: CustomAppBarWidget(
-            isBackButtonExist: true,
-            title: '',
-            onBackPressed: (){
-              if(Navigator.canPop(context)){
-                Navigator.pop(context);
-              }
-            },
-          ),
-        ),
+        backgroundColor: Theme.of(context).cardColor,
+        appBar: ResponsiveHelper.isDesktop(context)
+            ? const PreferredSize(preferredSize: Size.fromHeight(120), child: WebAppBarWidget())
+            : PreferredSize(
+                preferredSize: const Size.fromHeight(50),
+                child: CustomAppBarWidget(
+                  isBackButtonExist: true,
+                  title: '',
+                  onBackPressed: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+              ),
         body: SafeArea(
-          child: Center(
-            child: CustomScrollView(slivers: [
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Center(
+                  child: Container(
+                    width: Dimensions.webScreenWidth,
+                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraLarge),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 60),
+                        
+                        // --- Premium Header ---
+                        Image.asset(Images.appLogo, height: 60, fit: BoxFit.contain),
+                        const SizedBox(height: 40),
+                        
+                        Text(
+                          getTranslated('welcome_back', context),
+                          style: poppinsSemiBold.copyWith(fontSize: 32, height: 1.2, color: Theme.of(context).primaryColor),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          getTranslated('enter_mobile_number_to_login', context),
+                          style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).disabledColor),
+                        ),
+                        
+                        const SizedBox(height: 50),
 
-              SliverToBoxAdapter(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-
-                if(ResponsiveHelper.isDesktop(context))
-                  SizedBox(height: size.width * 0.02),
-
-                Center(child: Container(
-                  width: size.width > 700 ? 450 : size.width,
-                  margin: const EdgeInsets.only(top: Dimensions.paddingSizeLarge),
-                  padding: size.width > 700 ? const EdgeInsets.all(Dimensions.paddingSizeDefault) : null,
-                  decoration: size.width > 700 ? BoxDecoration(
-                    color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(color: Theme.of(context).shadowColor, blurRadius: 5, spreadRadius: 1),
-                    ],
-                  ) : null,
-                  child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-
-                    SizedBox(height: ResponsiveHelper.isDesktop(context) ? size.height * 0.08 : size.height * 0.14),
-
-                    Consumer<SplashProvider>(
-                      builder: (context, splash, child) {
-                        return Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Image.asset(
-                            Images.appLogo, height: ResponsiveHelper.isDesktop(context)
-                              ? MediaQuery.of(context).size.height * 0.15
-                              : MediaQuery.of(context).size.height / 4.5,
-                            fit: BoxFit.scaleDown,
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: size.height * 0.05),
-
-                    Row(children: [
-
-                      Expanded(child: Container()),
-
-                      Expanded(flex: 7, child: Column(children: [
-
+                        // --- Input Field ---
                         CustomTextFieldWidget(
                           countryDialCode: countryCode,
                           onCountryChanged: (CountryCode value) => countryCode = value.dialCode,
@@ -131,127 +114,108 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
                           controller: _phoneNumberController,
                           inputType: TextInputType.phone,
                           title: getTranslated('mobile_number', context),
+                          isElevation: false,
+                          fillColor: Theme.of(context).primaryColor.withValues(alpha: 0.03),
                         ),
-                        SizedBox(height: size.height * 0.03),
+                        const SizedBox(height: Dimensions.paddingSizeLarge),
 
+                        // --- Remember Me ---
                         Consumer<AuthProvider>(builder: (context, authProvider, child) {
                           return InkWell(
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
-                            onTap: ()=> authProvider.onChangeRememberMeStatus(),
-                            child: Row(children: [
-
-                              Container(width: 18, height: 18,
-                                decoration: BoxDecoration(
-                                  color: authProvider.isActiveRememberMe ? Theme.of(context).primaryColor : Theme.of(context).cardColor,
-                                  border: Border.all(color: authProvider.isActiveRememberMe ? Colors.transparent : Theme.of(context).primaryColor),
-                                  borderRadius: BorderRadius.circular(3),
+                            onTap: () => authProvider.onChangeRememberMeStatus(),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                                Container(
+                                  width: 20, height: 20,
+                                  decoration: BoxDecoration(
+                                    color: authProvider.isActiveRememberMe ? Theme.of(context).primaryColor : Colors.transparent,
+                                    border: Border.all(color: authProvider.isActiveRememberMe ? Colors.transparent : Theme.of(context).primaryColor.withValues(alpha: 0.3)),
+                                    borderRadius: BorderRadius.circular(Dimensions.radiusSizeSmall),
+                                  ),
+                                  child: authProvider.isActiveRememberMe
+                                      ? const Icon(Icons.check, color: Colors.white, size: 14)
+                                      : null,
                                 ),
-                                child: authProvider.isActiveRememberMe
-                                    ? const Icon(Icons.done, color: Colors.white, size: 17)
-                                    : const SizedBox.shrink(),
-                              ),
-                              const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                              Text(getTranslated('remember_me', context),
-                                style: Theme.of(context).textTheme.displayMedium!.copyWith(
-                                  fontSize: Dimensions.fontSizeExtraSmall,
-                                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                                const SizedBox(width: Dimensions.paddingSizeSmall),
+                                Text(
+                                  getTranslated('remember_me', context),
+                                  style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7)),
                                 ),
-                              ),
-
-                            ]),
+                              ]),
+                            ),
                           );
                         }),
-                        SizedBox(height: size.height * 0.03),
+                        
+                        const SizedBox(height: 40),
 
+                        // --- Action Button ---
                         Consumer<VerificationProvider>(builder: (context, verificationProvider, child) {
-                          return CustomButtonWidget(
-                            isLoading: verificationProvider.isLoading,
-                            buttonText: getTranslated('get_otp', context),
-                            onPressed: () async {
-                              if (_phoneNumberController!.text.isEmpty) {
-                                showCustomSnackBarHelper(getTranslated('enter_phone_number', context));
-                              }else {
-                                String phoneWithCountryCode = countryCode! + _phoneNumberController!.text.trim();
-                                if(PhoneNumberCheckerHelper.isPhoneValidWithCountryCode(phoneWithCountryCode)){
-                                  if(AuthHelper.isPhoneVerificationEnable(configModel)){
-                                    await verificationProvider.sendVerificationCode(context,
-                                      configModel, phoneWithCountryCode, type: VerificationType.phone.name,
-                                      fromPage: FromPage.otp.name
-                                    );
+                          return SizedBox(
+                            width: double.infinity,
+                            child: CustomButtonWidget(
+                              isLoading: verificationProvider.isLoading,
+                              buttonText: getTranslated('get_otp', context),
+                              borderRadius: 50, // Pill shape
+                              onPressed: () async {
+                                if (_phoneNumberController!.text.isEmpty) {
+                                  showCustomSnackBarHelper(getTranslated('enter_phone_number', context));
+                                } else {
+                                  String phoneWithCountryCode = countryCode! + _phoneNumberController!.text.trim();
+                                  if (PhoneNumberCheckerHelper.isPhoneValidWithCountryCode(phoneWithCountryCode)) {
+                                    if (AuthHelper.isPhoneVerificationEnable(configModel)) {
+                                      await verificationProvider.sendVerificationCode(
+                                          context, configModel, phoneWithCountryCode,
+                                          type: VerificationType.phone.name, fromPage: FromPage.otp.name);
+                                    }
+                                  } else {
+                                    showCustomSnackBarHelper(getTranslated('invalid_phone_number', context));
                                   }
-                                }else{
-                                  showCustomSnackBarHelper(getTranslated('invalid_phone_number', context));
                                 }
-
-                              }
-                            },
+                              },
+                            ),
                           );
                         }),
-                        const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+                        
+                        const SizedBox(height: 30),
 
-                        if(AuthHelper.isSocialMediaLoginEnable(configModel) && !AuthHelper.isManualLoginEnable(configModel))...[
-                          Center(child: Text(
-                            getTranslated('or', context),
-                            style: poppinsRegular.copyWith(
-                              fontSize: Dimensions.fontSizeDefault,
-                              color: Theme.of(context).hintColor,
-                            ),
-                          )),
-                          const SizedBox(height: Dimensions.paddingSizeDefault),
-
-                          const SocialLoginWidget(),
-                          const SizedBox(height: Dimensions.paddingSizeLarge),
-                        ],
-
-                      ])),
-
-                      Expanded(child: Container()),
-
-                    ]),
-
-                    if(configModel.isGuestCheckout == true && !Navigator.canPop(context))...[
-                      Center(child: InkWell(
-                        onTap: () => Navigator.pushNamedAndRemoveUntil(context, RouteHelper.getMainRoute(), (route) => false),
-                        child: RichText(text: TextSpan(children: [
-
-                          TextSpan(text: '${getTranslated('continue_as_a', context)} ',
-                            style: poppinsRegular.copyWith(
-                              fontSize: Dimensions.fontSizeSmall,
-                              color: Theme.of(context).hintColor,
+                        // --- Guest Link ---
+                        if (configModel.isGuestCheckout == true && !Navigator.canPop(context))
+                          Center(
+                            child: TextButton(
+                              onPressed: () => Navigator.pushNamedAndRemoveUntil(context, RouteHelper.getMainRoute(), (route) => false),
+                              child: RichText(
+                                text: TextSpan(children: [
+                                  TextSpan(
+                                    text: '${getTranslated('continue_as_a', context)} ',
+                                    style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).hintColor),
+                                  ),
+                                  TextSpan(
+                                    text: getTranslated('guest', context),
+                                    style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor),
+                                  ),
+                                ]),
+                              ),
                             ),
                           ),
-
-                          TextSpan(text: getTranslated('guest', context),
-                            style: poppinsRegular.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-
-                        ])),
-                      )),
-                    ],
-
-                  ])),
-                )),
-
-                if(ResponsiveHelper.isDesktop(context))
-                  SizedBox(height: size.width * 0.02),
-
-              ]))),
-
-              if(ResponsiveHelper.isDesktop(context)) const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-
-                  SizedBox(height: Dimensions.paddingSizeLarge),
-                  FooterWebWidget(footerType: FooterType.nonSliver),
-
-                ]),
+                          
+                        const SizedBox(height: 50),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-
-            ]),
+              if (ResponsiveHelper.isDesktop(context))
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    SizedBox(height: Dimensions.paddingSizeLarge),
+                    FooterWebWidget(footerType: FooterType.nonSliver),
+                  ]),
+                ),
+            ],
           ),
         ),
       ),

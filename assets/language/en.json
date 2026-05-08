@@ -673,5 +673,7 @@
   "now_pay_you_bill_using_the_payment_method": "Now, Pay your bill using the payment method",
   "now_wait_for_your_payment_to_be_verified" : "Now, wait for your payment to be verified",
   "phone": "Phone",
-  "payment_method_unavailable_talk_to_admin": "This payment method is currently unavailable. Please contact with admin."
+  "payment_method_unavailable_talk_to_admin": "This payment method is currently unavailable. Please contact with admin.",
+  "welcome_back": "Welcome Back!",
+  "enter_mobile_number_to_login": "Enter your mobile number to login"
 }

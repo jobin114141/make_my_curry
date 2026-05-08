@@ -11,5 +11,5 @@ String getTranslated(String? key, BuildContext context) {
       print('not localized --- $error');
     }
   }
-  return text!;
+  return text?.replaceAll('_', ' ') ?? '';
 }
