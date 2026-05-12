@@ -18,406 +18,183 @@ class MessageBubbleWidget extends StatelessWidget {
   const MessageBubbleWidget({super.key, this.messages, this.isAdmin});
   @override
   Widget build(BuildContext context) {
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    final bool isMe = isAdmin!
+        ? (messages!.isReply == null || !messages!.isReply!)
+        : (messages!.deliverymanId == null);
 
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-    return !isAdmin! ? messages!.deliverymanId != null ?
-    Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
-      ),
+    final String? displayMessage =
+        (messages!.message != null && messages!.message!.isNotEmpty)
+            ? messages!.message
+            : messages!.reply;
 
-      child: Padding(
-        padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(messages!.deliverymanId!.name??'',style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge),),
-            const SizedBox(height: Dimensions.paddingSizeSmall),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
-                  child: Container(width: 30, height: 30,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(width: .5,color: Theme.of(context).hintColor)
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50.0),
-                      child: FadeInImage.assetNetwork(
-                        placeholder: Images.profilePlaceholder, fit: BoxFit.cover, width: 40, height: 40,
-                        image: '${Provider.of<SplashProvider>(context,listen: false).baseUrls!.deliveryManImageUrl}/${messages!.deliverymanId!.image??''}',
-                        imageErrorBuilder: (c, o, s) => Image.asset(Images.profilePlaceholder, fit: BoxFit.cover),
-                      ),
-                    ),
-                  ),
-                ),
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                     if(messages!.message != null) Flexible(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).secondaryHeaderColor,
-                            borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(10),
-                              bottomRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.all(messages!.message != null?Dimensions.paddingSizeDefault:0),
-                            child: Text(messages!.message??''),
-                          ),
-                        ),
-                      ),
-                     if( messages!.attachment !=null) const SizedBox(height: Dimensions.paddingSizeSmall),
-                      messages!.attachment !=null? GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            childAspectRatio: 1,
-                            crossAxisCount: ResponsiveHelper.isDesktop(context) ? 8 : 3,
-                            crossAxisSpacing: 5
-                        ),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: messages!.attachment!.length,
-                        itemBuilder: (BuildContext context, index){
-                          return  messages!.attachment!.isNotEmpty?
-                          InkWell(
-                            onTap: () => showDialog(context: context, builder: (ctx)  =>  ImageDialogWidget(imageUrl: messages!.attachment![index]), ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child:CustomImageWidget(
-                                placeholder: Images.placeHolder, height: 100, width: 100, fit: BoxFit.cover,
-                                image: messages!.attachment![index],
-                              ),
-                            ),
-                          ):const SizedBox();
-
-                        },):const SizedBox(),
-                    ],
-                  ),
-                ),
-
-              ],
-            ),
-
-
-
-
-
-            const SizedBox(height: Dimensions.paddingSizeSmall),
-            const SizedBox(),
-            Text(DateConverterHelper.localDateToIsoStringAMPM(DateTime.parse(messages!.createdAt!), context), style: poppinsRegular.copyWith(color: Theme.of(context).hintColor,fontSize: Dimensions.fontSizeSmall),),
-          ],
-        ),
-      ),
-    ):
-    Padding(
-      padding: const EdgeInsets.symmetric(horizontal:Dimensions.paddingSizeDefault),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
-          //color: Colors.red
-        ),
-
-        child: Padding(
-          padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-          child: Column(
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+          horizontal: Dimensions.paddingSizeDefault, vertical: 8),
+      child: Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment:
+                isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text('${profileProvider.userInfoModel?.fName} ${profileProvider.userInfoModel?.lName}',style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge),),
-              const SizedBox(height: Dimensions.paddingSizeSmall),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Flexible(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                       if(messages!.message != null) Flexible(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: ColorResources.getChatAdminColor(context),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                bottomRight: Radius.circular(10),
-                                bottomLeft: Radius.circular(10),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(messages!.message != null ? Dimensions.paddingSizeDefault:0),
-                              child: Text(messages!.message??''),
-                            ),
-                          ),
-                        ),
-                        messages!.attachment != null ? const SizedBox(height: Dimensions.paddingSizeSmall) : const SizedBox(),
-                        messages!.attachment !=null? Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: GridView.builder(
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                childAspectRatio: 1,
-                                crossAxisCount: ResponsiveHelper.isDesktop(context) ? 8: 3,
-                                crossAxisSpacing: 5
-                            ),
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: messages!.attachment!.length,
-                            itemBuilder: (BuildContext context, index){
-                              return  (messages!.attachment!.isNotEmpty) ?
-                              InkWell(
-                                onTap: () => showDialog(context: context, builder: (ctx)  =>  ImageDialogWidget(imageUrl: messages!.attachment![index]), ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(5),
-                                  child: CustomImageWidget(
-                                    height: 100, width: 100, fit: BoxFit.cover,
-                                    image: messages!.attachment![index],
-                                  ),
-                                ),
-                              ):const SizedBox();
-
-                            },),
-                        ):const SizedBox(),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CircleAvatar(
-                      radius: Dimensions.paddingSizeDefault,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50.0),
-                        child: CustomImageWidget(
-                          fit: BoxFit.cover, width: 40, height: 40,
-                          image: '${Provider.of<SplashProvider>(context,listen: false).baseUrls!.customerImageUrl}/${profileProvider.userInfoModel!.image}',
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              if (!isMe) _buildAvatar(context, messages!, isAdmin!),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment:
+                      isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  children: [
+                    if (displayMessage != null && displayMessage.isNotEmpty)
+                      _buildMessageContainer(context, displayMessage, isMe),
+                    if (messages!.attachment != null ||
+                        (messages!.image != null &&
+                            messages!.image!.isNotEmpty))
+                      _buildAttachments(context, messages!),
+                  ],
+                ),
               ),
-
-
-
-
-              const SizedBox(height: Dimensions.paddingSizeSmall),
-              Text(DateConverterHelper.localDateToIsoStringAMPM(DateTime.parse(messages!.createdAt!), context), style: poppinsRegular.copyWith(color: Theme.of(context).hintColor,fontSize: Dimensions.fontSizeSmall),),
-
+              const SizedBox(width: 8),
+              if (isMe) _buildUserAvatar(context, profileProvider),
             ],
           ),
+          const SizedBox(height: 4),
+          Padding(
+            padding: EdgeInsets.only(
+              left: isMe ? 0 : 50,
+              right: isMe ? 50 : 0,
+            ),
+            child: Text(
+              DateConverterHelper.localDateToIsoStringAMPM(
+                  DateTime.parse(messages!.createdAt!), context),
+              style: poppinsRegular.copyWith(
+                color: Theme.of(context).hintColor.withOpacity(0.6),
+                fontSize: 10,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar(BuildContext context, Messages messages, bool isAdmin) {
+    final String imageUrl = isAdmin
+        ? '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.ecommerceImageUrl}/${Provider.of<SplashProvider>(context, listen: false).configModel!.ecommerceLogo}'
+        : '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.deliveryManImageUrl}/${messages.deliverymanId?.image ?? ''}';
+
+    return Container(
+      width: 35,
+      height: 35,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+            color: Theme.of(context).primaryColor.withOpacity(0.1), width: 1),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(50),
+        child: CustomImageWidget(
+          image: imageUrl,
+          placeholder: isAdmin ? Images.appLogo : Images.profilePlaceholder,
+          fit: BoxFit.cover,
         ),
       ),
-    )
-    //customer to admin
-        :Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeExtraSmall),
-      child: (messages!.isReply != null && messages!.isReply!) ?
-      Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
+    );
+  }
 
+  Widget _buildUserAvatar(
+      BuildContext context, ProfileProvider profileProvider) {
+    return Container(
+      width: 35,
+      height: 35,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+            color: Theme.of(context).primaryColor.withOpacity(0.1), width: 1),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(50),
+        child: CustomImageWidget(
+          image:
+              '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.customerImageUrl}/${profileProvider.userInfoModel?.image}',
+          placeholder: Images.profilePlaceholder,
+          fit: BoxFit.cover,
         ),
+      ),
+    );
+  }
 
-        child: Padding(
-          padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('${Provider.of<SplashProvider>(context,listen: false).configModel!.ecommerceName}',style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge),),
-              const SizedBox(height: Dimensions.paddingSizeSmall),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
-                    child: FadeInImage.assetNetwork(
-                      placeholder: Images.appLogo, fit: BoxFit.cover, width: 40, height: 40,
-                      image: '${Provider.of<SplashProvider>(context,listen: false).baseUrls!.ecommerceImageUrl}/${Provider.of<SplashProvider>(context,listen: false).configModel!.ecommerceLogo}',
-                      imageErrorBuilder: (c, o, s) => Image.asset(Images.appLogo, fit: BoxFit.contain, width: 40, height: 40),
-                    ),
-                  ),
+  Widget _buildMessageContainer(
+      BuildContext context, String message, bool isMe) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: isMe ? Theme.of(context).primaryColor : Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(20),
+          topRight: const Radius.circular(20),
+          bottomLeft: Radius.circular(isMe ? 20 : 4),
+          bottomRight: Radius.circular(isMe ? 4 : 20),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        message,
+        style: poppinsRegular.copyWith(
+          color: isMe
+              ? Colors.white
+              : Theme.of(context).textTheme.bodyLarge?.color,
+          fontSize: Dimensions.fontSizeDefault,
+        ),
+      ),
+    );
+  }
 
+  Widget _buildAttachments(BuildContext context, Messages messages) {
+    final List<String> attachments =
+        messages.attachment ?? messages.image ?? [];
+    if (attachments.isEmpty) return const SizedBox();
 
-                  Flexible(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                      if(messages!.reply != null && messages!.reply!.isNotEmpty)  Flexible(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).secondaryHeaderColor,
-                              borderRadius: const BorderRadius.only(
-                                bottomRight: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                                bottomLeft: Radius.circular(10),
-                              ),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(messages!.reply != null?Dimensions.paddingSizeDefault:0),
-                              child: Text(messages!.reply??''),
-                            ),
-                          ),
-                        ),
-                        if(messages!.reply != null && messages!.reply!.isNotEmpty) const SizedBox(height: 8.0),
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          childAspectRatio: 1,
+          crossAxisCount: ResponsiveHelper.isDesktop(context) ? 8 : 3,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+        ),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: attachments.length,
+        itemBuilder: (context, index) {
+          final String imageUrl = attachments[index].contains('http')
+              ? attachments[index]
+              : '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.chatImageUrl}/${attachments[index]}';
 
-                        messages!.image != null ? GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              childAspectRatio: 1,
-                              crossAxisCount: ResponsiveHelper.isDesktop(context) ? 8 : 3,
-                              crossAxisSpacing: 5
-                          ),
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: messages!.image!.length,
-                          itemBuilder: (BuildContext context, index){
-                            return  messages!.image!.isNotEmpty?
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: InkWell(
-                                hoverColor: Colors.transparent,
-                                onTap: () => showDialog(context: context, builder: (ctx)  =>  ImageDialogWidget(imageUrl: '${Provider.of<SplashProvider>(context,listen: false).baseUrls!.chatImageUrl}/${messages!.image![index]}'), ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: CustomImageWidget(
-                                    placeholder: Images.placeHolder,
-                                    height: 100, width: 100, fit: BoxFit.cover,
-                                    image: '${Provider.of<SplashProvider>(context,listen: false).baseUrls!.chatImageUrl}/${messages!.image![index]}',
-                                  ),
-                                ),
-                              ),
-                            ):const SizedBox();
-
-                          },):const SizedBox(),
-
-
-                      ],
-                    ),
-                  ),
-
-                ],
+          return InkWell(
+            onTap: () => showDialog(
+                context: context,
+                builder: (ctx) => ImageDialogWidget(imageUrl: imageUrl)),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: CustomImageWidget(
+                image: imageUrl,
+                placeholder: Images.placeHolder,
+                fit: BoxFit.cover,
               ),
-
-
-
-
-
-              const SizedBox(height: Dimensions.paddingSizeSmall),
-              Text(DateConverterHelper.localDateToIsoStringAMPM(DateTime.parse(messages!.createdAt!), context), style: poppinsRegular.copyWith(color: Theme.of(context).hintColor,fontSize: Dimensions.fontSizeSmall),),
-            ],
-          ),
-        ),
-      ):
-
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal:Dimensions.paddingSizeDefault),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(Dimensions.paddingSizeSmall),
-
-          ),
-
-          child: Consumer<ProfileProvider>(
-              builder: (context, profileController,_) {
-                return Column(crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text('${profileController.userInfoModel != null?profileController.userInfoModel!.fName??'':''} ${profileController.userInfoModel != null?profileController.userInfoModel!.lName??'':''}', style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge),),
-                    const SizedBox(height: Dimensions.paddingSizeSmall),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-
-                        Flexible(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              (messages!.message != null && messages!.message!.isNotEmpty) ? Flexible(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: ColorResources.getChatAdminColor(context),
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(10),
-                                      bottomRight: Radius.circular(10),
-                                      bottomLeft: Radius.circular(10),
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(messages!.message != null?Dimensions.paddingSizeDefault:0),
-                                    child: Text(messages!.message??''),
-                                  ),
-                                ),
-                              ) : const SizedBox(),
-                              messages!.image != null ? Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: GridView.builder(
-                                  reverse: true,
-                                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                      childAspectRatio: 1,
-                                      crossAxisCount: ResponsiveHelper.isDesktop(context) ? 8 : 3,
-                                      crossAxisSpacing: 5
-                                  ),
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: messages!.image!.length,
-                                  itemBuilder: (BuildContext context, index){
-                                    return  messages!.image!.isNotEmpty?
-                                    InkWell(
-                                      onTap: () => showDialog(context: context, builder: (ctx)  =>  ImageDialogWidget(imageUrl: messages!.image![index])),
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                          left: Dimensions.paddingSizeSmall ,
-                                          right:  0,
-                                          top: (messages!.message != null && messages!.message!.isNotEmpty) ? Dimensions.paddingSizeSmall : 0,                                       ),
-                                        child:ClipRRect(
-                                          borderRadius: BorderRadius.circular(5),
-                                          child: CustomImageWidget(
-                                            placeholder: Images.placeHolder, height: 100, width: 100, fit: BoxFit.cover,
-                                            image: messages!.image![index] ,
-                                          ),
-                                        ),
-                                      ),
-                                    ):const SizedBox();
-
-                                  },),
-                              ):const SizedBox(),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: Dimensions.paddingSizeSmall),
-                          child: Container(width: 40, height: 40,
-                            decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(Dimensions.paddingSizeDefault))
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: CustomImageWidget(
-                                placeholder: Images.placeHolder, fit: BoxFit.cover, width: 40, height: 40,
-                                image: profileController.userInfoModel != null? '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.customerImageUrl}/${profileController.userInfoModel!.image}':'',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-
-                    const SizedBox(height: Dimensions.paddingSizeSmall),
-                    Text(DateConverterHelper.localDateToIsoStringAMPM(DateTime.parse(messages!.createdAt!), context), style: poppinsRegular.copyWith(color: Theme.of(context).hintColor,fontSize: Dimensions.fontSizeSmall),),
-                    const SizedBox(height: Dimensions.paddingSizeDefault),
-                  ],
-                );
-              }
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

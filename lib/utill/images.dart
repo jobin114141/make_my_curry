@@ -58,6 +58,7 @@ class Images {
 
   // Image
   static const String appLogo = 'assets/image/app_logo.png';
+  static const String splashLogo = 'assets/image/New Make My Curry Pink.png';
   static const String webBarLogoPlaceHolder = 'assets/image/web_bar_logo_place_holder.png';
   static const String onBoarding1 = 'assets/image/on_boarding_1.png';
   static const String onBoarding2 = 'assets/image/on_boarding_2.png';

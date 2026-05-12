@@ -5,7 +5,8 @@ const Color pesitoPrimary = Color(0xFF333333);
 const Color pesitoSecondary = Color(0xFFFFE4EF); // Soft, light pink
 const Color pesitoCard = Colors.white;
 const Color pesitoFocus = Color(0xFFF4A6BB); // Lighter pinkish for focus
-const Color pesitoHint = Color(0xFFF10000); // Muted, deep pinkish for hints
+const Color pesitoHint = Color(0xFF8E8E93); // Professional grey for hints
+const Color pesitoAlert = Color(0xFFF10000); // Original red for indicators
 const Color pesitoCanvas = Color(0xFFFFF6F9); // Very light, for backgrounds
 const Color pesitoShadow = Color(0x1AC70043); // Slight shadow using primary
 

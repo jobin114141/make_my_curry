@@ -8,6 +8,7 @@ import 'package:flutter_grocery/utill/dimensions.dart';
 import 'package:flutter_grocery/utill/images.dart';
 import 'package:flutter_grocery/utill/styles.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_grocery/theme/light_theme.dart';
 
 
 class MainAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
@@ -452,7 +453,7 @@ class _MenuWidget extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     alignment: Alignment.center,
-                    decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: pesitoAlert),
                     child: Center(
                       child: Text(
                           Provider.of<CartProvider>(context).cartList.length.toString(),

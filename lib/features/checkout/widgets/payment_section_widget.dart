@@ -51,8 +51,7 @@ class PaymentMethodSelectionWidget extends StatefulWidget {
 }
 
 class _PaymentMethodSelectionWidgetState
-    extends State<PaymentMethodSelectionWidget>
-    with TickerProviderStateMixin {
+    extends State<PaymentMethodSelectionWidget> with TickerProviderStateMixin {
   TextEditingController? _bringAmountController;
   List<PaymentMethod> paymentList = [];
   int? _paymentMethodIndex;
@@ -61,7 +60,7 @@ class _PaymentMethodSelectionWidgetState
   OfflinePaymentModel? _selectedOfflineMethod;
   List<Map<String, String>>? _selectedOfflineValue;
   String _selectedPaymentType = '';
-  
+
   late AnimationController _slideController;
   late AnimationController _scaleController;
   late Animation<Offset> _slideAnimation;
@@ -71,7 +70,7 @@ class _PaymentMethodSelectionWidgetState
   void initState() {
     super.initState();
     _bringAmountController = TextEditingController();
-    
+
     // Initialize animations
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 600),
@@ -81,7 +80,7 @@ class _PaymentMethodSelectionWidgetState
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
@@ -89,7 +88,7 @@ class _PaymentMethodSelectionWidgetState
       parent: _slideController,
       curve: Curves.easeOutBack,
     ));
-    
+
     _scaleAnimation = Tween<double>(
       begin: 0.8,
       end: 1.0,
@@ -97,9 +96,8 @@ class _PaymentMethodSelectionWidgetState
       parent: _scaleController,
       curve: Curves.elasticOut,
     ));
-    
-    final splashProvider =
-        Provider.of<SplashProvider>(context, listen: false);
+
+    final splashProvider = Provider.of<SplashProvider>(context, listen: false);
     final configModel = splashProvider.configModel!;
     splashProvider.getOfflinePaymentMethod(false);
 
@@ -113,7 +111,7 @@ class _PaymentMethodSelectionWidgetState
       ));
     }
     _initializeData();
-    
+
     // Start animations
     _slideController.forward();
     _scaleController.forward();
@@ -127,16 +125,17 @@ class _PaymentMethodSelectionWidgetState
   }
 
   void _initializeData() {
-    final orderProvider =
-        Provider.of<OrderProvider>(context, listen: false);
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
     _paymentMethodIndex = orderProvider.paymentMethodIndex;
     _partialAmount = orderProvider.partialAmount;
     _paymentMethod = orderProvider.paymentMethod;
     _selectedOfflineMethod = orderProvider.selectedOfflineMethod;
     _selectedOfflineValue = orderProvider.selectedOfflineValue;
 
-    if (_paymentMethodIndex == 0) _selectedPaymentType = 'wallet';
-    else if (_paymentMethodIndex == 1) _selectedPaymentType = 'cod';
+    if (_paymentMethodIndex == 0)
+      _selectedPaymentType = 'wallet';
+    else if (_paymentMethodIndex == 1)
+      _selectedPaymentType = 'cod';
     else if (_paymentMethod != null) _selectedPaymentType = 'online';
 
     if (_paymentMethodIndex != 1) {
@@ -160,7 +159,7 @@ class _PaymentMethodSelectionWidgetState
           label: 'Wallet',
           subtitle: 'Available Balance',
           icon: Icons.account_balance_wallet_rounded,
-            color: Theme.of(context).primaryColor,
+          color: Theme.of(context).primaryColor,
           badge: PriceConverterHelper.convertPrice(context, walletBalance),
         ),
       PaymentOption(
@@ -168,7 +167,7 @@ class _PaymentMethodSelectionWidgetState
         label: 'Cash on Delivery',
         subtitle: 'Pay when delivered',
         icon: Icons.payments_rounded,
-            color: Theme.of(context).primaryColor,
+        color: Theme.of(context).primaryColor,
         badge: null,
       ),
       if (paymentList.isNotEmpty)
@@ -177,7 +176,7 @@ class _PaymentMethodSelectionWidgetState
           label: 'Online Payment',
           subtitle: 'Cards, UPI & More',
           icon: Icons.credit_card_rounded,
-            color: Theme.of(context).primaryColor,
+          color: Theme.of(context).primaryColor,
           badge: null,
         ),
     ];
@@ -220,8 +219,7 @@ class _PaymentMethodSelectionWidgetState
 
               // Payment Method List (Radio Button Style)
               _buildPaymentMethodList(availableMethods, walletBalance),
-                            _buildHeader(context),
-
+              _buildHeader(context),
 
               // COD bring-change input
               // if (_selectedPaymentType == 'cod') ...[
@@ -369,11 +367,12 @@ class _PaymentMethodSelectionWidgetState
     );
   }
 
-  Widget _buildPaymentMethodList(List<PaymentOption> availableMethods, double walletBalance) {
+  Widget _buildPaymentMethodList(
+      List<PaymentOption> availableMethods, double walletBalance) {
     return Column(
       children: availableMethods.map((option) {
         final isSelected = _selectedPaymentType == option.type;
-        
+
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           child: GestureDetector(
@@ -387,7 +386,9 @@ class _PaymentMethodSelectionWidgetState
               curve: Curves.easeInOut,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isSelected ? option.color.withOpacity(0.1) : Colors.grey.shade50,
+                color: isSelected
+                    ? option.color.withOpacity(0.1)
+                    : Colors.grey.shade50,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isSelected ? option.color : Colors.grey.shade300,
@@ -425,16 +426,16 @@ class _PaymentMethodSelectionWidgetState
                           )
                         : null,
                   ),
-                  
+
                   const SizedBox(width: 16),
-                  
+
                   // Icon
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: isSelected 
-                        ? option.color.withOpacity(0.15) 
-                        : Colors.grey.shade100,
+                      color: isSelected
+                          ? option.color.withOpacity(0.15)
+                          : Colors.grey.shade100,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
@@ -443,9 +444,9 @@ class _PaymentMethodSelectionWidgetState
                       size: 20,
                     ),
                   ),
-                  
+
                   const SizedBox(width: 16),
-                  
+
                   // Label and subtitle
                   Expanded(
                     child: Column(
@@ -455,7 +456,9 @@ class _PaymentMethodSelectionWidgetState
                           option.label,
                           style: poppinsSemiBold.copyWith(
                             fontSize: 16,
-                            color: isSelected ? option.color : Colors.grey.shade800,
+                            color: isSelected
+                                ? option.color
+                                : Colors.grey.shade800,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -469,29 +472,30 @@ class _PaymentMethodSelectionWidgetState
                       ],
                     ),
                   ),
-                  
+
                   // Badge if available
                   if (option.badge != null)
-                   Container(
-  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // increased padding
-  decoration: BoxDecoration(
-    color: option.color.withOpacity(0.1),
-    borderRadius: BorderRadius.circular(16), // more rounded for larger badge
-    border: Border.all(
-      color: option.color.withOpacity(0.3),
-      width: 1.2, // slightly thicker border
-    ),
-  ),
-  child: Text(
-    option.badge!,
-    style: poppinsRegular.copyWith(
-      fontSize: 14, // increased font size
-      color: option.color,
-      fontWeight: FontWeight.w600,
-    ),
-  ),
-),
-
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6), // increased padding
+                      decoration: BoxDecoration(
+                        color: option.color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(
+                            16), // more rounded for larger badge
+                        border: Border.all(
+                          color: option.color.withOpacity(0.3),
+                          width: 1.2, // slightly thicker border
+                        ),
+                      ),
+                      child: Text(
+                        option.badge!,
+                        style: poppinsRegular.copyWith(
+                          fontSize: 14, // increased font size
+                          color: option.color,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -558,8 +562,7 @@ class _PaymentMethodSelectionWidgetState
       switch (type) {
         case 'wallet':
           _paymentMethodIndex = 0;
-          _partialAmount =
-              widget.total > walletBalance ? walletBalance : null;
+          _partialAmount = widget.total > walletBalance ? walletBalance : null;
           _paymentMethod = null;
           _bringAmountController?.clear();
           break;
@@ -591,7 +594,7 @@ class PaymentOption {
   final IconData icon;
   final Color color;
   final String? badge;
-  
+
   PaymentOption({
     required this.type,
     required this.label,

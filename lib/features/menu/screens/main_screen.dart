@@ -177,7 +177,7 @@ class _MainScreenState extends State<MainScreen> {
                                                     const EdgeInsets.all(5),
                                                 decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
-                                                    color: pesitoHint),
+                                                    color: pesitoAlert),
                                                 child: Text(
                                                     '${Provider.of<CartProvider>(context).cartList.length}',
                                                     style: TextStyle(

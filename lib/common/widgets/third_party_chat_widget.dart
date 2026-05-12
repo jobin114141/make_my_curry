@@ -123,8 +123,7 @@ class _ThirdPartyChatWidgetState extends State<ThirdPartyChatWidget> {
           final String? userId = widget.configModel?.messenger!.userName;
           final Uri messengerUrl = Uri.parse("https://m.me/$userId");
           if (await canLaunchUrl(messengerUrl)) {
-            await launchUrl(messengerUrl,
-                mode: LaunchMode.externalApplication);
+            await launchUrl(messengerUrl, mode: LaunchMode.externalApplication);
           }
         },
       ));

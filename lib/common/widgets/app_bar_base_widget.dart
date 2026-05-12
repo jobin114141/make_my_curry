@@ -5,6 +5,8 @@ import 'package:flutter_grocery/utill/images.dart';
 import 'package:flutter_grocery/utill/styles.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_grocery/theme/light_theme.dart';
+
 class AppBarBaseWidget extends StatelessWidget implements PreferredSizeWidget{
   final String? title;
   const AppBarBaseWidget({super.key, this.title = ''});
@@ -29,7 +31,7 @@ class AppBarBaseWidget extends StatelessWidget implements PreferredSizeWidget{
                 right: -2,
                 child: Container(
                   padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).primaryColor),
+                  decoration: BoxDecoration(shape: BoxShape.circle, color: pesitoAlert),
                   child: Text('${Provider.of<CartProvider>(context).cartList.length}',
                       style: TextStyle(color: Theme.of(context).cardColor, fontSize: 10)),
                 ),

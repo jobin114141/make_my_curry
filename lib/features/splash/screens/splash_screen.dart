@@ -165,6 +165,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Consumer<SplashProvider>(
           builder: (context, splashProvider, _) {
             if (splashProvider.configModel != null && isNotLoaded) {
@@ -173,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   splashProvider.configModel, splashProvider, context);
             }
             return Center(
-              child: Image.asset(Images.appLogo, height: 250, width: 250),
+              child: Image.asset(Images.splashLogo, height: 350, width: 350),
             );
           }
       ),
