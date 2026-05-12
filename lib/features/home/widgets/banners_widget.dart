@@ -15,20 +15,25 @@ import 'package:provider/provider.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
 class BannersWidget extends StatelessWidget {
-  const BannersWidget({super.key});
+  final bool isReverse;
+  const BannersWidget({super.key, this.isReverse = false});
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.sizeOf(context);
     return Consumer<BannerProvider>(
       builder: (context, bannerProvider, child) {
+        final bannerList = (isReverse && bannerProvider.bannerList != null)
+            ? bannerProvider.bannerList!.reversed.toList()
+            : bannerProvider.bannerList;
+
         return Column(
           children: [
             Container(
               width: Dimensions.webScreenWidth,
               height: ResponsiveHelper.isDesktop(context) ? 210 : size.width * 0.49,
               padding: ResponsiveHelper.isDesktop(context) ? const EdgeInsets.only(top: Dimensions.paddingSizeLarge, bottom: Dimensions.paddingSizeSmall) : null,
-              child: bannerProvider.bannerList != null ? bannerProvider.bannerList!.isNotEmpty ? Stack(
+              child: bannerList != null ? bannerList.isNotEmpty ? Stack(
                 fit: StackFit.expand,
                 children: [
                   CarouselSlider.builder(
@@ -42,15 +47,15 @@ class BannersWidget extends StatelessWidget {
                         Provider.of<BannerProvider>(context, listen: false).setCurrentIndex(index);
                       },
                     ),
-                    itemCount: bannerProvider.bannerList!.isEmpty ? 1 : bannerProvider.bannerList!.length,
+                    itemCount: bannerList.isEmpty ? 1 : bannerList.length,
                     itemBuilder: (context, index, _) {
                       return InkWell(
                         hoverColor: Colors.transparent,
                         onTap: () {
-                          if(bannerProvider.bannerList![index].productId != null) {
+                          if(bannerList[index].productId != null) {
                             Product? product;
                             for(Product prod in bannerProvider.productList) {
-                              if(prod.id == bannerProvider.bannerList![index].productId) {
+                              if(prod.id == bannerList[index].productId) {
                                 product = prod;
                                 break;
                               }
@@ -61,10 +66,10 @@ class BannersWidget extends StatelessWidget {
                               );
                             }
 
-                          }else if(bannerProvider.bannerList![index].categoryId != null) {
+                          }else if(bannerList[index].categoryId != null) {
                             CategoryModel? category;
                             for(CategoryModel categoryModel in Provider.of<CategoryProvider>(context, listen: false).categoryList!) {
-                              if(categoryModel.id == bannerProvider.bannerList![index].categoryId) {
+                              if(categoryModel.id == bannerList[index].categoryId) {
                                 category = categoryModel;
                                 break;
                               }
@@ -84,7 +89,7 @@ class BannersWidget extends StatelessWidget {
                               width: ResponsiveHelper.isDesktop(context) ? 400 : size.width,
                               placeholder: Images.placeHolder,
                               image: '${Provider.of<SplashProvider>(context,listen: false).baseUrls!.bannerImageUrl}'
-                                  '/${bannerProvider.bannerList![index].image}',
+                                  '/${bannerList[index].image}',
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -93,16 +98,16 @@ class BannersWidget extends StatelessWidget {
                     },
                   ),
 
-                 if(!ResponsiveHelper.isDesktop(context)) const Positioned(
+                 if(!ResponsiveHelper.isDesktop(context)) Positioned(
                     bottom: 5, left: 0, right: 0,
-                    child: BannerIndicatorView(),
+                    child: BannerIndicatorView(isReverse: isReverse),
                   ),
                 ]) : Center(child: Text(getTranslated('no_banner_available', context))) : const BannerShimmer(),
             ),
 
-            if(ResponsiveHelper.isDesktop(context)) const Padding(
-              padding: EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
-              child: BannerIndicatorView(),
+            if(ResponsiveHelper.isDesktop(context)) Padding(
+              padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+              child: BannerIndicatorView(isReverse: isReverse),
             ),
           ],
         );
@@ -131,18 +136,21 @@ class BannerShimmer extends StatelessWidget {
 }
 
 class BannerIndicatorView extends StatelessWidget {
-  const BannerIndicatorView({
-    super.key,
-  });
+  final bool isReverse;
+  const BannerIndicatorView({super.key, this.isReverse = false});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<BannerProvider>(
       builder: (ctx, bannerProvider, _) {
-        return bannerProvider.bannerList == null ? const SizedBox() : Row(
+        final bannerList = (isReverse && bannerProvider.bannerList != null)
+            ? bannerProvider.bannerList!.reversed.toList()
+            : bannerProvider.bannerList;
+
+        return bannerList == null ? const SizedBox() : Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: bannerProvider.bannerList!.map((bnr) {
-            int index = bannerProvider.bannerList!.indexOf(bnr);
+          children: bannerList.map((bnr) {
+            int index = bannerList.indexOf(bnr);
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 3),
               height: 5, width: 10,

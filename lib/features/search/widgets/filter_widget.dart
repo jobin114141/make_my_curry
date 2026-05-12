@@ -5,7 +5,6 @@ import 'package:flutter_grocery/features/search/providers/search_provider.dart';
 import 'package:flutter_grocery/utill/dimensions.dart';
 import 'package:flutter_grocery/utill/styles.dart';
 import 'package:flutter_grocery/common/widgets/custom_button_widget.dart';
-import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:provider/provider.dart';
 
 class FilterWidget extends StatefulWidget {
@@ -66,27 +65,7 @@ class _FilterWidgetState extends State<FilterWidget> {
                 ],
               ),
               const SizedBox(height: 15),
-              Text(
-                getTranslated('price', context),
-                style: poppinsMedium,
-              ),
-
-              // price range
-              FlutterSlider(
-                values: [searchProvider.lowerValue ?? (searchProvider.searchProductModel?.minPrice ?? 0),  (searchProvider.upperValue ?? (searchProvider.searchProductModel?.maxPrice ?? 0) + (isNotEqualValue ? 0 : 1))],
-                rangeSlider: true,
-                max: (searchProvider.searchProductModel?.maxPrice ?? 0) + (isNotEqualValue ? 0 : 1),
-                min: searchProvider.searchProductModel?.minPrice ?? 0,
-                handlerHeight: 25,
-                handlerWidth: 25,
-                trackBar: FlutterSliderTrackBar(activeTrackBar: BoxDecoration(color: Theme.of(context).primaryColor), activeTrackBarHeight: 6),
-                handler: FlutterSliderHandler(decoration: BoxDecoration(color: Theme.of(context).primaryColor, shape: BoxShape.circle), child: const SizedBox()),
-                rightHandler: FlutterSliderHandler(decoration: BoxDecoration(color: Theme.of(context).primaryColor, shape: BoxShape.circle), child: const SizedBox()),
-                onDragging: (handlerIndex, lowerValue, upperValue) {
-                  searchProvider.setLowerAndUpperValue(lowerValue, upperValue);
-                },
-              ),
-              const SizedBox(height: Dimensions.paddingSizeDefault),
+              const SizedBox(height: 15),
 
               Text(getTranslated('sort_by', context), style: poppinsMedium),
               const SizedBox(height: Dimensions.paddingSizeSmall),

@@ -39,7 +39,9 @@ class FreeDeliveryProgressBarWidget extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Text(
-            '${PriceConverterHelper.convertPrice(context, (configModel?.freeDeliveryOverAmount ?? 0) - _subTotal)} More to free Delivery!',
+            ((configModel?.freeDeliveryOverAmount ?? 0) - _subTotal) > 0
+                ? '${PriceConverterHelper.convertPrice(context, (configModel?.freeDeliveryOverAmount ?? 0) - _subTotal)} More to free Delivery!'
+                : 'Free Delivery reached!',
             style: poppinsSemiBold.copyWith(fontSize: 14, color: const Color(0xFF38B23C)),
           ),
         ],

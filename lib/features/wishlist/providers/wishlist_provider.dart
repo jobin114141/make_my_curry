@@ -12,7 +12,10 @@ import 'package:flutter_grocery/helper/custom_snackbar_helper.dart';
 class WishListProvider extends ChangeNotifier {
   final WishListRepo? wishListRepo;
 
-  WishListProvider({required this.wishListRepo});
+  WishListProvider({required this.wishListRepo}) {
+    _wishList = [];
+    _wishIdList = [];
+  }
 
   List<Product>? _wishList;
   List<Product>? get wishList => _wishList;
@@ -55,21 +58,41 @@ class WishListProvider extends ChangeNotifier {
 
   Future<void> getWishListProduct() async {
     _isLoading = true;
-    DataSyncHelper.fetchAndSyncData(
+    await DataSyncHelper.fetchAndSyncData(
       fetchFromLocal: () => wishListRepo!.getWishList(source: DataSourceEnum.local),
       fetchFromClient: () => wishListRepo!.getWishList(source: DataSourceEnum.client),
       onResponse: (data, _) {
+        // debugPrint('WishList Response: $data');
         _wishList = [];
         _wishIdList = [];
-
-        for(int i = 0; i< _wishList!.length; i++){
-          _wishIdList.add(_wishList![i].id);
+        if (data != null) {
+          if (data is List) {
+            for (var v in data) {
+              try {
+                _wishList!.add(Product.fromJson(v));
+              } catch (e) {
+                debugPrint('Error parsing product in wishlist: $e');
+              }
+            }
+          } else if (data is Map && data['products'] != null) {
+            for (var v in data['products']) {
+              try {
+                _wishList!.add(Product.fromJson(v));
+              } catch (e) {
+                debugPrint('Error parsing product in wishlist: $e');
+              }
+            }
+          }
+          
+          for(int i = 0; i< _wishList!.length; i++){
+            _wishIdList.add(_wishList![i].id);
+          }
         }
-
-        _isLoading = false;
         notifyListeners();
       },
     );
+    _isLoading = false;
+    notifyListeners();
   }
 
   void clearWishList(){

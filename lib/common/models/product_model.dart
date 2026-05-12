@@ -156,18 +156,21 @@ class Product {
     _name = json['name'];
     _description = json['description'];
     _image = json['image']?.cast<String>();
-    _price = json['price'].toDouble();
+    _price = double.tryParse('${json['price']}') ?? 0;
     if (json['variations'] != null) {
       _variations = [];
       json['variations'].forEach((v) {
         _variations!.add(Variations.fromJson(v));
       });
     }
-    _tax = json['tax'].toDouble();
+    _tax = double.tryParse('${json['tax']}') ?? 0;
     _status = json['status'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
-    _attributes = json['attributes'].cast<String>();
+    if (json['attributes'] != null) {
+      _attributes = [];
+      json['attributes'].forEach((v) => _attributes!.add(v.toString()));
+    }
     if (json['category_ids'] != null) {
       _categoryIds = [];
       json['category_ids'].forEach((v) {

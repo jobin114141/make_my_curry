@@ -62,6 +62,7 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
     categoryProvider.initializeAllSortBy(context);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: (ResponsiveHelper.isDesktop(context)? const PreferredSize(preferredSize: Size.fromHeight(120), child: WebAppBarWidget())
           : CustomAppBarWidget(
         title: appBarText,

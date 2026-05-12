@@ -108,30 +108,31 @@ class _MainScreenState extends State<MainScreen> {
 
             return Consumer<LocationProvider>(
               builder: (context, locationProvider, child) => InkWell(
-                onTap: () {
-                },
+                onTap: () {},
                 child: Scaffold(
                   key: _scaffoldKey,
                   drawer: const MenuWidget(),
-                  floatingActionButton: (!ResponsiveHelper.isDesktop(context) && splash.pageIndex != 2)
+                  floatingActionButton: (!ResponsiveHelper.isDesktop(context) &&
+                          splash.pageIndex != 2)
                       ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 50.0),
                           child: ThirdPartyChatWidget(
                               configModel: splash.configModel),
                         )
                       : null,
-                  appBar: (ResponsiveHelper.isDesktop(context) || splash.pageIndex == 2)
+                  appBar: (ResponsiveHelper.isDesktop(context) ||
+                          splash.pageIndex == 2)
                       ? null
                       : AppBar(
                           backgroundColor: Theme.of(context).cardColor,
                           leading: IconButton(
-                            icon: const Icon(
-                              Icons.menu,
-                              size: 25,
-                            ),
-                            onPressed: () {
-                              _scaffoldKey.currentState?.openDrawer();
-                            }),
+                              icon: const Icon(
+                                Icons.menu,
+                                size: 25,
+                              ),
+                              onPressed: () {
+                                _scaffoldKey.currentState?.openDrawer();
+                              }),
                           title: splash.pageIndex == 0
                               ? Text(
                                   _getGreeting(),

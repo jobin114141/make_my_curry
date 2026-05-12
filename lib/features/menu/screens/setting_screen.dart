@@ -11,6 +11,7 @@ import 'package:flutter_grocery/common/widgets/main_app_bar_widget.dart';
 import 'package:flutter_grocery/features/menu/widgets/currency_dialog_widget.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_grocery/helper/route_helper.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../widgets/acount_delete_dialog_widget.dart';
 
@@ -24,74 +25,131 @@ class SettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: ResponsiveHelper.isMobilePhone()
-          ? null : (ResponsiveHelper.isDesktop(context)
-          ? const MainAppBarWidget(): const AppBarBaseWidget()) as PreferredSizeWidget?,
-
+          ? null
+          : (ResponsiveHelper.isDesktop(context)
+              ? const MainAppBarWidget()
+              : const AppBarBaseWidget()) as PreferredSizeWidget?,
       body: Center(
         child: SizedBox(
           width: 1170,
           child: ListView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.paddingSizeExtraSmall),
             children: [
-              SwitchListTile(
-                activeColor: Theme.of(context).primaryColor,
-                value: Provider.of<ThemeProvider>(context).darkTheme,
-                onChanged: (bool isActive) =>Provider.of<ThemeProvider>(context, listen: false).toggleTheme(),
-                title: Text(getTranslated('dark_theme', context), style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge)),
-              ),
-
               _TitleButton(
                 icon: Icons.language,
                 title: getTranslated('choose_language', context),
-                onTap: () => showDialogHelper(context, const CurrencyDialogWidget()),
+                onTap: () =>
+                    showDialogHelper(context, const CurrencyDialogWidget()),
               ),
-
-              authProvider.isLoggedIn() ? ListTile(
-                onTap: () {
-                  showDialogHelper(context,
-                      AccountDeleteDialogWidget(
-                        icon: Icons.question_mark_sharp,
-                        title: getTranslated('are_you_sure_to_delete_account', context),
-                        description: getTranslated('it_will_remove_your_all_information', context),
-                        onTapFalseText:getTranslated('no', context),
-                        onTapTrueText: getTranslated('yes', context),
-                        isFailed: true,
-                        onTapFalse: () => Navigator.of(context).pop(),
-                        onTapTrue: () => authProvider.deleteUser(context),
-                      ),
-                      dismissible: false,
-                      isFlip: true);
-                },
-                leading: Icon(Icons.delete, size: 25, color: Theme.of(context).colorScheme.error),
-                title: Text(
-                  getTranslated('delete_account', context),
-                  style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge,
-                  ),
+              _TitleButton(
+                icon: Icons.description,
+                title: getTranslated('terms_and_condition', context),
+                onTap: () =>
+                    Navigator.pushNamed(context, RouteHelper.getTermsRoute()),
+              ),
+              _TitleButton(
+                icon: Icons.privacy_tip,
+                title: getTranslated('privacy_policy', context),
+                onTap: () =>
+                    Navigator.pushNamed(context, RouteHelper.getPolicyRoute()),
+              ),
+              if (Provider.of<SplashProvider>(context, listen: false)
+                      .configModel
+                      ?.refundPolicyStatus ??
+                  false)
+                _TitleButton(
+                  icon: Icons.assignment_return,
+                  title: getTranslated('refund_policy', context),
+                  onTap: () => Navigator.pushNamed(
+                      context, RouteHelper.getRefundPolicyRoute()),
                 ),
-              ) : const SizedBox(),
+              if (Provider.of<SplashProvider>(context, listen: false)
+                      .configModel
+                      ?.cancellationPolicyStatus ??
+                  false)
+                _TitleButton(
+                  icon: Icons.cancel_presentation,
+                  title: getTranslated('cancellation_policy', context),
+                  onTap: () => Navigator.pushNamed(
+                      context, RouteHelper.getCancellationPolicyRoute()),
+                ),
+              _TitleButton(
+                icon: Icons.info_outline,
+                title: getTranslated('about_us', context),
+                onTap: () =>
+                    Navigator.pushNamed(context, RouteHelper.getAboutUsRoute()),
+              ),
+              if (Provider.of<SplashProvider>(context, listen: false)
+                      .configModel
+                      ?.returnPolicyStatus ??
+                  false)
+                _TitleButton(
+                  icon: Icons.assignment_return_outlined,
+                  title: getTranslated('return_policy', context),
+                  onTap: () => Navigator.pushNamed(
+                      context, RouteHelper.getReturnPolicyRoute()),
+                ),
+              _TitleButton(
+                icon: Icons.question_answer,
+                title: getTranslated('faq', context),
+                onTap: () =>
+                    Navigator.pushNamed(context, RouteHelper.getFaqRoute()),
+              ),
+              authProvider.isLoggedIn()
+                  ? ListTile(
+                      onTap: () {
+                        showDialogHelper(
+                            context,
+                            AccountDeleteDialogWidget(
+                              icon: Icons.question_mark_sharp,
+                              title: getTranslated(
+                                  'are_you_sure_to_delete_account', context),
+                              description: getTranslated(
+                                  'it_will_remove_your_all_information',
+                                  context),
+                              onTapFalseText: getTranslated('no', context),
+                              onTapTrueText: getTranslated('yes', context),
+                              isFailed: true,
+                              onTapFalse: () => Navigator.of(context).pop(),
+                              onTapTrue: () => authProvider.deleteUser(context),
+                            ),
+                            dismissible: false,
+                            isFlip: true);
+                      },
+                      leading: Icon(Icons.delete,
+                          size: 25, color: Theme.of(context).colorScheme.error),
+                      title: Text(
+                        getTranslated('delete_account', context),
+                        style: poppinsRegular.copyWith(
+                          fontSize: Dimensions.fontSizeLarge,
+                        ),
+                      ),
+                    )
+                  : const SizedBox(),
             ],
           ),
         ),
       ),
     );
   }
-
 }
 
 class _TitleButton extends StatelessWidget {
   final IconData icon;
   final String? title;
   final Function onTap;
-  const _TitleButton({required this.icon, required this.title, required this.onTap});
+  const _TitleButton(
+      {required this.icon, required this.title, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: Theme.of(context).primaryColor),
-      title: Text(title!, style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge)),
+      title: Text(title!,
+          style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeLarge)),
       onTap: onTap as void Function()?,
     );
   }
 }
-

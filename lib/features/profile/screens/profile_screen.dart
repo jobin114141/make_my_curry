@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_grocery/common/enums/footer_type_enum.dart';
 import 'package:flutter_grocery/common/widgets/footer_web_widget.dart';
@@ -30,48 +29,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
 
-    _isLoggedIn = Provider.of<AuthProvider>(context, listen: false).isLoggedIn();
+    _isLoggedIn =
+        Provider.of<AuthProvider>(context, listen: false).isLoggedIn();
 
-    if(_isLoggedIn) {
-      Provider.of<ProfileProvider>(context, listen: false).getUserInfo(true, isUpdate: true);
+    if (_isLoggedIn) {
+      Provider.of<ProfileProvider>(context, listen: false)
+          .getUserInfo(true, isUpdate: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final SplashProvider splashProvider = Provider.of<SplashProvider>(context, listen: false);
+    final SplashProvider splashProvider =
+        Provider.of<SplashProvider>(context, listen: false);
     return Scaffold(
-      appBar: ResponsiveHelper.isDesktop(context)? const PreferredSize(preferredSize: Size.fromHeight(120), child: WebAppBarWidget()): AppBar(
-        backgroundColor: Theme.of(context).cardColor,
-        leading: IconButton(
-            icon: Image.asset(Images.moreIcon, color: Theme.of(context).primaryColor),
-            onPressed: () {
-              splashProvider.setPageIndex(0);
-              Navigator.of(context).pop();
-            }),
-        title: Text(getTranslated('profile', context),
-            style: poppinsMedium.copyWith(
-              fontSize: Dimensions.fontSizeSmall,
-              color: Theme.of(context).textTheme.bodyLarge!.color,
-            )),
-      ),
+      appBar: ResponsiveHelper.isDesktop(context)
+          ? const PreferredSize(
+              preferredSize: Size.fromHeight(120), child: WebAppBarWidget())
+          : AppBar(
+              backgroundColor: Theme.of(context).cardColor,
+              leading: IconButton(
+                  icon: Icon(Icons.arrow_back_ios,
+                      color: Theme.of(context).primaryColor, size: 25),
+                  onPressed: () {
+                    splashProvider.setPageIndex(0);
+                    Navigator.of(context).pop();
+                  }),
+              title: Text(getTranslated('profile', context),
+                  style: poppinsMedium.copyWith(
+                    fontSize: Dimensions.fontSizeSmall,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  )),
+            ),
       body: SafeArea(
-        child: _isLoggedIn ? Consumer<ProfileProvider>(builder: (context, profileProvider, child) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall),
-            child: CustomScrollView(slivers: [
-              SliverToBoxAdapter(child: ProfileHeaderWidget()),
-
-              SliverToBoxAdapter(child: ProfileDetailsWidget()),
-
-              FooterWebWidget(footerType: FooterType.sliver),
-            ])
-          );
-        }) : const NotLoggedInWidget(),
+        child: _isLoggedIn
+            ? Consumer<ProfileProvider>(
+                builder: (context, profileProvider, child) {
+                return const Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: Dimensions.paddingSizeExtraSmall),
+                    child: CustomScrollView(slivers: [
+                      SliverToBoxAdapter(child: ProfileHeaderWidget()),
+                      SliverToBoxAdapter(child: ProfileDetailsWidget()),
+                      FooterWebWidget(footerType: FooterType.sliver),
+                    ]));
+              })
+            : const NotLoggedInWidget(),
       ),
     );
   }
 }
-
-
-

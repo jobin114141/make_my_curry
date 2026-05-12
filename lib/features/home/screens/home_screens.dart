@@ -40,7 +40,7 @@ class HomeScreen extends StatefulWidget {
     final flashDealProvider =
         Provider.of<FlashDealProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final withLListProvider =
+    final wishListProvider =
         Provider.of<WishListProvider>(context, listen: false);
     final localizationProvider =
         Provider.of<LocalizationProvider>(context, listen: false);
@@ -80,7 +80,7 @@ class HomeScreen extends StatefulWidget {
     productProvider.getAllProductList(1, reload, isUpdate: false);
 
     if (authProvider.isLoggedIn()) {
-      withLListProvider.getWishListProduct();
+      wishListProvider.getWishListProduct();
     }
 
     if ((config?.flashDealProductStatus ?? false) &&
@@ -242,6 +242,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ])
                               : const SizedBox();
                         }),
+                  const SizedBox(height: Dimensions.paddingSizeDefault),
+                  Consumer<BannerProvider>(builder: (context, banner, child) {
+                    return (banner.bannerList?.isEmpty ?? false)
+                        ? const SizedBox()
+                        : const BannersWidget(isReverse: true);
+                  }),
                 ]);
               }),
 

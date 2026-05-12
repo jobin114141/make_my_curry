@@ -10,68 +10,86 @@ import 'package:provider/provider.dart';
 class ProfileDetailsWidget extends StatelessWidget {
   const ProfileDetailsWidget({super.key});
 
-
   @override
   Widget build(BuildContext context) {
-    return Consumer<ProfileProvider>(
-        builder: (context, profileProvider, _) {
-          return profileProvider.isLoading ? CustomLoaderWidget(color: Theme.of(context).primaryColor) : Center(
-            child: Container(
-              width: Dimensions.webScreenWidth * 0.7,
-              padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ResponsiveHelper.isDesktop(context) ? Column(crossAxisAlignment: CrossAxisAlignment.start,children: [
+    return Consumer<ProfileProvider>(builder: (context, profileProvider, _) {
+      return profileProvider.isLoading
+          ? CustomLoaderWidget(color: Theme.of(context).primaryColor)
+          : Center(
+              child: Container(
+                width: Dimensions.webScreenWidth * 0.7,
+                padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ResponsiveHelper.isDesktop(context)
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                                Text(
+                                  getTranslated('name', context),
+                                  style: poppinsRegular.copyWith(
+                                      fontSize: Dimensions.fontSizeExtraSmall,
+                                      color: Theme.of(context)
+                                          .hintColor
+                                          .withValues(alpha: 0.6)),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  '${profileProvider.userInfoModel?.fName ?? ''} ${profileProvider.userInfoModel!.lName ?? ''}',
+                                  style: poppinsRegular.copyWith(
+                                      fontSize: Dimensions.fontSizeDefault),
+                                ),
+                                const Divider(),
+                              ])
+                        : Center(
+                            child: Text(
+                            '${profileProvider.userInfoModel?.fName ?? ''} ${profileProvider.userInfoModel?.lName ?? ''}',
+                            style: poppinsMedium.copyWith(
+                                fontSize: Dimensions.fontSizeExtraLarge),
+                          )),
+                    const SizedBox(height: 30),
+
+                    // for first name section
                     Text(
-                      getTranslated('name', context),
-                      style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).hintColor.withValues(alpha: 0.6)),
+                      getTranslated('mobile_number', context),
+                      style: poppinsRegular.copyWith(
+                          fontSize: Dimensions.fontSizeExtraSmall,
+                          color: Theme.of(context)
+                              .hintColor
+                              .withValues(alpha: 0.6)),
                     ),
                     const SizedBox(height: 6),
+
                     Text(
-                      '${profileProvider.userInfoModel?.fName ?? ''} ${profileProvider.userInfoModel!.lName ?? ''}',
-                      style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeDefault),
+                      profileProvider.userInfoModel!.phone ?? '',
+                      style: poppinsRegular.copyWith(
+                          fontSize: Dimensions.fontSizeDefault),
                     ),
                     const Divider(),
 
-                  ]) : Center(child: Text(
-                    '${profileProvider.userInfoModel?.fName ?? ''} ${profileProvider.userInfoModel?.lName ?? ''}',
-                    style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
-                  )),
-                  const SizedBox(height: 30),
+                    const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+                    Text(
+                      getTranslated('email', context),
+                      style: poppinsRegular.copyWith(
+                          fontSize: Dimensions.fontSizeExtraSmall,
+                          color: Theme.of(context)
+                              .hintColor
+                              .withValues(alpha: 0.6)),
+                    ),
+                    const SizedBox(height: 6),
 
-                  // for first name section
-                  Text(
-                    getTranslated('mobile_number', context),
-                    style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).hintColor.withValues(alpha: 0.6)),
-                  ),
-                  const SizedBox(height: 6),
-
-                  Text(
-                    profileProvider.userInfoModel!.phone ?? '',
-                    style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeDefault),
-                  ),
-                  const Divider(),
-
-                  const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-                  Text(
-                    getTranslated('email', context),
-                    style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).hintColor.withValues(alpha: 0.6)),
-                  ),
-                  const SizedBox(height: 6),
-
-                  Text(
-                    profileProvider.userInfoModel?.email ?? '',
-                    style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeDefault),
-                  ),
-                  const Divider(),
-                  const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-
-                ],
+                    Text(
+                      profileProvider.userInfoModel?.email ?? '',
+                      style: poppinsRegular.copyWith(
+                          fontSize: Dimensions.fontSizeDefault),
+                    ),
+                    const Divider(),
+                    const SizedBox(height: Dimensions.paddingSizeExtraLarge),
+                  ],
+                ),
               ),
-            ),
-          );
-        }
-    );
+            );
+    });
   }
 }

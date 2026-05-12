@@ -98,22 +98,28 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(7),
-                        color: Theme.of(context).secondaryHeaderColor,
+                        borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+                        border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.08)),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-
                               Text(
                                 "${searchProvider.searchProductModel?.products?.length ?? 0} ",
-                                style: poppinsMedium,
+                                style: poppinsSemiBold.copyWith(
+                                  color: Theme.of(context).primaryColor,
+                                  fontSize: Dimensions.fontSizeLarge,
+                                ),
                               ),
                               Text(
                                 getTranslated('items_found', context),
-                                style: poppinsMedium,
+                                style: poppinsMedium.copyWith(
+                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.7),
+                                  fontSize: Dimensions.fontSizeDefault,
+                                ),
                               ),
                             ],
                           ),
@@ -131,21 +137,19 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                                   });
                             },
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeLarge : Dimensions.paddingSizeSmall,
-                                  vertical: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeExtraSmall : Dimensions.paddingSizeSmall),
+                              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeExtraSmall),
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                  border: Border.all(color: Theme.of(context).primaryColor)),
+                                  color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                                  borderRadius: BorderRadius.circular(Dimensions.radiusSizeDefault),
+                                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.1))),
                               child: Row(
                                 children: [
-                                  ResponsiveHelper.isDesktop(context) ? Text(
+                                  Text(
                                     getTranslated('filter', context),
-                                    style:
-                                    poppinsMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: Dimensions.fontSizeSmall),
-                                  ) : const SizedBox(),
-                                  SizedBox(width: ResponsiveHelper.isDesktop(context) ? Dimensions.paddingSizeSmall : 0),
-
-                                  Icon(Icons.filter_list, color: Theme.of(context).primaryColor),
+                                    style: poppinsMedium.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeSmall),
+                                  ),
+                                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                  Icon(Icons.filter_list, color: Theme.of(context).primaryColor, size: 18),
                                 ],
                               ),
                             ),

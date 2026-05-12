@@ -260,16 +260,6 @@ class SplashProvider extends ChangeNotifier  {
         MainScreenModel(const WalletScreen(), 'wallet', Images.wallet),
       if (_configModel?.loyaltyPointStatus ?? false)
         MainScreenModel(const LoyaltyScreen(), 'loyalty_point', Images.loyaltyIcon),
-      MainScreenModel(const HtmlViewerScreen(htmlType: HtmlType.termsAndCondition), 'terms_and_condition', Images.termsAndConditions),
-      MainScreenModel(const HtmlViewerScreen(htmlType: HtmlType.privacyPolicy), 'privacy_policy', Images.privacyPolicy),
-      MainScreenModel(const HtmlViewerScreen(htmlType: HtmlType.aboutUs), 'about_us', Images.aboutUs),
-      if (_configModel?.returnPolicyStatus ?? false)
-        MainScreenModel(const HtmlViewerScreen(htmlType: HtmlType.returnPolicy), 'return_policy', Images.returnPolicy),
-      if (_configModel?.refundPolicyStatus ?? false)
-        MainScreenModel(const HtmlViewerScreen(htmlType: HtmlType.refundPolicy), 'refund_policy', Images.refundPolicy),
-      if (_configModel?.cancellationPolicyStatus ?? false)
-        MainScreenModel(const HtmlViewerScreen(htmlType: HtmlType.cancellationPolicy), 'cancellation_policy', Images.cancellationPolicy),
-      MainScreenModel(const HtmlViewerScreen(htmlType: HtmlType.faq), 'faq', Images.faq),
     ];
   }
 
