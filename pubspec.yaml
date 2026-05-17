@@ -2,8 +2,8 @@ name: flutter_grocery
 description: A new Flutter application.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.2+11
-   # versionName = 1.0.1 ; versionCode = 4
+version: 1.0.3+12
+
 
 environment:
   sdk: '>=3.3.4 <4.0.0'
