@@ -14,11 +14,10 @@ class PriceConverterHelper {
     }
     ConfigModel config = Provider.of<SplashProvider>(context, listen: false).configModel!;
     bool isLeft = config.currencySymbolPosition == 'left';
-    return !isLeft ?  '${price!.toStringAsFixed(config.decimalPointSettings!).replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'' ${config.currencySymbol}'
-        : '${config.currencySymbol} ''${price!.toStringAsFixed(config.decimalPointSettings!).replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}'
-        ;
+    return !isLeft ? '${price!.toStringAsFixed(config.decimalPointSettings!).replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}\u00A0${config.currencySymbol}'
+        : '${config.currencySymbol}\u00A0${price!.toStringAsFixed(config.decimalPointSettings!).replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}';
   }
 
   static double? convertWithDiscount(double? price, double? discount, String? discountType, {double? maxDiscount}) {

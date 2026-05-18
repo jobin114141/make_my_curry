@@ -299,7 +299,7 @@ class _ProductGridWidget extends StatelessWidget {
         child: Stack(children: [
           Column(children: [
             Expanded(
-              flex: isCenter ? ResponsiveHelper.isMobile() ? 140 : 172 : 196,
+              flex: isCenter ? ResponsiveHelper.isMobile() ? 160 : 180 : 196,
               child: Stack(children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 5, right: 5, top: 5),
@@ -312,7 +312,7 @@ class _ProductGridWidget extends StatelessWidget {
                 ),
 
                 Container(
-                  margin: const EdgeInsets.only(top: Dimensions.paddingSizeSmall, left: Dimensions.paddingSizeSmall, right: Dimensions.paddingSizeSmall),
+                  margin: const EdgeInsets.only(top: 6, left: 6, right: 6),
                   width: Dimensions.webScreenWidth,
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(
@@ -335,102 +335,75 @@ class _ProductGridWidget extends StatelessWidget {
               ),),
 
             Expanded(flex: 111, child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
+              padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
               child: Column(
-                crossAxisAlignment: isCenter ? CrossAxisAlignment.center: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
 
-                  product.rating != null ? Row(mainAxisAlignment: isCenter ? MainAxisAlignment.center : MainAxisAlignment.start, children: [
-                    const Icon(Icons.star_rounded, color: ColorResources.ratingColor, size: 20),
-                    const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                    Text(product.rating!.isNotEmpty ? product.rating![0].average!.toStringAsFixed(1) : '0.0', style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-
-                  ]) : const SizedBox(),
-
-                  Tooltip(message: product.name ?? '', child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
-                    child: Text(
-                      product.name ?? '',
-                      style: poppinsMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: isCenter ? TextAlign.center : TextAlign.start,
+                  // Product Name
+                  Text(
+                    product.name ?? '',
+                    style: poppinsMedium.copyWith(
+                      fontSize: Dimensions.fontSizeSmall,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                      height: 1.3,
                     ),
-                  )),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
 
-                  Column(children: [
-                    if(!isCenter) const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-                    if(!isCenter) Divider(height: 2, thickness: 2,  color: Theme.of(context).secondaryHeaderColor),
-                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                  const SizedBox(height: 2),
 
+                  // Capacity / Unit
+                  Text(
+                    '${product.capacity} ${product.unit}',
+                    style: poppinsRegular.copyWith(
+                      fontSize: 10,
+                      color: Theme.of(context).disabledColor,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
 
-                    isCenter ? Text(
-                      '${product.capacity} ${product.unit}',
-                      style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                      maxLines: 1, overflow: TextOverflow.ellipsis,
-                    ) : const SizedBox(),
+                  const SizedBox(height: 4),
 
-                    isCenter ? CustomDirectionalityWidget(child: RichText(
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      text: TextSpan(
-                        children: [
-
-                          if((product.price ?? 0) > priceWithDiscount) TextSpan(
-                            style: poppinsRegular.copyWith(
-                              fontSize: Dimensions.fontSizeDefault,
-                              color: Theme.of(context).disabledColor,
-                              decoration: TextDecoration.lineThrough,
-                            ),
-                            text: PriceConverterHelper.convertPrice(context, (product.price ?? 0)),
-                          ),
-                          if((product.price ?? 0) > priceWithDiscount) const TextSpan(text: '  '),
-
-                          TextSpan(
+                  // Price row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      // Discounted / final price
+                      Expanded(
+                        child: CustomDirectionalityWidget(
+                          child: Text(
+                            PriceConverterHelper.convertPrice(context, priceWithDiscount),
                             style: poppinsSemiBold.copyWith(
                               fontSize: Dimensions.fontSizeDefault,
-                              color: Theme.of(context).textTheme.titleMedium?.color,
+                              color: Theme.of(context).primaryColor,
                             ),
-                            text: PriceConverterHelper.convertPrice(context, priceWithDiscount),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-
-
-
-                        ],
-                      ),
-                    )) : Row(
-                      children: [
-                        Text(
-                          '${product.capacity} ${product.unit}',
-                          style: poppinsRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
-                          maxLines: 1, overflow: TextOverflow.ellipsis,
                         ),
-                        const Spacer(),
+                      ),
 
-                        product.price! > priceWithDiscount  ?
+                      // Original price (strikethrough) if discounted
+                      if ((product.price ?? 0) > priceWithDiscount)
                         CustomDirectionalityWidget(
                           child: Text(
                             PriceConverterHelper.convertPrice(context, product.price),
                             style: poppinsRegular.copyWith(
-                              fontSize: Dimensions.fontSizeSmall,
+                              fontSize: 10,
                               color: Theme.of(context).disabledColor,
                               decoration: TextDecoration.lineThrough,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ) : const SizedBox(),
-
-                        CustomDirectionalityWidget(child: Text(
-                          PriceConverterHelper.convertPrice(context, priceWithDiscount),
-                          style: poppinsSemiBold.copyWith(fontSize: Dimensions.fontSizeLarge),
-                        )),
-                      ],
-                    ),
-                    // const SizedBox(height: Dimensions.paddingSizeSmall),
-                  ]),
+                        ),
+                    ],
+                  ),
 
                 ],
               ),
@@ -466,12 +439,12 @@ class _ProductGridWidget extends StatelessWidget {
                   highlightColor: Colors.transparent,
                   onTap: () {
                     if (isExistInCart) {
-                      showCustomSnackBarHelper('already_added'.tr);
-                    } else if (stock! < 1) {
-                      showCustomSnackBarHelper('out_of_stock'.tr);
+                      showCustomSnackBarHelper(getTranslated('already_added', context));
+                    } else if ((stock ?? 0) < 1) {
+                      showCustomSnackBarHelper(getTranslated('out_of_stock', context));
                     } else {
                       Provider.of<CartProvider>(context, listen: false).addToCart(cartModel!);
-                      showCustomSnackBarHelper('added_to_cart'.tr, isError: false);
+                      showCustomSnackBarHelper(getTranslated('added_to_cart', context), isError: false);
                     }
                   },
                   child: Container(
