@@ -152,16 +152,17 @@ class ProductTitleWidget extends StatelessWidget {
                 '20-25 min', 
                 style: poppinsRegular.copyWith(color: Colors.black54, fontSize: Dimensions.fontSizeSmall),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4),
-                child: Text('|', style: TextStyle(color: Colors.black26)),
-              ),
-              
-              const Icon(Icons.local_shipping_outlined, color: Colors.black87, size: 18),
-              Text(
-                'Free Delivery', 
-                style: poppinsRegular.copyWith(color: Colors.black54, fontSize: Dimensions.fontSizeSmall),
-              ),
+              if ((startingPriceWithDiscount ?? 0) > 790) ...[
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4),
+                  child: Text('|', style: TextStyle(color: Colors.black26)),
+                ),
+                const Icon(Icons.local_shipping_outlined, color: Colors.black87, size: 18),
+                Text(
+                  getTranslated('free_delivery', context) ?? 'Free Delivery', 
+                  style: poppinsRegular.copyWith(color: Colors.black54, fontSize: Dimensions.fontSizeSmall),
+                ),
+              ],
             ]),
 
           ]),
