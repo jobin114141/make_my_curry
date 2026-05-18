@@ -61,7 +61,8 @@ class CartButtonWidget extends StatelessWidget {
           backgroundColor: const Color(0xFF0F1E29),
           textColor: Colors.white,
           borderRadius: 50,
-          buttonText: 'Proceed To Buy (${Provider.of<CartProvider>(context, listen: false).cartList.length} Item${Provider.of<CartProvider>(context, listen: false).cartList.length > 1 ? 's' : ''})',
+          buttonText:
+              'Proceed To Buy (${Provider.of<CartProvider>(context, listen: false).cartList.length} Item${Provider.of<CartProvider>(context, listen: false).cartList.length > 1 ? 's' : ''})',
           onPressed: () {
             if (_itemPrice < (_configModel.minimumOrderValue ?? 0)) {
               showCustomSnackBarHelper(
